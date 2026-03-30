@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LangQuiz</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>字</text></svg>">
+<title>PokéQuiz</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <style>
 :root {
   --bg: #0f0f1a;
@@ -240,14 +240,13 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 <body>
 
 <nav class="tab-bar">
-  <button class="tab-btn active" data-tab="mandarin">Traditional Mandarin</button>
-  <button class="tab-btn" data-tab="pokemon">Pokémon Quiz</button>
+  <button class="tab-btn active" data-tab="pokemon">Pokémon Quiz</button>
   <button class="tab-btn" data-tab="wtp">Who's That Pokémon?</button>
 </nav>
 
 <header>
   <div class="title-row">
-    <div class="title">Lang<span class="accent">Quiz</span><span class="sub" id="subtitle">Traditional Mandarin</span></div>
+    <div class="title">Poké<span class="accent">Quiz</span><span class="sub" id="subtitle">Pokémon</span></div>
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
@@ -255,7 +254,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     </div>
   </div>
   <div class="input-row">
-    <input type="text" id="input-box" placeholder="Type pinyin…" autocomplete="off" autofocus spellcheck="false" />
+    <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
     <div class="progress-wrap">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
@@ -319,8 +318,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 </div>
 
 <footer>
-  Data: <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank">HSK Vocabulary</a>
-  · <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
+  Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
 </footer>
 
@@ -495,8 +493,8 @@ const Q = (function() {
 
   function openScoreboard() {
     sbCurrentTab = currentTab;
-    const tabs = ['mandarin', 'pokemon', 'wtp'];
-    const tabLabels = { mandarin: 'Mandarin', pokemon: 'Pokémon', wtp: "Who's That?" };
+    const tabs = ['pokemon', 'wtp'];
+    const tabLabels = { pokemon: 'Pokémon Quiz', wtp: "Who's That?" };
     $('sb-tabs').innerHTML = tabs.map(function(t) {
       return '<button class="sb-tab' + (t === sbCurrentTab ? ' active' : '') + '" data-sb="' + t + '">' + tabLabels[t] + '</button>';
     }).join('');
@@ -1004,10 +1002,10 @@ const Q = (function() {
 
     const isPoke = tab === 'pokemon';
     const isWtp = tab === 'wtp';
-    const subtitles = { mandarin: 'Traditional Mandarin', pokemon: 'Pokémon', wtp: "Who's That Pokémon?" };
+    const subtitles = { pokemon: 'Pokémon', wtp: "Who's That Pokémon?" };
     $('subtitle').textContent = subtitles[tab] || tab;
-    $input.placeholder = isPoke ? 'Type a Pokémon name…' : isWtp ? 'Type the Pokémon name…' : 'Type pinyin (e.g. ai, wo, nihao)…';
-    $('btn-order').textContent = isPoke ? 'Dex Order' : 'Freq Order';
+    $input.placeholder = isWtp ? 'Type the Pokémon name…' : 'Type a Pokémon name…';
+    $('btn-order').textContent = 'Dex Order';
     $('btn-sound').style.display = (isPoke || isWtp) ? '' : 'none';
     $('btn-shadows').style.display = isPoke ? '' : 'none';
 
@@ -1149,7 +1147,7 @@ const Q = (function() {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  switchTab('mandarin');
+  switchTab('pokemon');
 
   return { closeModal: () => $overlay.classList.remove('active'), reset };
 })();
