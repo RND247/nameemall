@@ -1,0 +1,5 @@
+# Build scripts (not needed for the site)
+build_*.py
+
+# OS files
+.DS_Store

@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangQuiz</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>字</text></svg>">
+<style>
+:root {
+  --bg: #0f0f1a;
+  --bg2: #161625;
+  --bg-card: #1c1c30;
+  --bg-card-found: #0d2847;
+  --accent: #e94560;
+  --text: #e8e8f0;
+  --text-dim: #6b7280;
+  --text-pinyin: #38bdf8;
+  --green: #22c55e;
+  --green-glow: rgba(34,197,94,0.25);
+  --border: #2a2a40;
+  --input-bg: #0a0a18;
+  --radius: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.tab-bar { display: flex; justify-content: center; gap: 0; background: var(--bg2); border-bottom: 2px solid var(--border); }
+.tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 16px 6px; }
+.title-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 8px; }
+.title { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
+.title .accent { color: var(--accent); }
+.title .sub { color: var(--text-dim); font-weight: 500; font-size: 0.82rem; margin-left: 4px; }
+
+.stats { display: flex; align-items: center; gap: 14px; font-size: 0.85rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.stats .num { color: var(--green); font-weight: 700; }
+.stats .total { color: var(--text); font-weight: 700; }
+.stats .timer-val { color: var(--text); font-weight: 600; }
+.stats .best { color: var(--text-pinyin); font-size: 0.75rem; }
+
+.input-row { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+#input-box { background: var(--input-bg); border: 2px solid var(--border); border-radius: var(--radius); color: var(--text); font-size: 1rem; padding: 8px 14px; width: 320px; outline: none; transition: border-color 0.2s; }
+#input-box:focus { border-color: var(--accent); }
+#input-box::placeholder { color: var(--text-dim); }
+#input-box.flash-green { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+
+.progress-wrap { flex: 1; max-width: 260px; min-width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--text-pinyin)); transition: width 0.35s ease; border-radius: 3px; }
+
+.hint-row { text-align: center; font-size: 0.78rem; color: var(--text-dim); padding: 4px 0 2px; min-height: 22px; display: none; }
+.hint-row .hint-val { color: var(--text-pinyin); font-weight: 600; }
+
+.btn-row { display: flex; gap: 6px; justify-content: center; padding: 4px 0 6px; flex-wrap: wrap; }
+.btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 5px 14px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.btn:hover { border-color: var(--text-pinyin); color: var(--text); }
+.btn.danger { border-color: var(--accent); color: var(--accent); }
+.btn.danger:hover { background: var(--accent); color: #fff; }
+
+.grid-wrap { padding: 8px 10px; max-width: 1400px; margin: 0 auto; }
+.grid { display: grid; gap: 3px; }
+.grid.mandarin-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+
+.region-section { margin-bottom: 12px; }
+.region-header { display: flex; align-items: center; gap: 10px; padding: 10px 4px 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-pinyin); letter-spacing: 0.3px; }
+.region-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.region-header .region-count { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); margin-left: -4px; }
+.region-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 3px; }
+
+.card { aspect-ratio: 1; background: var(--bg-card); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 1px solid transparent; overflow: hidden; transition: background 0.3s, border-color 0.3s; cursor: default; }
+.card .rank { position: absolute; top: 2px; left: 3px; font-size: 0.5rem; color: var(--text-dim); opacity: 0.35; }
+.card.just-found { animation: pop 0.4s ease-out; }
+@keyframes pop { 0% { transform: scale(1.2); } 60% { transform: scale(0.95); } 100% { transform: scale(1); } }
+
+.card.unrevealed .char { font-size: 1.45rem; color: var(--text-dim); opacity: 0.08; filter: blur(4px); user-select: none; }
+.card.found { background: var(--bg-card-found); border-color: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+.card.found .char { font-size: 1.35rem; color: #fff; line-height: 1.2; }
+.card.found .pinyin { font-size: 0.48rem; color: var(--text-pinyin); margin-top: 1px; }
+.card.found .english { font-size: 0.4rem; color: var(--text-dim); margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card.missed { background: rgba(233,69,96,0.1); border-color: rgba(233,69,96,0.5); }
+.card.missed .char { font-size: 1.35rem; color: var(--accent); opacity: 0.85; line-height: 1.2; }
+.card.missed .pinyin { font-size: 0.48rem; color: var(--accent); opacity: 0.6; margin-top: 1px; }
+.card.missed .english { font-size: 0.4rem; color: var(--accent); opacity: 0.5; margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Pokemon cards ── */
+.poke-placeholder { font-size: 2rem; font-weight: 900; color: var(--text-dim); opacity: 0.18; font-style: italic; text-shadow: 0 0 8px rgba(56,189,248,0.15); user-select: none; line-height: 1; }
+.poke-shadow { width: 56px; height: 56px; object-fit: contain; filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(56,189,248,0.3)); opacity: 0.4; display: none; }
+
+.card.unrevealed .poke-sprite { display: none; }
+.card.unrevealed .poke-name { display: none; }
+.card.unrevealed .poke-gen { display: none; }
+
+.shadows-on .card.unrevealed .poke-placeholder { display: none; }
+.shadows-on .card.unrevealed .poke-shadow { display: block; }
+
+.card.found .poke-placeholder { display: none; }
+.card.found .poke-shadow { display: none; }
+.card.found .poke-sprite { width: 56px; height: 56px; object-fit: contain; }
+.card.found .poke-name { font-size: 0.48rem; color: var(--text); margin-top: 2px; font-weight: 600; }
+.card.found .poke-gen { font-size: 0.38rem; color: var(--text-dim); }
+.card.found[data-pid] { cursor: pointer; }
+
+.card.missed .poke-placeholder { display: none; }
+.card.missed .poke-shadow { display: none; }
+.card.missed .poke-sprite { width: 56px; height: 56px; object-fit: contain; filter: grayscale(1) opacity(0.5); }
+.card.missed .poke-name { font-size: 0.48rem; color: var(--accent); opacity: 0.7; margin-top: 2px; font-weight: 600; }
+.card.missed .poke-gen { font-size: 0.38rem; color: var(--accent); opacity: 0.4; }
+.card.missed[data-pid] { cursor: pointer; }
+
+/* ── Pokemon popup ── */
+.poke-popup {
+  display: none;
+  position: fixed;
+  z-index: 150;
+  width: 320px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+.poke-popup.active { display: block; }
+.poke-popup .pp-top { display: flex; gap: 14px; align-items: flex-start; }
+.poke-popup .pp-sprite { width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; background: var(--bg-card); border-radius: 10px; flex-shrink: 0; }
+.poke-popup .pp-info { flex: 1; min-width: 0; }
+.poke-popup .pp-name { font-size: 1.1rem; font-weight: 800; }
+.poke-popup .pp-id { font-size: 0.75rem; color: var(--text-dim); }
+.poke-popup .pp-region { font-size: 0.72rem; color: var(--text-pinyin); margin-top: 2px; }
+.poke-popup .pp-types { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+.poke-popup .pp-type { font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; font-weight: 700; text-transform: uppercase; color: #fff; }
+.poke-popup .pp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 12px; margin-top: 8px; font-size: 0.72rem; }
+.poke-popup .pp-stats dt { color: var(--text-dim); }
+.poke-popup .pp-stats dd { color: var(--text); font-weight: 600; }
+.poke-popup .pp-flavor { margin-top: 10px; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; font-style: italic; border-top: 1px solid var(--border); padding-top: 8px; }
+.poke-popup .pp-loading { color: var(--text-dim); font-size: 0.8rem; padding: 10px 0; }
+
+.toast-stack { position: fixed; bottom: 16px; right: 16px; display: flex; flex-direction: column; gap: 4px; z-index: 50; pointer-events: none; }
+.toast { background: var(--bg-card-found); border: 1px solid var(--green); border-radius: 8px; padding: 6px 12px; font-size: 0.82rem; color: var(--green); animation: slideIn 0.25s ease-out, fadeOut 0.4s ease 2.2s forwards; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+.toast .tc { font-size: 1.05rem; }
+.toast img { width: 28px; height: 28px; }
+.toast.family-toast { background: linear-gradient(135deg, #1a1a3e, #0d2847); border-color: #f7d02c; color: #f7d02c; white-space: normal; flex-direction: column; padding: 10px 14px; gap: 4px; animation: slideIn 0.3s ease-out, fadeOut 0.5s ease 4s forwards; }
+.toast.family-toast .family-label { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+.toast.family-toast .family-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center; }
+.toast.family-toast .family-row .fm { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.toast.family-toast .family-row img { width: 40px; height: 40px; }
+.toast.family-toast .family-row .fm-arrow { font-size: 0.9rem; color: #f7d02c; opacity: 0.5; }
+.toast.family-toast .family-row .fm-name { font-size: 0.5rem; color: var(--text-dim); max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+@keyframes slideIn { from { transform: translateX(50px); opacity: 0; } }
+@keyframes fadeOut { to { opacity: 0; } }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; }
+.overlay.active { display: flex; }
+.modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 36px 28px; text-align: center; max-width: 380px; width: 90%; }
+.modal h2 { margin-bottom: 10px; font-size: 1.4rem; }
+.modal h2.win { color: var(--green); }
+.modal h2.lose { color: var(--accent); }
+.modal p { color: var(--text-dim); margin-bottom: 6px; font-size: 0.9rem; }
+.modal .big { font-size: 2.8rem; font-weight: 800; color: var(--text); margin: 8px 0; }
+.modal .btn { margin-top: 14px; margin-right: 6px; }
+
+/* ── Scoreboard panel ── */
+.scoreboard-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center;
+}
+.scoreboard-overlay.active { display: flex; }
+.scoreboard-panel {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; max-width: 480px; width: 92%; max-height: 80vh; display: flex; flex-direction: column;
+}
+.scoreboard-panel h2 { font-size: 1.1rem; margin-bottom: 12px; text-align: center; color: var(--text-pinyin); }
+.sb-tabs { display: flex; gap: 0; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+.sb-tab { background: none; border: none; color: var(--text-dim); padding: 6px 16px; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-bottom: 2px solid transparent; }
+.sb-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.sb-list { flex: 1; overflow-y: auto; min-height: 100px; }
+.sb-empty { text-align: center; color: var(--text-dim); font-size: 0.82rem; padding: 24px 0; }
+.sb-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; padding: 8px 4px; border-bottom: 1px solid var(--border); font-size: 0.78rem; align-items: center; }
+.sb-row:last-child { border-bottom: none; }
+.sb-date { color: var(--text-dim); }
+.sb-result { font-weight: 700; }
+.sb-result.complete { color: var(--green); }
+.sb-result.partial { color: var(--accent); }
+.sb-time { color: var(--text-pinyin); font-weight: 600; font-variant-numeric: tabular-nums; }
+.sb-header { font-weight: 700; color: var(--text-dim); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-bottom: 2px; display: grid; grid-template-columns: 1fr auto auto; gap: 8px; }
+.sb-clear { margin-top: 10px; text-align: center; }
+
+/* ── Who's That Pokemon mode ── */
+.wtp-wrap { display: flex; flex-direction: column; align-items: center; padding: 30px 16px; gap: 20px; max-width: 500px; margin: 0 auto; }
+.wtp-card { background: var(--bg-card); border: 2px solid var(--border); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; transition: border-color 0.3s; }
+.wtp-card.correct { border-color: var(--green); box-shadow: 0 0 20px var(--green-glow); }
+.wtp-card.wrong { border-color: var(--accent); }
+.wtp-img-wrap { width: 320px; height: 320px; display: flex; align-items: center; justify-content: center; position: relative; }
+.wtp-img { max-width: 100%; max-height: 100%; object-fit: contain; transition: filter 0.4s; }
+.wtp-img.shadow { filter: brightness(0) invert(1) drop-shadow(0 0 6px rgba(56,189,248,0.3)); }
+.wtp-info { text-align: center; min-height: 32px; }
+.wtp-name { font-size: 1.4rem; font-weight: 800; color: var(--green); }
+.wtp-name.missed { color: var(--accent); }
+.wtp-dex { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+.wtp-counter { font-size: 0.85rem; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.wtp-counter .wtp-score { color: var(--green); font-weight: 700; }
+.wtp-counter .wtp-total { color: var(--text); font-weight: 700; }
+.wtp-btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.wtp-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 8px 18px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; transition: all 0.15s; }
+.wtp-btn:hover { border-color: var(--text-pinyin); color: var(--text); }
+.wtp-btn.reveal { border-color: var(--text-pinyin); color: var(--text-pinyin); }
+.wtp-btn.skip { border-color: var(--accent); color: var(--accent); }
+.wtp-btn.skip:hover { background: var(--accent); color: #fff; }
+.wtp-streak { font-size: 0.78rem; color: var(--text-pinyin); font-weight: 700; }
+.wtp-gen-section { width: 100%; text-align: center; }
+.wtp-gen-label { font-size: 0.75rem; color: var(--text-dim); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.wtp-gen-grid { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; }
+.wtp-gen-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 5px 12px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; font-weight: 700; transition: all 0.15s; }
+.wtp-gen-btn:hover { border-color: var(--text-pinyin); color: var(--text); }
+.wtp-gen-btn.gen-correct { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.1); }
+.wtp-gen-btn.gen-wrong { border-color: var(--accent); color: var(--accent); opacity: 0.6; }
+.wtp-gen-btn.gen-answer { border-color: var(--green); color: var(--green); background: rgba(34,197,94,0.15); }
+.wtp-gen-btn:disabled { cursor: default; }
+.wtp-next { background: var(--text-pinyin); border: none; color: var(--bg); padding: 10px 28px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; transition: opacity 0.15s; margin-top: 4px; }
+.wtp-next:hover { opacity: 0.85; }
+.wtp-score-line { font-size: 0.75rem; color: var(--text-dim); }
+
+footer { text-align: center; padding: 24px 16px; font-size: 0.7rem; color: var(--text-dim); border-top: 1px solid var(--border); margin-top: 16px; }
+footer a { color: var(--text-pinyin); text-decoration: none; }
+.loading { display: flex; align-items: center; justify-content: center; height: 50vh; color: var(--text-dim); font-size: 1.1rem; grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+  .grid.mandarin-grid { grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 2px; }
+  .region-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 2px; }
+  .title-row { flex-direction: column; gap: 6px; }
+  #input-box { width: 240px; }
+  .card.found .char, .card.unrevealed .char { font-size: 1.15rem; }
+  .stats { gap: 8px; font-size: 0.8rem; }
+  .tab-btn { padding: 8px 18px; font-size: 0.8rem; }
+  .poke-popup { width: 260px; padding: 14px; }
+  .poke-popup .pp-sprite { width: 72px; height: 72px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="mandarin">Traditional Mandarin</button>
+  <button class="tab-btn" data-tab="pokemon">Pokémon Quiz</button>
+  <button class="tab-btn" data-tab="wtp">Who's That Pokémon?</button>
+</nav>
+
+<header>
+  <div class="title-row">
+    <div class="title">Lang<span class="accent">Quiz</span><span class="sub" id="subtitle">Traditional Mandarin</span></div>
+    <div class="stats">
+      <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
+      <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
+      <span class="best" id="best-display"></span>
+    </div>
+  </div>
+  <div class="input-row">
+    <input type="text" id="input-box" placeholder="Type pinyin…" autocomplete="off" autofocus spellcheck="false" />
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+  <div class="hint-row" id="hint-row">
+    Closest match: <span class="hint-val" id="closest-hint">—</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn danger" id="btn-give-up">Give Up</button>
+    <button class="btn" id="btn-reset">Reset</button>
+    <button class="btn" id="btn-shuffle">Shuffle</button>
+    <button class="btn" id="btn-order">Freq Order</button>
+    <button class="btn" id="btn-hint">Hint: Off</button>
+    <button class="btn" id="btn-sound" style="display:none">Sound: Off</button>
+    <button class="btn" id="btn-shadows" style="display:none">Shadows: Off</button>
+    <button class="btn" id="btn-history">Scoreboard</button>
+  </div>
+</header>
+
+<div class="grid-wrap" id="grid-wrap">
+  <div class="grid mandarin-grid" id="grid"><div class="loading">Loading…</div></div>
+</div>
+
+<div class="poke-popup" id="poke-popup">
+  <div class="pp-top">
+    <img class="pp-sprite" id="pp-sprite" src="" alt="">
+    <div class="pp-info">
+      <div class="pp-name" id="pp-name"></div>
+      <div class="pp-id" id="pp-id"></div>
+      <div class="pp-region" id="pp-region"></div>
+      <div class="pp-types" id="pp-types"></div>
+    </div>
+  </div>
+  <dl class="pp-stats" id="pp-stats"></dl>
+  <div class="pp-flavor" id="pp-flavor"></div>
+</div>
+
+<div class="toast-stack" id="toasts"></div>
+
+<div class="scoreboard-overlay" id="sb-overlay">
+  <div class="scoreboard-panel">
+    <h2>Scoreboard</h2>
+    <div class="sb-tabs" id="sb-tabs"></div>
+    <div class="sb-header"><span>Date</span><span>Score</span><span>Time</span></div>
+    <div class="sb-list" id="sb-list"></div>
+    <div class="sb-clear"><button class="btn danger" id="sb-clear-btn" style="font-size:0.72rem;padding:4px 12px">Clear Scoreboard</button> <button class="btn" id="sb-close-btn" style="font-size:0.72rem;padding:4px 12px">Close</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modal-title">Well done!</h2>
+    <p>You named</p>
+    <div class="big" id="modal-score">0 / 0</div>
+    <p id="modal-time"></p>
+    <p id="modal-pct"></p>
+    <p id="modal-best"></p>
+    <button class="btn" onclick="Q.closeModal()">Close</button>
+    <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+  </div>
+</div>
+
+<footer>
+  Data: <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank">HSK Vocabulary</a>
+  · <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
+  · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
+</footer>
+
+<script>
+const Q = (function() {
+  'use strict';
+
+  let currentTab = 'mandarin';
+  let items = [];
+  let foundSet = new Set();
+  let displayOrder = [];
+  let timerInterval = null;
+  let startTime = null;
+  let elapsedMs = 0;
+  let timerRunning = false;
+  let givenUp = false;
+  let hintEnabled = false;
+  let soundEnabled = false;
+  let shadowsEnabled = false;
+
+  let keyToIndices = {};
+  let allKeys = [];
+  const dataSources = { mandarin: null, pokemon: null };
+  const pokeCache = {};
+  let pokeDetails = null;
+  let pokeFamilies = null;
+  let pokeFamilyMap = {};
+  let completedFamilies = new Set();
+
+  // WTP mode state
+  let wtpOrder = [];
+  let wtpIdx = 0;
+  let wtpCorrect = 0;
+  let wtpGenCorrect = 0;
+  let wtpRevealed = false;
+  let wtpSpriteShown = false;
+  let wtpGenGuessed = false;
+  const WTP_REGIONS = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea'];
+
+  const $ = id => document.getElementById(id);
+  const $input = $('input-box');
+  const $foundCount = $('found-count');
+  const $timer = $('timer');
+  const $bar = $('progress-bar');
+  const $hint = $('closest-hint');
+  const $hintRow = $('hint-row');
+  const $toasts = $('toasts');
+  const $overlay = $('overlay');
+  const $popup = $('poke-popup');
+
+  const TYPE_COLORS = {
+    normal:'#a8a77a',fire:'#ee8130',water:'#6390f0',electric:'#f7d02c',grass:'#7ac74c',
+    ice:'#96d9d6',fighting:'#c22e28',poison:'#a33ea1',ground:'#e2bf65',flying:'#a98ff3',
+    psychic:'#f95587',bug:'#a6b91a',rock:'#b6a136',ghost:'#735797',dragon:'#6f35fc',
+    dark:'#705746',steel:'#b7b7ce',fairy:'#d685ad'
+  };
+
+  const TONE_MAP = { 'ā':'a','á':'a','ǎ':'a','à':'a','ē':'e','é':'e','ě':'e','è':'e','ī':'i','í':'i','ǐ':'i','ì':'i','ō':'o','ó':'o','ǒ':'o','ò':'o','ū':'u','ú':'u','ǔ':'u','ù':'u','ǖ':'v','ǘ':'v','ǚ':'v','ǜ':'v','ü':'v' };
+
+  function stripTones(s) { let o = ''; for (const c of s) o += TONE_MAP[c] || c; return o.toLowerCase(); }
+
+  function buildMandarinKeys(w) { const a = stripTones(w.p); return [a, a.replace(/\s+/g, '')]; }
+  function buildPokemonKeys(w) { return w.k; }
+
+  function buildIndex() {
+    keyToIndices = {};
+    const fn = currentTab === 'mandarin' ? buildMandarinKeys : buildPokemonKeys;
+    items.forEach((w, i) => { for (const k of fn(w)) { (keyToIndices[k] ||= []).push(i); } });
+    allKeys = Object.keys(keyToIndices);
+  }
+
+  function findAllMatches(input) {
+    const q = input.toLowerCase().trim();
+    if (!q) return [];
+    return (keyToIndices[q] || []).filter(i => !foundSet.has(i));
+  }
+
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (!m) return n; if (!n) return m;
+    const d = [];
+    for (let i = 0; i <= m; i++) d[i] = [i];
+    for (let j = 0; j <= n; j++) d[0][j] = j;
+    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+      d[i][j] = a[i-1] === b[j-1] ? d[i-1][j-1] : 1 + Math.min(d[i-1][j], d[i][j-1], d[i-1][j-1]);
+    return d[m][n];
+  }
+
+  function closestHint(input) {
+    const q = input.toLowerCase().trim();
+    if (q.length < 1) return '—';
+    let best = '', bestD = Infinity;
+    for (const k of allKeys) {
+      if (Math.abs(k.length - q.length) > 2) continue;
+      if (!(keyToIndices[k] || []).some(i => !foundSet.has(i))) continue;
+      const d = levenshtein(q, k);
+      if (d > 0 && d < bestD) { bestD = d; best = k; if (d === 1) return best; }
+    }
+    return bestD <= 2 ? best : '—';
+  }
+
+  function fmtTime(ms) { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+
+  function startTimer() {
+    if (timerRunning) return;
+    timerRunning = true;
+    startTime = Date.now() - elapsedMs;
+    timerInterval = setInterval(() => { elapsedMs = Date.now() - startTime; $timer.textContent = fmtTime(elapsedMs); }, 250);
+  }
+  function stopTimer() { timerRunning = false; clearInterval(timerInterval); }
+
+  // ── Highscore ──
+
+  function hsKey() { return 'langquiz_hs_' + currentTab; }
+
+  function loadHighscore() {
+    try { return JSON.parse(localStorage.getItem(hsKey())) || {}; } catch(e) { return {}; }
+  }
+
+  function saveHighscore(count, time) {
+    const hs = loadHighscore();
+    let updated = false;
+    if (!hs.bestCount || count > hs.bestCount) { hs.bestCount = count; updated = true; }
+    if (count === items.length && (!hs.bestTime || time < hs.bestTime)) { hs.bestTime = time; updated = true; }
+    if (updated) localStorage.setItem(hsKey(), JSON.stringify(hs));
+    return hs;
+  }
+
+  function displayHighscore() {
+    const hs = loadHighscore();
+    const parts = [];
+    if (hs.bestCount) parts.push('Best: ' + hs.bestCount + '/' + items.length);
+    if (hs.bestTime) parts.push('Record: ' + fmtTime(hs.bestTime));
+    $('best-display').textContent = parts.join(' · ');
+  }
+
+  // ── Score history ──
+
+  function histKey(tab) { return 'langquiz_hist_' + tab; }
+
+  function loadHistory(tab) {
+    try { return JSON.parse(localStorage.getItem(histKey(tab))) || []; } catch(e) { return []; }
+  }
+
+  function saveToHistory(count, total, time) {
+    const list = loadHistory(currentTab);
+    list.unshift({ date: Date.now(), count: count, total: total, time: time });
+    if (list.length > 50) list.length = 50;
+    localStorage.setItem(histKey(currentTab), JSON.stringify(list));
+  }
+
+  function renderScoreboard(tab) {
+    const list = loadHistory(tab).slice().sort(function(a, b) {
+      const pa = a.count / a.total, pb = b.count / b.total;
+      if (pb !== pa) return pb - pa;
+      return a.time - b.time;
+    });
+    const $list = $('sb-list');
+    if (!list.length) { $list.innerHTML = '<div class="sb-empty">No games played yet</div>'; return; }
+    let html = '';
+    list.forEach(function(r) {
+      const d = new Date(r.date);
+      const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      const pct = (r.count / r.total * 100).toFixed(1);
+      const cls = r.count === r.total ? 'complete' : 'partial';
+      html += '<div class="sb-row"><span class="sb-date">' + dateStr + '</span><span class="sb-result ' + cls + '">' + r.count + '/' + r.total + ' (' + pct + '%)</span><span class="sb-time">' + fmtTime(r.time) + '</span></div>';
+    });
+    $list.innerHTML = html;
+  }
+
+  let sbCurrentTab = 'mandarin';
+
+  function openScoreboard() {
+    sbCurrentTab = currentTab;
+    const tabs = ['mandarin', 'pokemon', 'wtp'];
+    const tabLabels = { mandarin: 'Mandarin', pokemon: 'Pokémon', wtp: "Who's That?" };
+    $('sb-tabs').innerHTML = tabs.map(function(t) {
+      return '<button class="sb-tab' + (t === sbCurrentTab ? ' active' : '') + '" data-sb="' + t + '">' + tabLabels[t] + '</button>';
+    }).join('');
+    $('sb-tabs').querySelectorAll('.sb-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        sbCurrentTab = this.dataset.sb;
+        $('sb-tabs').querySelectorAll('.sb-tab').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        renderScoreboard(sbCurrentTab);
+      });
+    });
+    renderScoreboard(sbCurrentTab);
+    $('sb-overlay').classList.add('active');
+  }
+
+  // ── Display helpers ──
+
+  function displayMeaning(w) {
+    let m = w.m[0].split(';')[0].trim().replace(/^\([^)]*\)\s*/, '');
+    if (!m && w.m.length > 1) m = w.m[1].split(';')[0].trim().replace(/^\([^)]*\)\s*/, '');
+    if (!m) m = w.m[0];
+    return m.length > 22 ? m.slice(0, 20) + '…' : m;
+  }
+  function fullMeaning(w) { return w.m.slice(0, 4).map(m => m.split(';')[0].trim()).join('; '); }
+
+  // ── Render grid ──
+
+  const REGION_ORDER = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea'];
+
+  function makeCard(idx) {
+    const w = items[idx];
+    const c = document.createElement('div');
+    c.className = 'card unrevealed';
+    c.id = 'c' + idx;
+    if (currentTab === 'mandarin') {
+      c.innerHTML = '<span class="rank">' + w.id + '</span><div class="char">' + w.t + '</div><div class="pinyin"></div><div class="english"></div>';
+    } else {
+      c.innerHTML = '<span class="rank">#' + w.id + '</span>' +
+        '<div class="poke-placeholder">?</div>' +
+        '<img class="poke-shadow" src="' + w.s + '" alt="" loading="lazy">' +
+        '<img class="poke-sprite" alt="" loading="lazy">' +
+        '<div class="poke-name"></div><div class="poke-gen"></div>';
+      c.dataset.pid = w.id;
+    }
+    return c;
+  }
+
+  function renderGrid() {
+    const wrap = $('grid-wrap');
+    if (currentTab === 'mandarin') {
+      wrap.innerHTML = '<div class="grid mandarin-grid" id="grid"></div>';
+      const grid = $('grid');
+      const frag = document.createDocumentFragment();
+      for (const idx of displayOrder) frag.appendChild(makeCard(idx));
+      grid.appendChild(frag);
+    } else {
+      wrap.innerHTML = '';
+      wrap.classList.toggle('shadows-on', shadowsEnabled);
+      const groups = {};
+      for (const idx of displayOrder) { const r = items[idx].g; (groups[r] ||= []).push(idx); }
+      for (const region of REGION_ORDER) {
+        const list = groups[region];
+        if (!list || !list.length) continue;
+        const sec = document.createElement('div');
+        sec.className = 'region-section';
+        const hdr = document.createElement('div');
+        hdr.className = 'region-header';
+        hdr.innerHTML = region + ' <span class="region-count">(' + list.length + ')</span>';
+        sec.appendChild(hdr);
+        const grid = document.createElement('div');
+        grid.className = 'region-grid';
+        for (const idx of list) grid.appendChild(makeCard(idx));
+        sec.appendChild(grid);
+        wrap.appendChild(sec);
+      }
+    }
+  }
+
+  function pokeCryUrl(id) { return 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/' + id + '.ogg'; }
+  function playCry(id) { try { const a = new Audio(pokeCryUrl(id)); a.volume = 0.3; a.play().catch(()=>{}); } catch(e){} }
+
+  function revealCard(idx, missed) {
+    const c = $('c' + idx);
+    if (!c) return;
+    const w = items[idx];
+    c.className = 'card ' + (missed ? 'missed' : 'found just-found');
+    if (currentTab === 'mandarin') {
+      c.querySelector('.pinyin').textContent = w.p;
+      c.querySelector('.english').textContent = displayMeaning(w);
+      c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
+    } else {
+      c.querySelector('.poke-sprite').src = w.s;
+      c.querySelector('.poke-name').textContent = w.n;
+      c.querySelector('.poke-gen').textContent = w.g;
+    }
+  }
+
+  function revealCardContent(idx) {
+    const c = $('c' + idx);
+    if (!c) return;
+    const w = items[idx];
+    if (currentTab === 'mandarin') {
+      c.querySelector('.pinyin').textContent = w.p;
+      c.querySelector('.english').textContent = displayMeaning(w);
+      c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
+    } else {
+      c.querySelector('.poke-sprite').src = w.s;
+      c.querySelector('.poke-name').textContent = w.n;
+      c.querySelector('.poke-gen').textContent = w.g;
+    }
+  }
+
+  function toast(w) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    if (currentTab === 'mandarin') {
+      el.innerHTML = '<span class="tc">' + w.t + '</span> ' + w.p + ' — ' + displayMeaning(w);
+    } else {
+      el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n;
+    }
+    $toasts.appendChild(el);
+    setTimeout(() => el.remove(), 2700);
+  }
+
+  function checkFamilyComplete(revealedIds) {
+    if (currentTab !== 'pokemon' || !pokeFamilies) return;
+    const checked = new Set();
+    for (const pid of revealedIds) {
+      const famIdx = pokeFamilyMap[pid];
+      if (famIdx === undefined || checked.has(famIdx) || completedFamilies.has(famIdx)) continue;
+      checked.add(famIdx);
+      const family = pokeFamilies[famIdx];
+      if (family.every(fid => items.some((w, i) => w.id === fid && foundSet.has(i)))) {
+        completedFamilies.add(famIdx);
+        setTimeout(() => familyToast(family), 400);
+      }
+    }
+  }
+
+  function familyToast(family) {
+    const el = document.createElement('div');
+    el.className = 'toast family-toast';
+    const label = document.createElement('div');
+    label.className = 'family-label';
+    label.textContent = 'Evolution Complete!';
+    el.appendChild(label);
+    const row = document.createElement('div');
+    row.className = 'family-row';
+    family.forEach((fid, i) => {
+      const w = items.find(it => it.id === fid);
+      if (!w) return;
+      if (i > 0) {
+        const arrow = document.createElement('span');
+        arrow.className = 'fm-arrow';
+        arrow.textContent = '→';
+        row.appendChild(arrow);
+      }
+      const fm = document.createElement('div');
+      fm.className = 'fm';
+      const img = document.createElement('img');
+      img.src = w.s;
+      img.alt = w.n;
+      fm.appendChild(img);
+      const name = document.createElement('div');
+      name.className = 'fm-name';
+      name.textContent = w.n;
+      fm.appendChild(name);
+      row.appendChild(fm);
+    });
+    el.appendChild(row);
+    $toasts.appendChild(el);
+    setTimeout(() => el.remove(), 4500);
+  }
+
+  function updateUI() {
+    $foundCount.textContent = foundSet.size;
+    $bar.style.width = (foundSet.size / items.length * 100) + '%';
+  }
+
+  function flashInput() { $input.classList.add('flash-green'); setTimeout(() => $input.classList.remove('flash-green'), 300); }
+
+  function showModal(won) {
+    const count = currentTab === 'wtp' ? wtpCorrect : foundSet.size;
+    $('modal-title').textContent = won ? 'Incredible!' : 'Results';
+    $('modal-title').className = won ? 'win' : 'lose';
+    if (currentTab === 'wtp') {
+      $('modal-score').textContent = 'Name: ' + wtpCorrect + '/' + items.length + '  ·  Region: ' + wtpGenCorrect + '/' + items.length;
+    } else {
+      $('modal-score').textContent = count + ' / ' + items.length;
+    }
+    $('modal-time').textContent = 'in ' + fmtTime(elapsedMs);
+    $('modal-pct').textContent = (count / items.length * 100).toFixed(1) + '%';
+    saveToHistory(count, items.length, elapsedMs);
+    const hs = saveHighscore(count, elapsedMs);
+    const hsParts = [];
+    if (hs.bestCount) hsParts.push('Best: ' + hs.bestCount + '/' + items.length);
+    if (hs.bestTime) hsParts.push('Record: ' + fmtTime(hs.bestTime));
+    $('modal-best').textContent = hsParts.join(' · ');
+    displayHighscore();
+    $overlay.classList.add('active');
+  }
+
+  // ── Pokemon popup ──
+
+  async function fetchPokeDetails(id) {
+    if (pokeCache[id]) return pokeCache[id];
+    if (!pokeDetails) {
+      try {
+        const res = await fetch('pokemon_details.json');
+        if (!res.ok) return null;
+        pokeDetails = await res.json();
+      } catch(e) { return null; }
+    }
+    const d = pokeDetails[id];
+    if (!d) return null;
+    const details = {
+      types: d.t || [],
+      height: d.h || '?',
+      weight: d.w || '?',
+      abilities: d.a || [],
+      genus: d.g || '',
+      flavor: d.f || '',
+      sprite: d.s || ''
+    };
+    pokeCache[id] = details;
+    return details;
+  }
+
+  let popupTimer = null;
+
+  function showPopup(card, w) {
+    const id = w.id;
+    $('pp-sprite').src = w.s;
+    $('pp-name').textContent = w.n;
+    $('pp-id').textContent = '#' + String(id).padStart(4, '0');
+    $('pp-region').textContent = w.g;
+    $('pp-types').innerHTML = '';
+    $('pp-stats').innerHTML = '';
+    $('pp-flavor').textContent = 'Loading…';
+
+    const rect = card.getBoundingClientRect();
+    let left = rect.right + 12;
+    let top = rect.top;
+    if (left + 330 > window.innerWidth) left = rect.left - 332;
+    if (left < 8) left = 8;
+    if (top + 300 > window.innerHeight) top = window.innerHeight - 310;
+    if (top < 8) top = 8;
+    $popup.style.left = left + 'px';
+    $popup.style.top = top + 'px';
+    $popup.classList.add('active');
+
+    fetchPokeDetails(id).then(d => {
+      if (!$popup.classList.contains('active')) return;
+      if (!d) { $('pp-flavor').textContent = 'Could not load details.'; return; }
+
+      if (d.sprite) $('pp-sprite').src = d.sprite;
+
+      $('pp-types').innerHTML = d.types.map(t =>
+        '<span class="pp-type" style="background:' + (TYPE_COLORS[t] || '#888') + '">' + t + '</span>'
+      ).join('');
+
+      $('pp-stats').innerHTML =
+        '<dt>Height</dt><dd>' + d.height + '</dd>' +
+        '<dt>Weight</dt><dd>' + d.weight + '</dd>' +
+        '<dt>Category</dt><dd>' + d.genus + '</dd>' +
+        '<dt>Abilities</dt><dd>' + d.abilities.join(', ') + '</dd>';
+
+      $('pp-flavor').textContent = d.flavor;
+    });
+  }
+
+  function hidePopup() { $popup.classList.remove('active'); }
+
+  document.addEventListener('mouseover', function(e) {
+    const card = e.target.closest('.card.found, .card.missed');
+    if (!card || currentTab !== 'pokemon') { clearTimeout(popupTimer); hidePopup(); return; }
+    const pid = parseInt(card.dataset.pid);
+    if (!pid) return;
+    const w = items.find(it => it.id === pid);
+    if (!w) return;
+    clearTimeout(popupTimer);
+    popupTimer = setTimeout(() => showPopup(card, w), 200);
+  });
+
+  document.addEventListener('mouseout', function(e) {
+    const card = e.target.closest('.card');
+    if (card) { clearTimeout(popupTimer); hidePopup(); }
+  });
+
+  document.addEventListener('click', function(e) {
+    const card = e.target.closest('.card.found, .card.missed');
+    if (!card || currentTab !== 'pokemon') return;
+    const pid = parseInt(card.dataset.pid);
+    if (!pid) return;
+    const w = items.find(it => it.id === pid);
+    if (!w) return;
+    const name = w.n.replace(/ /g, '_');
+    window.open('https://bulbapedia.bulbagarden.net/wiki/' + name + '_(Pok%C3%A9mon)', '_blank');
+  });
+
+  // ── Save / Load ──
+
+  function saveKey() { return 'langquiz_' + currentTab; }
+  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder })); }
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(saveKey()));
+      if (d && d.f && d.f.length) { foundSet = new Set(d.f); elapsedMs = d.e || 0; if (d.o && d.o.length === items.length) displayOrder = d.o; return true; }
+    } catch(e) {}
+    return false;
+  }
+
+  // ── Actions ──
+
+  function giveUp() {
+    if (givenUp) return;
+    givenUp = true; stopTimer(); $input.disabled = true;
+    for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+    showModal(false);
+  }
+
+  function reset() {
+    givenUp = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set();
+    stopTimer(); timerRunning = false; $timer.textContent = '00:00';
+    $input.value = ''; $input.disabled = false;
+    if (hintEnabled) $hint.textContent = '—';
+    if (currentTab === 'wtp') {
+      wtpActivate(items);
+      return;
+    }
+    updateUI(); displayOrder = items.map((_, i) => i);
+    renderGrid(); $input.focus(); localStorage.removeItem(saveKey());
+  }
+
+  function shuffle() {
+    for (let i = displayOrder.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [displayOrder[i], displayOrder[j]] = [displayOrder[j], displayOrder[i]]; }
+    renderGrid();
+    foundSet.forEach(i => { const c = $('c' + i); if (c) { c.className = 'card found'; revealCardContent(i); } });
+  }
+
+  function order() {
+    displayOrder = items.map((_, i) => i);
+    renderGrid();
+    foundSet.forEach(i => { const c = $('c' + i); if (c) { c.className = 'card found'; revealCardContent(i); } });
+  }
+
+  // ── Who's That Pokemon mode ──
+
+  function wtpActivate(data) {
+    items = data;
+    wtpOrder = items.map((_, i) => i);
+    for (let i = wtpOrder.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [wtpOrder[i], wtpOrder[j]] = [wtpOrder[j], wtpOrder[i]]; }
+    wtpIdx = 0; wtpCorrect = 0; wtpGenCorrect = 0; wtpRevealed = false; wtpSpriteShown = false; wtpGenGuessed = false;
+    foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set();
+    $timer.textContent = '00:00'; $input.value = ''; $input.disabled = false;
+    $foundCount.textContent = '0'; $('total-count').textContent = items.length;
+    $bar.style.width = '0%';
+    displayHighscore();
+    wtpRender();
+    $input.focus();
+  }
+
+  function wtpCurrent() { return wtpIdx < wtpOrder.length ? items[wtpOrder[wtpIdx]] : null; }
+
+  function wtpRender() {
+    const wrap = $('grid-wrap');
+    const w = wtpCurrent();
+    if (!w) { stopTimer(); showModal(true); return; }
+    wrap.innerHTML =
+      '<div class="wtp-wrap">' +
+        '<div class="wtp-counter">Pokémon <span class="wtp-score">' + (wtpIdx + 1) + '</span> / <span class="wtp-total">' + items.length + '</span>' +
+          '  ·  Name: <span class="wtp-score">' + wtpCorrect + '</span>' +
+          '  ·  Region: <span class="wtp-score">' + wtpGenCorrect + '</span>' +
+        '</div>' +
+        '<div class="wtp-card" id="wtp-card">' +
+          '<div class="wtp-img-wrap"><img class="wtp-img shadow" id="wtp-img" src="' + w.s + '" alt=""></div>' +
+          '<div class="wtp-info" id="wtp-info"></div>' +
+          '<div class="wtp-gen-section" id="wtp-gen" style="display:none">' +
+            '<div class="wtp-gen-label">Which region?</div>' +
+            '<div class="wtp-gen-grid" id="wtp-gen-grid"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="wtp-btns" id="wtp-btns">' +
+          '<button class="wtp-btn reveal" id="wtp-show">Show Sprite</button>' +
+          '<button class="wtp-btn skip" id="wtp-skip">Skip</button>' +
+        '</div>' +
+      '</div>';
+    $('wtp-show').addEventListener('click', wtpShowSprite);
+    $('wtp-skip').addEventListener('click', wtpSkip);
+    wtpRevealed = false; wtpSpriteShown = false; wtpGenGuessed = false;
+  }
+
+  function wtpShowSprite() {
+    const img = $('wtp-img');
+    if (img && !wtpSpriteShown) {
+      img.classList.remove('shadow');
+      wtpSpriteShown = true;
+    }
+  }
+
+  function wtpReveal(nameCorrect) {
+    if (wtpRevealed) return;
+    wtpRevealed = true;
+    const w = wtpCurrent();
+    if (!w) return;
+    const img = $('wtp-img');
+    if (img) img.classList.remove('shadow');
+    const card = $('wtp-card');
+    const info = $('wtp-info');
+    $input.disabled = true;
+    if (nameCorrect) {
+      wtpCorrect++;
+      foundSet.add(wtpOrder[wtpIdx]);
+      if (card) card.classList.add('correct');
+      if (info) info.innerHTML = '<div class="wtp-name">' + w.n + '</div><div class="wtp-dex">#' + w.id + '</div>';
+      if (soundEnabled) playCry(w.id);
+    } else {
+      if (card) card.classList.add('wrong');
+      if (info) info.innerHTML = '<div class="wtp-name missed">' + w.n + '</div><div class="wtp-dex">#' + w.id + '</div>';
+    }
+    $foundCount.textContent = wtpCorrect;
+    $bar.style.width = ((wtpIdx + 1) / items.length * 100) + '%';
+    wtpShowGenButtons();
+  }
+
+  function wtpShowGenButtons() {
+    const genSection = $('wtp-gen');
+    const genGrid = $('wtp-gen-grid');
+    if (!genSection || !genGrid) return;
+    genGrid.innerHTML = WTP_REGIONS.map(function(r, i) {
+      return '<button class="wtp-gen-btn" data-region="' + r + '">' + r + ' (Gen ' + (i + 1) + ')</button>';
+    }).join('');
+    genSection.style.display = '';
+    genGrid.querySelectorAll('.wtp-gen-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() { wtpGuessGen(this.dataset.region); });
+    });
+  }
+
+  function wtpGuessGen(guess) {
+    if (wtpGenGuessed) return;
+    wtpGenGuessed = true;
+    const w = wtpCurrent();
+    const correct = w && guess === w.g;
+    if (correct) wtpGenCorrect++;
+    const genGrid = $('wtp-gen-grid');
+    if (genGrid) {
+      genGrid.querySelectorAll('.wtp-gen-btn').forEach(function(btn) {
+        btn.disabled = true;
+        if (btn.dataset.region === w.g) btn.classList.add('gen-answer');
+        if (btn.dataset.region === guess && !correct) btn.classList.add('gen-wrong');
+        if (btn.dataset.region === guess && correct) btn.classList.add('gen-correct');
+      });
+    }
+    const info = $('wtp-info');
+    if (info) {
+      const dex = info.querySelector('.wtp-dex');
+      if (dex) dex.textContent = '#' + w.id + ' · ' + w.g;
+    }
+    wtpShowNextBtn();
+  }
+
+  function wtpShowNextBtn() {
+    const btns = $('wtp-btns');
+    if (btns) {
+      btns.innerHTML = '<button class="wtp-next" id="wtp-next-btn">Next →</button>';
+      $('wtp-next-btn').addEventListener('click', wtpNext);
+      $('wtp-next-btn').focus();
+    }
+  }
+
+  function wtpSkip() {
+    wtpReveal(false);
+  }
+
+  function wtpNext() {
+    wtpIdx++;
+    if (wtpIdx >= wtpOrder.length) {
+      stopTimer();
+      showModal(wtpCorrect === items.length);
+      return;
+    }
+    $input.disabled = false;
+    $input.value = '';
+    wtpRender();
+    $input.focus();
+  }
+
+  function wtpHandleInput(val) {
+    if (wtpRevealed || !val) return;
+    const w = wtpCurrent();
+    if (!w) return;
+    const q = val.toLowerCase().replace(/[-\s]/g, '');
+    for (const k of w.k) {
+      if (q === k) { wtpReveal(true); return; }
+    }
+  }
+
+  // ── Tab switching ──
+
+  function switchTab(tab) {
+    if (tab === currentTab && items.length) return;
+    stopTimer(); timerRunning = false; givenUp = false;
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+
+    const isPoke = tab === 'pokemon';
+    const isWtp = tab === 'wtp';
+    const subtitles = { mandarin: 'Traditional Mandarin', pokemon: 'Pokémon', wtp: "Who's That Pokémon?" };
+    $('subtitle').textContent = subtitles[tab] || tab;
+    $input.placeholder = isPoke ? 'Type a Pokémon name…' : isWtp ? 'Type the Pokémon name…' : 'Type pinyin (e.g. ai, wo, nihao)…';
+    $('btn-order').textContent = isPoke ? 'Dex Order' : 'Freq Order';
+    $('btn-sound').style.display = (isPoke || isWtp) ? '' : 'none';
+    $('btn-shadows').style.display = isPoke ? '' : 'none';
+
+    const gridBtns = ['btn-give-up', 'btn-shuffle', 'btn-order', 'btn-hint', 'btn-shadows'];
+    gridBtns.forEach(id => { $(id).style.display = isWtp ? 'none' : ''; });
+
+    if ((isPoke || isWtp) && !pokeFamilies) {
+      fetch('families.json').then(r => r.json()).then(fams => {
+        pokeFamilies = fams;
+        pokeFamilyMap = {};
+        fams.forEach((fam, i) => fam.forEach(pid => { pokeFamilyMap[pid] = i; }));
+      }).catch(() => {});
+    }
+
+    if (isWtp) {
+      const cached = dataSources['pokemon'];
+      if (cached) { wtpActivate(cached); }
+      else {
+        $('grid-wrap').innerHTML = '<div class="loading">Loading…</div>';
+        fetch('pokemon.json').then(r => r.json()).then(data => { dataSources['pokemon'] = data; wtpActivate(data); })
+          .catch(() => { $('grid-wrap').innerHTML = '<div class="loading">Failed to load data.</div>'; });
+      }
+      return;
+    }
+
+    const cached = dataSources[tab];
+    if (cached) { activateData(cached); }
+    else {
+      $('grid-wrap').innerHTML = '<div class="loading">Loading…</div>';
+      fetch(isPoke ? 'pokemon.json' : 'words.json').then(r => r.json()).then(data => { dataSources[tab] = data; activateData(data); })
+        .catch(() => { $('grid-wrap').innerHTML = '<div class="loading">Failed to load data.</div>'; });
+    }
+  }
+
+  function activateData(data) {
+    items = data; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set();
+    $timer.textContent = '00:00'; $input.value = ''; $input.disabled = false;
+    if (hintEnabled) $hint.textContent = '—';
+    $('total-count').textContent = items.length;
+    buildIndex();
+    displayOrder = items.map((_, i) => i);
+    const restored = load();
+    renderGrid();
+    if (restored) {
+      foundSet.forEach(i => { const c = $('c' + i); if (c) { c.className = 'card found'; revealCardContent(i); } });
+      $timer.textContent = fmtTime(elapsedMs);
+      if (currentTab === 'pokemon' && pokeFamilies) {
+        const idToIdx = {};
+        items.forEach((w, i) => { idToIdx[w.id] = i; });
+        pokeFamilies.forEach((fam, fi) => {
+          if (fam.every(fid => { const idx = idToIdx[fid]; return idx !== undefined && foundSet.has(idx); }))
+            completedFamilies.add(fi);
+        });
+      }
+    }
+    updateUI(); displayHighscore(); $input.focus();
+  }
+
+  // ── Input handler ──
+
+  let hintTimer = null;
+
+  $input.addEventListener('input', function() {
+    const val = this.value.trim();
+    if (!timerRunning && !givenUp && val.length > 0) startTimer();
+
+    if (currentTab === 'wtp') {
+      wtpHandleInput(val);
+      return;
+    }
+
+    const matches = findAllMatches(val);
+    if (matches.length > 0) {
+      for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
+      if (currentTab === 'pokemon' && soundEnabled) playCry(items[matches[0]].id);
+      if (currentTab === 'pokemon') checkFamilyComplete(matches.map(i => items[i].id));
+      flashInput(); updateUI(); this.value = '';
+      if (hintEnabled) $hint.textContent = '—';
+      save();
+      setTimeout(() => { const t = $('c' + matches[0]); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
+      if (foundSet.size === items.length) { stopTimer(); showModal(true); }
+    } else if (hintEnabled) {
+      clearTimeout(hintTimer);
+      hintTimer = setTimeout(() => { $hint.textContent = closestHint(val); }, 200);
+    }
+  });
+
+  $input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { this.value = ''; if (hintEnabled) $hint.textContent = '—'; }
+    if (e.key === 'Enter' && currentTab === 'wtp') {
+      if (!wtpRevealed) { wtpSkip(); }
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (currentTab !== 'wtp') return;
+    if (e.key === 'Enter' && wtpRevealed && wtpGenGuessed) { wtpNext(); }
+  });
+
+  // ── Button wiring ──
+
+  $('btn-give-up').addEventListener('click', giveUp);
+  $('btn-reset').addEventListener('click', reset);
+  $('btn-shuffle').addEventListener('click', shuffle);
+  $('btn-order').addEventListener('click', order);
+
+  $('btn-hint').addEventListener('click', function() {
+    hintEnabled = !hintEnabled;
+    this.textContent = 'Hint: ' + (hintEnabled ? 'On' : 'Off');
+    $hintRow.style.display = hintEnabled ? '' : 'none';
+    if (!hintEnabled) $hint.textContent = '—';
+    this.style.borderColor = hintEnabled ? 'var(--text-pinyin)' : '';
+  });
+
+  $('btn-sound').addEventListener('click', function() {
+    soundEnabled = !soundEnabled;
+    this.textContent = 'Sound: ' + (soundEnabled ? 'On' : 'Off');
+    this.style.borderColor = soundEnabled ? 'var(--text-pinyin)' : '';
+  });
+
+  $('btn-shadows').addEventListener('click', function() {
+    shadowsEnabled = !shadowsEnabled;
+    this.textContent = 'Shadows: ' + (shadowsEnabled ? 'On' : 'Off');
+    this.style.borderColor = shadowsEnabled ? 'var(--text-pinyin)' : '';
+    $('grid-wrap').classList.toggle('shadows-on', shadowsEnabled);
+  });
+
+  $('btn-history').addEventListener('click', openScoreboard);
+  $('sb-close-btn').addEventListener('click', function() { $('sb-overlay').classList.remove('active'); });
+  $('sb-clear-btn').addEventListener('click', function() {
+    if (confirm('Clear all history for this tab?')) {
+      localStorage.removeItem(histKey(sbCurrentTab));
+      renderScoreboard(sbCurrentTab);
+    }
+  });
+  $('sb-overlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+
+  switchTab('mandarin');
+
+  return { closeModal: () => $overlay.classList.remove('active'), reset };
+})();
+</script>
+</body>
+</html>
