@@ -588,7 +588,7 @@ const Q = (function() {
 
   function setTypeBg(c, types) {
     if (!types || !types.length) return;
-    const a = 0.15;
+    const a = 0.3;
     if (types.length === 1) {
       const col = TYPE_COLORS[types[0]] || '#888';
       c.style.background = hexToRgba(col, a);
