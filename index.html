@@ -200,11 +200,13 @@ body.light .wtp-img.shadow { filter: brightness(0) drop-shadow(0 0 6px rgba(0,0,
 .toast.family-toast { background: linear-gradient(135deg, #1a1a3e, #0d2847); border-color: #f7d02c; color: #f7d02c; white-space: normal; flex-direction: column; padding: 10px 14px; gap: 4px; animation: slideIn 0.3s ease-out, fadeOut 0.8s ease 9s forwards; }
 .toast.family-toast .family-pun { font-size: 0.58rem; color: #fde68a; font-style: italic; text-align: center; margin-top: 2px; opacity: 0.85; }
 .toast.family-toast .family-label { font-weight: 800; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-.toast.family-toast .family-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; justify-content: center; }
-.toast.family-toast .family-row .fm { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.toast.family-toast .family-row img { width: 40px; height: 40px; }
-.toast.family-toast .family-row .fm-arrow { font-size: 0.9rem; color: #f7d02c; opacity: 0.5; }
-.toast.family-toast .family-row .fm-name { font-size: 0.5rem; color: var(--text-dim); max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+.toast.family-toast .evo-tree { display: flex; align-items: center; gap: 2px; }
+.toast.family-toast .evo-node { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.toast.family-toast .evo-node img { width: 40px; height: 40px; }
+.toast.family-toast .evo-node .fm-name { font-size: 0.5rem; color: var(--text-dim); max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+.toast.family-toast .evo-arrow { font-size: 0.9rem; color: #f7d02c; opacity: 0.5; margin: 0 1px; }
+.toast.family-toast .evo-branch { display: flex; flex-direction: column; gap: 3px; }
+.toast.family-toast .evo-branch-row { display: flex; align-items: center; gap: 2px; }
 @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } }
 @keyframes fadeOut { to { opacity: 0; } }
 
@@ -965,7 +967,7 @@ const Q = (function() {
       if (famIdx === undefined || checked.has(famIdx) || completedFamilies.has(famIdx)) continue;
       checked.add(famIdx);
       const family = pokeFamilies[famIdx];
-      if (family.every(fid => items.some((w, i) => w.id === fid && foundSet.has(i)))) {
+      if (family.m.every(fid => items.some((w, i) => w.id === fid && foundSet.has(i)))) {
         completedFamilies.add(famIdx);
         setTimeout(() => familyToast(family), 400);
       }
@@ -973,7 +975,7 @@ const Q = (function() {
   }
 
   var FAMILY_PUNS = {
-    1:"That's pokemon BULBA-sics right there!",4:"You're on FIRE with that one!",7:"Shell yeah, you did it!",10:"That evolution was BUTTER than expected!",13:"Bee-lieve it or not, you got 'em all!",16:"That's a PIDGEY amount of effort for a great result!",19:"Rat race? More like rat ACE!",21:"No FEAR-ow when you're on a roll!",23:"That family really knows how to COBRA-te!",25:"Pika-CHOOSE you!",27:"You really DUG deep for that one!",29:"She's the QUEEN of poison types!",32:"Long live the KING!",35:"That was FAIRy easy, wasn't it?",37:"Nine out of NINE tales told!",39:"Don't sleep on this family... oh wait.",41:"That evolution was CROBAT-ically insane!",43:"You really let this family BLOOM!",46:"That's a fungi to be around... wait, wrong kingdom.",48:"Moth-er of all completions!",50:"You really DUG TRIO the competition!",52:"That's PURR-fection!",54:"Finally using that PSY-duck brain!",56:"You went APE on that one!",58:"That's LEGENDARY... wait, it's not, but still!",60:"POLI-tically speaking, that was impressive.",63:"ABRA-cadabra, family complete!",66:"MACHAMP-ion of evolution families!",69:"You BELLSPROUT of nowhere with that one!",72:"TENTACOOL move completing that family!",74:"That was ROCK solid!",77:"You're on a RAPIDASH to finish!",79:"SLOW and steady wins the race!",81:"That family is MAGNETICALLY attractive!",83:"That was a FARFETCH'D achievement... or was it?",84:"DODuO or die, and you chose wisely!",86:"That was SEEL-iously good!",88:"GRIME time is over!",90:"You really came out of your SHELL!",92:"That was GHAST-ly good!",95:"STEEL yourself — that was impressive!",96:"Don't SLEEP on this accomplishment!",98:"That was KING-ler of completions!",100:"That was an ELECTR-ifying finish!",102:"EGG-cellent work!",104:"You really BONE'd up on your knowledge!",106:"HITMON-COMPLETE!",108:"You LICKED that challenge!",109:"That completion was a GAS!",111:"You really CHARGED through that one!",113:"That made me HAPPINY inside!",114:"You're all TANGLED up in success!",116:"KING of the sea!",118:"You're the real GOLDEN catch!",120:"STAR-mie, you're amazing!",122:"That was no MIME-stake!",123:"That was a real CUT above!",124:"You SMOOCH-ed that challenge!",125:"That was an ELECTR-ifying trio!",126:"You're on FIRE... MAGMAR-velous!",129:"From useless to GYARA-t! What a glow-up!",133:"EEVEE-ryone is impressed!",137:"PORYGON... PORYGONE... PORY-DONE!",138:"That's an ancient achievement — OMASTAR-ding!",140:"You really KABUTOP-ped that off!",143:"That family is a big SNORE... just kidding!",147:"DRAGON these families to completion!",152:"MEGA-nium effort right there!",155:"You're on FIRE — TYPHLO-sion style!",158:"CHOMP CHOMP, family done!",161:"You FUR-ET out every last one!",163:"That was a real HOOT!",165:"LED-ian the way to completion!",167:"Caught in the web of SUCCESS!",170:"That family really LIGHTS up the deep!",175:"TOGE-ther at last!",177:"XATU-ally nailed it!",179:"That was SHOCKINGLY good!",183:"MARA-LL you need is skill!",185:"Stop FAKING it... oh wait, you're legit!",187:"You JUMPED right through that one!",190:"That completion was HANDY!",191:"You really let your skills BLOOM!",193:"You MEGA-evolved that knowledge!",194:"WOOP WOOP! Family complete!",198:"That was a DARK-ly impressive feat!",200:"Truly MIS-leading how easy you made that look!",202:"WOBBUF-FET you do it again?!",203:"That was no ordinary GIRAFFE-air!",204:"You FORT-ified that completion!",206:"DUN-DUN-DUNNN... SPARCE-ly anyone gets these!",207:"You really SOARED with that one!",209:"That's GRANBULL-ar confidence!",211:"That was a POINTED victory!",215:"WEAVILE-y done!",216:"You're BEAR-y good at this!",218:"That was slow and MAGMA-nificent!",220:"ICE work completing that family!",222:"CORAL-ations on completing that one!",223:"You OCTO-pied yourself well!",226:"That was a MANTA-stic completion!",228:"HOUND-ed every last one down!",231:"ELEPHAN-tastic work!",234:"STANT-ler? More like STAR-ler!",246:"You TYRANITAR-ically dominated that!",252:"TREE-mendous work!",255:"That was BLAZIKEN hot!",258:"I HERD you like Mudkipz... all of them!",261:"You showed real MIGHT-yena!",263:"No more ZIGZAG-ging — straight to completion!",265:"That was a BEAUTIFUL-ly complex family!",270:"That was LUDI-crously good!",273:"You really SHIFTED into gear!",276:"You SWELLOW-ed that family whole!",278:"PELIP-perfect!",280:"You GUARDED that family well!",283:"MASQUER-ading as a genius, clearly!",285:"SHROOM for improvement? Nah, that was perfect!",287:"Stop SLAKING and celebrate!",290:"That was a real NINJA move!",293:"That was EXPLOUD-ingly good!",296:"You HARIYAMA-naged it perfectly!",299:"Your sense of direction is PROBO-passing all tests!",300:"That was PURR-fectly done!",304:"That was an AGGRON-izing wait but worth it!",307:"MEDI-tate on that success!",309:"That was ELECTRIC!",315:"Stop and smell the ROSES!",316:"You SWALLOWED that challenge whole!",318:"That was SHARP!",320:"WAIL of a good time!",322:"That was a HUMPING good completion... NUMEL pun intended!",325:"Stop SPOINK-ing around and celebrate!",328:"You really FLEW through that one!",331:"That was a PRICKLY family to catch!",333:"You're ALTARIA-natively talented!",339:"You WHIS-ked through that family!",341:"CRAW-ling to the finish? Nah, you sprinted!",343:"That was perfectly BALANCED!",345:"That's an ancient LILY of a family!",347:"That was ARMALDO-rable!",349:"From ugly duckling to MILOTIC beauty!",353:"That family is BANETTE from your list!",355:"That was DUSK-ily impressive!",358:"That family CHIMED in perfectly!",361:"That was ICE COLD efficiency!",363:"You SEALED the deal!",366:"PEARL of a completion!",371:"You SALA-MENCED through it!",374:"That was META-l as heck!",
+    1:"That's pokemon BULBA-sics right there!",4:"You're on FIRE with that one!",7:"Shell yeah, you did it!",10:"That evolution was BUTTER than expected!",13:"Bee-lieve it or not, you got 'em all!",16:"That's a PIDGEY amount of effort for a great result!",19:"Rat race? More like rat ACE!",21:"No FEAR-ow when you're on a roll!",23:"That family really knows how to COBRA-te!",172:"Pika-CHOOSE you!",27:"You really DUG deep for that one!",29:"She's the QUEEN of poison types!",32:"Long live the KING!",173:"That was FAIRy easy, wasn't it?",37:"Nine out of NINE tales told!",174:"Don't sleep on this family... oh wait.",41:"That evolution was CROBAT-ically insane!",43:"You really let this family BLOOM!",46:"That's a fungi to be around... wait, wrong kingdom.",48:"Moth-er of all completions!",50:"You really DUG TRIO the competition!",52:"That's PURR-fection!",54:"Finally using that PSY-duck brain!",56:"You went APE on that one!",58:"That's LEGENDARY... wait, it's not, but still!",60:"POLI-tically speaking, that was impressive.",63:"ABRA-cadabra, family complete!",66:"MACHAMP-ion of evolution families!",69:"You BELLSPROUT of nowhere with that one!",72:"TENTACOOL move completing that family!",74:"That was ROCK solid!",77:"You're on a RAPIDASH to finish!",79:"SLOW and steady wins the race!",81:"That family is MAGNETICALLY attractive!",83:"That was a FARFETCH'D achievement... or was it?",84:"DODuO or die, and you chose wisely!",86:"That was SEEL-iously good!",88:"GRIME time is over!",90:"You really came out of your SHELL!",92:"That was GHAST-ly good!",95:"STEEL yourself — that was impressive!",96:"Don't SLEEP on this accomplishment!",98:"That was KING-ler of completions!",100:"That was an ELECTR-ifying finish!",102:"EGG-cellent work!",104:"You really BONE'd up on your knowledge!",236:"HITMON-COMPLETE!",108:"You LICKED that challenge!",109:"That completion was a GAS!",111:"You really CHARGED through that one!",440:"That made me HAPPINY inside!",114:"You're all TANGLED up in success!",116:"KING of the sea!",118:"You're the real GOLDEN catch!",120:"STAR-mie, you're amazing!",439:"That was no MIME-stake!",123:"That was a real CUT above!",238:"You SMOOCH-ed that challenge!",239:"That was an ELECTR-ifying trio!",240:"You're on FIRE... MAGMAR-velous!",129:"From useless to GYARA-t! What a glow-up!",133:"EEVEE-ryone is impressed!",137:"PORYGON... PORYGONE... PORY-DONE!",138:"That's an ancient achievement — OMASTAR-ding!",140:"You really KABUTOP-ped that off!",446:"That family is a big SNORE... just kidding!",147:"DRAGON these families to completion!",152:"MEGA-nium effort right there!",155:"You're on FIRE — TYPHLO-sion style!",158:"CHOMP CHOMP, family done!",161:"You FUR-ET out every last one!",163:"That was a real HOOT!",165:"LED-ian the way to completion!",167:"Caught in the web of SUCCESS!",170:"That family really LIGHTS up the deep!",175:"TOGE-ther at last!",177:"XATU-ally nailed it!",179:"That was SHOCKINGLY good!",298:"MARA-LL you need is skill!",438:"Stop FAKING it... oh wait, you're legit!",187:"You JUMPED right through that one!",190:"That completion was HANDY!",191:"You really let your skills BLOOM!",193:"You MEGA-evolved that knowledge!",194:"WOOP WOOP! Family complete!",198:"That was a DARK-ly impressive feat!",200:"Truly MIS-leading how easy you made that look!",360:"WOBBUF-FET you do it again?!",203:"That was no ordinary GIRAFFE-air!",204:"You FORT-ified that completion!",206:"DUN-DUN-DUNNN... SPARCE-ly anyone gets these!",207:"You really SOARED with that one!",209:"That's GRANBULL-ar confidence!",211:"That was a POINTED victory!",215:"WEAVILE-y done!",216:"You're BEAR-y good at this!",218:"That was slow and MAGMA-nificent!",220:"ICE work completing that family!",222:"CORAL-ations on completing that one!",223:"You OCTO-pied yourself well!",458:"That was a MANTA-stic completion!",228:"HOUND-ed every last one down!",231:"ELEPHAN-tastic work!",234:"STANT-ler? More like STAR-ler!",246:"You TYRANITAR-ically dominated that!",252:"TREE-mendous work!",255:"That was BLAZIKEN hot!",258:"I HERD you like Mudkipz... all of them!",261:"You showed real MIGHT-yena!",263:"No more ZIGZAG-ging — straight to completion!",265:"That was a BEAUTIFUL-ly complex family!",270:"That was LUDI-crously good!",273:"You really SHIFTED into gear!",276:"You SWELLOW-ed that family whole!",278:"PELIP-perfect!",280:"You GUARDED that family well!",283:"MASQUER-ading as a genius, clearly!",285:"SHROOM for improvement? Nah, that was perfect!",287:"Stop SLAKING and celebrate!",290:"That was a real NINJA move!",293:"That was EXPLOUD-ingly good!",296:"You HARIYAMA-naged it perfectly!",299:"Your sense of direction is PROBO-passing all tests!",300:"That was PURR-fectly done!",304:"That was an AGGRON-izing wait but worth it!",307:"MEDI-tate on that success!",309:"That was ELECTRIC!",406:"Stop and smell the ROSES!",316:"You SWALLOWED that challenge whole!",318:"That was SHARP!",320:"WAIL of a good time!",322:"That was a HUMPING good completion... NUMEL pun intended!",325:"Stop SPOINK-ing around and celebrate!",328:"You really FLEW through that one!",331:"That was a PRICKLY family to catch!",333:"You're ALTARIA-natively talented!",339:"You WHIS-ked through that family!",341:"CRAW-ling to the finish? Nah, you sprinted!",343:"That was perfectly BALANCED!",345:"That's an ancient LILY of a family!",347:"That was ARMALDO-rable!",349:"From ugly duckling to MILOTIC beauty!",353:"That family is BANETTE from your list!",355:"That was DUSK-ily impressive!",433:"That family CHIMED in perfectly!",361:"That was ICE COLD efficiency!",363:"You SEALED the deal!",366:"PEARL of a completion!",371:"You SALA-MENCED through it!",374:"That was META-l as heck!",
     387:"TURT-ally awesome!",390:"That was a BLAZING finish!",393:"You EMPOLEON-ed your way through!",396:"That was a STAR performance!",399:"BIDOOF the GOAT!",401:"That was music to my ears — KRICKE-TUNE!",403:"That was LUXUR-iously done!",408:"You really RAMMED through that!",410:"Great DEFENSE with that family!",412:"That family has many FORMS of excellence!",415:"BEE-utiful completion!",418:"You FLOATED through that!",420:"CHERRY on top!",422:"That was GASTRO-nomically good!",425:"You DRIFTED right through it!",427:"HOP to it — oh wait, you already did!",431:"That was PURR-etty impressive!",434:"That family really STUNK... in a good way!",436:"BRONZE medal? No, GOLD!",443:"You CHOMPED through that family!",447:"The AURA is strong with this one!",449:"That was HIPPO-critically good!",451:"You STUNG that completion!",453:"That was a real CROAK of genius!",456:"That family is LUMINOUS!",459:"That was SNOW joke — well done!",
     495:"SERPENTine path to victory!",498:"You're EMBOAR-rassingly good!",501:"That was OTTER-ly amazing!",504:"You were WATCHING for that one!",506:"That was STOUT-hearted!",509:"You PURR-loined that victory!",511:"That was a SAGE decision!",513:"You SIMMERED to perfection!",515:"POUR it on!",517:"A DREAM come true!",519:"That was UN-FEZANT-ly easy for you!",522:"That was a STRIKING completion!",524:"You really ROCKED that!",527:"You BAT that out of the park!",529:"You DRILLED through that family!",532:"That took some serious MUSCLE!",535:"That was SEISMIC-ally good!",540:"You WEAVED through that one!",543:"That was VENOM-ously efficient!",546:"That was WHIMSICAL!",548:"LILLI-gant or not, you earned it!",550:"You went against the CURRENT!",551:"Later, KROOKODILE — family done!",554:"You were on FIRE... literally!",557:"You really CRUSHED it!",559:"That was SCRAPPY!",562:"That was an ancient victory UNMASKED!",564:"TURTL-y awesome!",566:"You really TOOK FLIGHT!",568:"One trainer's TRASH is another's treasure!",570:"That was an ILLUSION of difficulty!",572:"That was CLEAN!",574:"GOTH to love it!",577:"That was a REUNI-fying moment!",580:"SWAN-derful!",582:"That was SWEET!",585:"Oh DEER, you did it!",588:"You CAVALIER-ly completed that!",590:"There's a FUNGUS AMONG-USS... and you found them!",592:"That was JELLY good!",595:"That was SHOCKING-ly tiny but mighty!",597:"IRON will right there!",599:"All the GEARS clicked into place!",602:"That was EEL-ectrifying!",605:"That was out of this WORLD!",607:"That family really LIT up!",610:"You AXE-d that challenge!",613:"That was BEAR-ably cool!",616:"You ACCELERAT-ed through that!",619:"That was MARTIAL arts mastery!",622:"That was GO-LURK-ious!",624:"You played that like a CHESS master — CHECKMATE!",627:"That took BRAV-ery!",629:"That was a VULTURE-ous victory!",633:"HYDRA-powered completion!",636:"That was a VOLCANIC achievement!",
     650:"You CHESNAUGHT-ed that family!",653:"That was FOX-y!",656:"NINJA-like precision!",659:"You DIG it!",661:"That was a FLAME-boyant finish!",664:"That was BEAUTIFUL-ly scattered!",667:"That was ROAR-some!",669:"That was FLORA-l perfection!",672:"You really GOAT it done!",674:"That was PANDEMONIUM!",677:"That was PSY-ber cool!",679:"That was a SHARP achievement!",682:"That was AROMATIC!",684:"SWEET victory!",686:"You turned that family UPSIDE DOWN!",688:"That was a BARNACLE-busting finish!",690:"That was DRAGON-ly impressive!",692:"CLAW-some completion!",694:"That was ELECTR-ifyingly cool!",696:"That was TYRANT-ically good!",698:"That was an ICE AGE achievement!",704:"That was GOOD-ra — no, GREAT!",708:"That was TREE-mendous!",710:"SPOOKY good!",712:"That was AVALANCHE-level dominance!",714:"That was NOISY but victorious!",
@@ -983,37 +985,63 @@ const Q = (function() {
   };
 
   function familyToast(family) {
-    const el = document.createElement('div');
+    var edges = family.e;
+    var members = family.m;
+
+    var childSet = new Set();
+    for (var k in edges) edges[k].forEach(function(c) { childSet.add(c); });
+    var root = members.find(function(id) { return !childSet.has(id); }) || members[0];
+
+    function makeNode(id) {
+      var w = items.find(function(it) { return it.id === id; });
+      var node = document.createElement('div');
+      node.className = 'evo-node';
+      if (w) {
+        var img = document.createElement('img');
+        img.src = w.s; img.alt = w.n;
+        node.appendChild(img);
+        var nm = document.createElement('div');
+        nm.className = 'fm-name'; nm.textContent = w.n;
+        node.appendChild(nm);
+      }
+      return node;
+    }
+
+    function buildTree(id) {
+      var container = document.createElement('div');
+      container.className = 'evo-tree';
+      container.appendChild(makeNode(id));
+      var children = edges[String(id)];
+      if (!children || !children.length) return container;
+
+      var arrow = document.createElement('span');
+      arrow.className = 'evo-arrow'; arrow.textContent = '→';
+      container.appendChild(arrow);
+
+      if (children.length === 1) {
+        container.appendChild(buildTree(children[0]));
+      } else {
+        var branch = document.createElement('div');
+        branch.className = 'evo-branch';
+        children.forEach(function(cid) {
+          var row = document.createElement('div');
+          row.className = 'evo-branch-row';
+          row.appendChild(buildTree(cid));
+          branch.appendChild(row);
+        });
+        container.appendChild(branch);
+      }
+      return container;
+    }
+
+    var el = document.createElement('div');
     el.className = 'toast family-toast';
-    const label = document.createElement('div');
+    var label = document.createElement('div');
     label.className = 'family-label';
     label.textContent = 'Evolution Complete!';
     el.appendChild(label);
-    const row = document.createElement('div');
-    row.className = 'family-row';
-    family.forEach((fid, i) => {
-      const w = items.find(it => it.id === fid);
-      if (!w) return;
-      if (i > 0) {
-        const arrow = document.createElement('span');
-        arrow.className = 'fm-arrow';
-        arrow.textContent = '→';
-        row.appendChild(arrow);
-      }
-      const fm = document.createElement('div');
-      fm.className = 'fm';
-      const img = document.createElement('img');
-      img.src = w.s;
-      img.alt = w.n;
-      fm.appendChild(img);
-      const name = document.createElement('div');
-      name.className = 'fm-name';
-      name.textContent = w.n;
-      fm.appendChild(name);
-      row.appendChild(fm);
-    });
-    el.appendChild(row);
-    var pun = FAMILY_PUNS[family[0]];
+    el.appendChild(buildTree(root));
+    var pun = FAMILY_PUNS[root];
     if (pun) {
       var punEl = document.createElement('div');
       punEl.className = 'family-pun';
@@ -1021,7 +1049,7 @@ const Q = (function() {
       el.appendChild(punEl);
     }
     $toasts.appendChild(el);
-    setTimeout(() => el.remove(), 10000);
+    setTimeout(function() { el.remove(); }, 10000);
   }
 
   function launchConfetti() {
@@ -2298,7 +2326,7 @@ const Q = (function() {
       fetch('families.json').then(r => r.json()).then(fams => {
         pokeFamilies = fams;
         pokeFamilyMap = {};
-        fams.forEach((fam, i) => fam.forEach(pid => { pokeFamilyMap[pid] = i; }));
+        fams.forEach((fam, i) => fam.m.forEach(pid => { pokeFamilyMap[pid] = i; }));
       }).catch(() => {});
     }
     if ((isPoke || isMulti) && !pokeForms) {
@@ -2345,7 +2373,7 @@ const Q = (function() {
         const idToIdx = {};
         items.forEach((w, i) => { idToIdx[w.id] = i; });
         pokeFamilies.forEach((fam, fi) => {
-          if (fam.every(fid => { const idx = idToIdx[fid]; return idx !== undefined && foundSet.has(idx); }))
+          if (fam.m.every(fid => { const idx = idToIdx[fid]; return idx !== undefined && foundSet.has(idx); }))
             completedFamilies.add(fi);
         });
       }
