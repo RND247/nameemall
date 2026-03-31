@@ -66,7 +66,7 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .region-section { margin-bottom: 12px; }
 .region-header { display: flex; align-items: center; gap: 10px; padding: 10px 4px 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-pinyin); letter-spacing: 0.3px; }
 .region-header::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-.region-header .region-count { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); margin-left: -4px; }
+.region-header .region-count { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); margin-left: auto; font-variant-numeric: tabular-nums; }
 .region-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 3px; }
 
 .card { aspect-ratio: 1; background: var(--bg-card); border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 1px solid transparent; overflow: hidden; transition: background 0.3s, border-color 0.3s; cursor: default; }
@@ -523,6 +523,8 @@ const Q = (function() {
   // ── Render grid ──
 
   const REGION_ORDER = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea'];
+  const REGION_GEN = { Kanto:1, Johto:2, Hoenn:3, Sinnoh:4, Unova:5, Kalos:6, Alola:7, Galar:8, Paldea:9 };
+  let regionIndices = {};
 
   function makeCard(idx) {
     const w = items[idx];
@@ -554,15 +556,18 @@ const Q = (function() {
       wrap.innerHTML = '';
       wrap.classList.toggle('shadows-on', shadowsEnabled);
       const groups = {};
+      regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (groups[r] ||= []).push(idx); }
       for (const region of REGION_ORDER) {
         const list = groups[region];
         if (!list || !list.length) continue;
+        regionIndices[region] = list;
+        const found = list.filter(i => foundSet.has(i)).length;
         const sec = document.createElement('div');
         sec.className = 'region-section';
         const hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = region + ' <span class="region-count">(' + list.length + ')</span>';
+        hdr.innerHTML = region + ' (Gen ' + REGION_GEN[region] + ') <span class="region-count" id="rc-' + region + '">' + found + '/' + list.length + '</span>';
         sec.appendChild(hdr);
         const grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -672,6 +677,14 @@ const Q = (function() {
   function updateUI() {
     $foundCount.textContent = foundSet.size;
     $bar.style.width = (foundSet.size / items.length * 100) + '%';
+    if (currentTab === 'pokemon') {
+      for (const region of REGION_ORDER) {
+        const list = regionIndices[region];
+        if (!list) continue;
+        const el = $('rc-' + region);
+        if (el) el.textContent = list.filter(i => foundSet.has(i)).length + '/' + list.length;
+      }
+    }
   }
 
   function flashInput() { $input.classList.add('flash-green'); setTimeout(() => $input.classList.remove('flash-green'), 300); }
