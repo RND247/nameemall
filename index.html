@@ -1477,13 +1477,7 @@ const Q = (function() {
 
   var duelIceConfig = { iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun.relay.metered.ca:80' },
-    { urls: 'turn:freeturn.net:3478', username: 'free', credential: 'free' },
-    { urls: 'turns:freeturn.net:5349', username: 'free', credential: 'free' },
-    { urls: 'turn:standard.relay.metered.ca:80', username: 'e43e3f4e0a50b3e105364037', credential: 'JOKLaMvFo6Qitacx' },
-    { urls: 'turn:standard.relay.metered.ca:443', username: 'e43e3f4e0a50b3e105364037', credential: 'JOKLaMvFo6Qitacx' },
-    { urls: 'turns:standard.relay.metered.ca:443?transport=tcp', username: 'e43e3f4e0a50b3e105364037', credential: 'JOKLaMvFo6Qitacx' }
+    { urls: 'stun:stun1.l.google.com:19302' }
   ]};
   var duelConnTimeout = null;
 
@@ -1494,7 +1488,7 @@ const Q = (function() {
     $('duel-create-btn').textContent = 'Creating…';
     $('duel-status').textContent = 'Connecting to signaling server…';
 
-    duelPeer = new Peer(roomId, { config: duelIceConfig, debug: 1 });
+    duelPeer = new Peer(roomId, { config: duelIceConfig });
     duelPeer.on('open', function(id) {
       const link = window.location.origin + window.location.pathname + '?duel=' + id;
       $('duel-link-area').innerHTML =
@@ -1551,7 +1545,7 @@ const Q = (function() {
   function duelJoin(hostId) {
     duelRole = 'red';
     $('duel-status').textContent = 'Connecting to signaling server…';
-    duelPeer = new Peer({ config: duelIceConfig, debug: 1 });
+    duelPeer = new Peer({ config: duelIceConfig });
     duelPeer.on('open', function() {
       $('duel-status').textContent = 'Connected to server. Reaching host…';
       duelConn = duelPeer.connect(hostId, { reliable: true });
