@@ -1481,7 +1481,14 @@ const Q = (function() {
     $('duel-create-btn').textContent = 'Creating…';
     $('duel-status').textContent = 'Setting up…';
 
-    duelPeer = new Peer(roomId);
+    var iceConfig = { iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'turns:freeturn.net:5349', username: 'free', credential: 'free' },
+      { urls: 'turn:freeturn.net:3478', username: 'free', credential: 'free' }
+    ]};
+    duelPeer = new Peer(roomId, { config: iceConfig, debug: 0 });
     duelPeer.on('open', function(id) {
       const link = window.location.origin + window.location.pathname + '?duel=' + id;
       $('duel-link-area').innerHTML =
@@ -1511,13 +1518,26 @@ const Q = (function() {
       });
     });
     duelPeer.on('error', function(err) {
-      $('duel-status').textContent = 'Connection error: ' + err.type;
+      $('duel-status').textContent = 'Connection error: ' + err.type + '. Try refreshing the page.';
+      $('duel-create-btn').style.display = '';
+      $('duel-create-btn').disabled = false;
+      $('duel-create-btn').textContent = 'Create Duel';
+    });
+    duelPeer.on('disconnected', function() {
+      if (!duelActive) $('duel-status').textContent = 'Disconnected from server. Try again.';
     });
   }
 
   function duelJoin(hostId) {
     duelRole = 'red';
-    duelPeer = new Peer();
+    var iceConfig = { iceServers: [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+      { urls: 'stun:stun2.l.google.com:19302' },
+      { urls: 'turns:freeturn.net:5349', username: 'free', credential: 'free' },
+      { urls: 'turn:freeturn.net:3478', username: 'free', credential: 'free' }
+    ]};
+    duelPeer = new Peer({ config: iceConfig, debug: 0 });
     duelPeer.on('open', function() {
       $('duel-status').textContent = 'Connecting to host…';
       duelConn = duelPeer.connect(hostId, { reliable: true });
@@ -1531,7 +1551,10 @@ const Q = (function() {
       });
     });
     duelPeer.on('error', function(err) {
-      $('duel-status').textContent = 'Connection error: ' + err.type;
+      $('duel-status').textContent = 'Connection error: ' + err.type + '. Try refreshing the page.';
+    });
+    duelPeer.on('disconnected', function() {
+      if (!duelActive) $('duel-status').textContent = 'Disconnected from server. Try again.';
     });
   }
 
