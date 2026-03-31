@@ -344,7 +344,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
 <header>
   <div class="title-row">
-    <div class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Pokémon</span></div>
+    <div class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Regular Mode</span></div>
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
@@ -1730,7 +1730,7 @@ const Q = (function() {
     const isPoke = tab === 'pokemon';
     const isWtp = tab === 'wtp';
     const isDuel = tab === 'duel';
-    const subtitles = { pokemon: 'Pokémon', wtp: "Who's That Pokémon?", duel: '⚔️ Duel Mode' };
+    const subtitles = { pokemon: 'Regular Mode', wtp: "Who's That Pokémon?", duel: '⚔️ Duel Mode' };
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = isWtp ? 'Type the Pokémon name…' : 'Type a Pokémon name…';
     if (!isPoke) stopCycleForms();
