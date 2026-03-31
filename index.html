@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PokéQuiz</title>
+<title>NameEmAll</title>
 <meta name="description" content="Can you name all 1025 Pokémon? Test your knowledge!">
-<meta property="og:title" content="PokéQuiz">
+<meta property="og:title" content="NameEmAll">
 <meta property="og:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rnd247.github.io/pokequiz/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="PokéQuiz">
+<meta name="twitter:title" content="NameEmAll">
 <meta name="twitter:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -331,7 +331,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
 <header>
   <div class="title-row">
-    <div class="title">Poké<span class="accent">Quiz</span><span class="sub" id="subtitle">Pokémon</span></div>
+    <div class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Pokémon</span></div>
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
@@ -1318,7 +1318,7 @@ const Q = (function() {
   let duelFinishOpponent = false;
 
   function duelGenId() {
-    return 'pq-' + Math.random().toString(36).substr(2, 8);
+    return 'nea-' + Math.random().toString(36).substr(2, 8);
   }
 
   function duelCleanup() {
@@ -1816,15 +1816,15 @@ const Q = (function() {
     document.body.classList.remove('light');
     $('btn-dark').classList.add('active');
     $('btn-light').classList.remove('active');
-    localStorage.setItem('pokequiz_theme', 'dark');
+    localStorage.setItem('namemall_theme', 'dark');
   });
   $('btn-light').addEventListener('click', function() {
     document.body.classList.add('light');
     $('btn-light').classList.add('active');
     $('btn-dark').classList.remove('active');
-    localStorage.setItem('pokequiz_theme', 'light');
+    localStorage.setItem('namemall_theme', 'light');
   });
-  if (localStorage.getItem('pokequiz_theme') === 'light') {
+  if (localStorage.getItem('namemall_theme') === 'light') {
     document.body.classList.add('light');
     $('btn-light').classList.add('active');
     $('btn-dark').classList.remove('active');
