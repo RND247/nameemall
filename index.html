@@ -75,11 +75,11 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 @keyframes pop { 0% { transform: scale(1.2); } 60% { transform: scale(0.95); } 100% { transform: scale(1); } }
 
 .card.unrevealed .char { font-size: 1.45rem; color: var(--text-dim); opacity: 0.08; filter: blur(4px); user-select: none; }
-.card.found { background: var(--bg-card-found); border-color: var(--green); box-shadow: 0 0 6px var(--green-glow); }
+.card.found { border-color: var(--green); box-shadow: 0 0 6px var(--green-glow); }
 .card.found .char { font-size: 1.35rem; color: #fff; line-height: 1.2; }
 .card.found .pinyin { font-size: 0.48rem; color: var(--text-pinyin); margin-top: 1px; }
 .card.found .english { font-size: 0.4rem; color: var(--text-dim); margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card.missed { background: rgba(233,69,96,0.1); border-color: rgba(233,69,96,0.5); }
+.card.missed { border-color: rgba(233,69,96,0.5); }
 .card.missed .char { font-size: 1.35rem; color: var(--accent); opacity: 0.85; line-height: 1.2; }
 .card.missed .pinyin { font-size: 0.48rem; color: var(--accent); opacity: 0.6; margin-top: 1px; }
 .card.missed .english { font-size: 0.4rem; color: var(--accent); opacity: 0.5; margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -108,6 +108,10 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .card.missed .poke-name { font-size: 0.48rem; color: var(--accent); opacity: 0.7; margin-top: 2px; font-weight: 600; }
 .card.missed .poke-gen { font-size: 0.38rem; color: var(--accent); opacity: 0.4; }
 .card.missed[data-pid] { cursor: pointer; }
+
+.form-toggle { position: absolute; bottom: 2px; right: 2px; background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: var(--text-pinyin); font-size: 0.42rem; font-weight: 800; padding: 1px 4px; border-radius: 3px; cursor: pointer; line-height: 1.2; z-index: 5; pointer-events: auto; transition: background 0.15s; }
+.form-toggle:hover { background: rgba(56,189,248,0.3); }
+.form-label { position: absolute; bottom: 2px; left: 2px; font-size: 0.36rem; color: var(--text-pinyin); opacity: 0.7; z-index: 5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
 
 /* ── Pokemon popup ── */
 .poke-popup {
@@ -347,6 +351,7 @@ const Q = (function() {
   let pokeFamilies = null;
   let pokeFamilyMap = {};
   let completedFamilies = new Set();
+  let pokeForms = null;
 
   // WTP mode state
   let wtpOrder = [];
@@ -581,12 +586,92 @@ const Q = (function() {
   function pokeCryUrl(id) { return 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/' + id + '.ogg'; }
   function playCry(id) { try { const a = new Audio(pokeCryUrl(id)); a.volume = 0.3; a.play().catch(()=>{}); } catch(e){} }
 
+  function setTypeBg(c, types) {
+    if (!types || !types.length) return;
+    const a = 0.15;
+    if (types.length === 1) {
+      const col = TYPE_COLORS[types[0]] || '#888';
+      c.style.background = hexToRgba(col, a);
+    } else {
+      const c1 = TYPE_COLORS[types[0]] || '#888';
+      const c2 = TYPE_COLORS[types[1]] || '#888';
+      c.style.background = 'linear-gradient(135deg, ' + hexToRgba(c1, a) + ' 50%, ' + hexToRgba(c2, a) + ' 50%)';
+    }
+  }
+
+  function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+  }
+
+  function getTypesForCard(w, formIdx) {
+    var fi = formIdx != null ? formIdx : 0;
+    if (pokeForms) {
+      var forms = pokeForms[String(w.id)];
+      if (forms && forms[fi] && forms[fi].t && forms[fi].t.length) {
+        return forms[fi].t;
+      }
+    }
+    if (pokeDetails) {
+      var d = pokeDetails[w.id];
+      if (d && d.t && d.t.length) return d.t;
+    }
+    return [];
+  }
+
+  function applyTypeBg(c, w) {
+    const fi = parseInt(c.dataset.formIdx || '0') || 0;
+    setTypeBg(c, getTypesForCard(w, fi));
+  }
+
+  function refreshTypeBgs() {
+    if (currentTab !== 'pokemon') return;
+    foundSet.forEach(i => {
+      const c = $('c' + i);
+      if (c && items[i]) applyTypeBg(c, items[i]);
+    });
+    document.querySelectorAll('.card.missed').forEach(card => {
+      const m = card.id && card.id.match(/^c(\d+)$/);
+      if (m) { const idx = parseInt(m[1]); if (items[idx]) applyTypeBg(card, items[idx]); }
+    });
+  }
+
+  function addFormToggle(c, w) {
+    if (currentTab !== 'pokemon' || !pokeForms) return;
+    const forms = pokeForms[String(w.id)];
+    if (!forms || forms.length < 2) return;
+    if (c.querySelector('.form-toggle')) return;
+    c.dataset.formIdx = '0';
+    const btn = document.createElement('button');
+    btn.className = 'form-toggle';
+    btn.textContent = '◀▶';
+    btn.title = 'Toggle forms';
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      let fi = (parseInt(c.dataset.formIdx) + 1) % forms.length;
+      c.dataset.formIdx = fi;
+      const form = forms[fi];
+      const sprite = c.querySelector('.poke-sprite');
+      if (sprite && form.s) sprite.src = form.s;
+      let lbl = c.querySelector('.form-label');
+      if (!lbl) { lbl = document.createElement('span'); lbl.className = 'form-label'; c.appendChild(lbl); }
+      lbl.textContent = form.l === 'Normal' ? '' : form.l;
+      c.dataset.formName = form.n;
+      const ft = form.t && form.t.length ? form.t : (pokeDetails && pokeDetails[w.id] ? pokeDetails[w.id].t : []);
+      setTypeBg(c, ft || []);
+    });
+    c.appendChild(btn);
+  }
+
   function revealCard(idx, missed) {
     const c = $('c' + idx);
     if (!c) return;
     const w = items[idx];
     c.className = 'card ' + (missed ? 'missed' : 'found just-found');
     if (currentTab === 'mandarin') {
+      c.style.background = 'var(--bg-card-found)';
       c.querySelector('.pinyin').textContent = w.p;
       c.querySelector('.english').textContent = displayMeaning(w);
       c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
@@ -594,6 +679,8 @@ const Q = (function() {
       c.querySelector('.poke-sprite').src = w.s;
       c.querySelector('.poke-name').textContent = w.n;
       c.querySelector('.poke-gen').textContent = w.g;
+      addFormToggle(c, w);
+      applyTypeBg(c, w);
     }
   }
 
@@ -602,6 +689,7 @@ const Q = (function() {
     if (!c) return;
     const w = items[idx];
     if (currentTab === 'mandarin') {
+      c.style.background = 'var(--bg-card-found)';
       c.querySelector('.pinyin').textContent = w.p;
       c.querySelector('.english').textContent = displayMeaning(w);
       c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
@@ -609,6 +697,8 @@ const Q = (function() {
       c.querySelector('.poke-sprite').src = w.s;
       c.querySelector('.poke-name').textContent = w.n;
       c.querySelector('.poke-gen').textContent = w.g;
+      addFormToggle(c, w);
+      applyTypeBg(c, w);
     }
   }
 
@@ -798,14 +888,28 @@ const Q = (function() {
   });
 
   document.addEventListener('click', function(e) {
+    if (e.target.closest('.form-toggle')) return;
     const card = e.target.closest('.card.found, .card.missed');
     if (!card || currentTab !== 'pokemon') return;
     const pid = parseInt(card.dataset.pid);
     if (!pid) return;
     const w = items.find(it => it.id === pid);
     if (!w) return;
-    const name = w.n.replace(/ /g, '_');
-    window.open('https://bulbapedia.bulbagarden.net/wiki/' + name + '_(Pok%C3%A9mon)', '_blank');
+    const formName = card.dataset.formName;
+    let bulbaName;
+    if (formName && formName !== w.n.toLowerCase().replace(/ /g, '-')) {
+      const parts = formName.split('-');
+      const species = w.n.replace(/ /g, '_');
+      const suffix = parts.slice(1).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('_');
+      if (formName.includes('-alola')) bulbaName = species + '_(Pok%C3%A9mon)#Alolan_' + species;
+      else if (formName.includes('-galar')) bulbaName = species + '_(Pok%C3%A9mon)#Galarian_' + species;
+      else if (formName.includes('-hisui')) bulbaName = species + '_(Pok%C3%A9mon)#Hisuian_' + species;
+      else if (formName.includes('-paldea')) bulbaName = species + '_(Pok%C3%A9mon)#Paldean_' + species;
+      else bulbaName = species + '_(Pok%C3%A9mon)';
+    } else {
+      bulbaName = w.n.replace(/ /g, '_') + '_(Pok%C3%A9mon)';
+    }
+    window.open('https://bulbapedia.bulbagarden.net/wiki/' + bulbaName, '_blank');
   });
 
   // ── Save / Load ──
@@ -1030,6 +1134,15 @@ const Q = (function() {
         pokeFamilies = fams;
         pokeFamilyMap = {};
         fams.forEach((fam, i) => fam.forEach(pid => { pokeFamilyMap[pid] = i; }));
+      }).catch(() => {});
+    }
+    if (isPoke && !pokeForms) {
+      fetch('pokemon_forms.json').then(r => r.json()).then(data => { pokeForms = data; refreshTypeBgs(); }).catch(() => {});
+    }
+    if ((isPoke || isWtp) && !pokeDetails) {
+      fetch('pokemon_details.json').then(r => r.json()).then(data => {
+        pokeDetails = data;
+        if (isPoke) refreshTypeBgs();
       }).catch(() => {});
     }
 
