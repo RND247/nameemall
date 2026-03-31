@@ -416,6 +416,22 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </header>
 
+<div class="duel-sticky" id="duel-sticky" style="display:none;">
+  <div class="duel-score" id="duel-score-bar">
+    <span class="ds-blue">🔵 Blue: <span id="ds-blue-count">0</span></span>
+    <span class="ds-neutral">Remaining: <span id="ds-neutral-count">0</span></span>
+    <span class="ds-red">🔴 Red: <span id="ds-red-count">0</span></span>
+  </div>
+  <div class="duel-finish-bar" id="duel-finish-bar">
+    <button class="btn danger" id="duel-finish-btn">Finish</button>
+    <span class="duel-finish-status" id="duel-finish-status"></span>
+  </div>
+  <div class="duel-finish-invite" id="duel-finish-invite">
+    <span>Your opponent wants to finish!</span>
+    <button class="btn danger" id="duel-accept-finish">Finish</button>
+  </div>
+</div>
+
 <div class="grid-wrap" id="grid-wrap">
   <div class="grid mandarin-grid" id="grid"><div class="loading">Loading…</div></div>
 </div>
@@ -1525,32 +1541,15 @@ const Q = (function() {
     wrap.innerHTML = '';
     wrap.classList.toggle('shadows-on', shadowsEnabled);
 
-    const stickyWrap = document.createElement('div');
-    stickyWrap.className = 'duel-sticky';
-    stickyWrap.id = 'duel-sticky';
-
-    const scoreBar = document.createElement('div');
-    scoreBar.className = 'duel-score';
-    scoreBar.id = 'duel-score-bar';
-    scoreBar.innerHTML = '<span class="ds-blue">🔵 Blue: <span id="ds-blue-count">0</span></span>' +
-      '<span class="ds-neutral">Remaining: <span id="ds-neutral-count">' + items.length + '</span></span>' +
-      '<span class="ds-red">🔴 Red: <span id="ds-red-count">0</span></span>';
-    stickyWrap.appendChild(scoreBar);
-
-    const finishBar = document.createElement('div');
-    finishBar.className = 'duel-finish-bar';
-    finishBar.id = 'duel-finish-bar';
-    finishBar.innerHTML = '<button class="btn danger" id="duel-finish-btn">Finish</button>' +
+    $('duel-sticky').style.display = '';
+    $('ds-neutral-count').textContent = items.length;
+    $('ds-blue-count').textContent = '0';
+    $('ds-red-count').textContent = '0';
+    $('duel-finish-bar').innerHTML = '<button class="btn danger" id="duel-finish-btn">Finish</button>' +
       '<span class="duel-finish-status" id="duel-finish-status"></span>';
-    stickyWrap.appendChild(finishBar);
-
-    const invite = document.createElement('div');
-    invite.className = 'duel-finish-invite';
-    invite.id = 'duel-finish-invite';
-    invite.innerHTML = '<span>Your opponent wants to finish!</span>' +
-      '<button class="btn danger" id="duel-accept-finish">Finish</button>';
-    stickyWrap.appendChild(invite);
-    wrap.appendChild(stickyWrap);
+    $('duel-finish-invite').classList.remove('show');
+    $('duel-finish-btn').addEventListener('click', duelFinish);
+    $('duel-accept-finish').addEventListener('click', duelFinish);
 
     if (duelSettings.orderMode === 'dex-gens') {
       var groups = {};
@@ -1581,9 +1580,6 @@ const Q = (function() {
       for (var i = 0; i < displayOrder.length; i++) grid.appendChild(makeCard(displayOrder[i]));
       wrap.appendChild(grid);
     }
-
-    $('duel-finish-btn').addEventListener('click', duelFinish);
-    $('duel-accept-finish').addEventListener('click', duelFinish);
   }
 
   function duelUpdateScore() {
@@ -1770,6 +1766,7 @@ const Q = (function() {
     $('btn-duel-link').style.display = isPoke ? '' : 'none';
     $('sep-duel-link').style.display = isPoke ? '' : 'none';
     $('duel-settings-bar').style.display = 'none';
+    $('duel-sticky').style.display = 'none';
     $('btn-history').style.display = isDuel ? 'none' : '';
     $('best-display').style.display = isDuel ? 'none' : '';
 
