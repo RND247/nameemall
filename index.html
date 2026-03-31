@@ -21,6 +21,20 @@
   --input-bg: #0a0a18;
   --radius: 8px;
 }
+body.light {
+  --bg: #f0f2f5;
+  --bg2: #ffffff;
+  --bg-card: #e4e7ec;
+  --bg-card-found: #d0e8ff;
+  --accent: #d63050;
+  --text: #1a1a2e;
+  --text-dim: #6b7280;
+  --text-pinyin: #1d7fc2;
+  --green: #16a34a;
+  --green-glow: rgba(22,163,74,0.2);
+  --border: #c8cdd5;
+  --input-bg: #ffffff;
+}
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -115,6 +129,8 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 /* ── Pokemon cards ── */
 .poke-placeholder { font-size: 2rem; font-weight: 900; color: var(--text-dim); opacity: 0.18; font-style: italic; text-shadow: 0 0 8px rgba(56,189,248,0.15); user-select: none; line-height: 1; }
 .poke-shadow { width: 56px; height: 56px; object-fit: contain; filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(56,189,248,0.3)); opacity: 0.4; display: none; }
+body.light .poke-shadow { filter: brightness(0) drop-shadow(0 0 3px rgba(0,0,0,0.2)); opacity: 0.25; }
+body.light .wtp-img.shadow { filter: brightness(0) drop-shadow(0 0 6px rgba(0,0,0,0.2)); }
 
 .card.unrevealed .poke-sprite { display: none; }
 .card.unrevealed .poke-name { display: none; }
@@ -311,6 +327,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="set-shadows"><span class="setting-label">Shadows</span><div class="toggle-switch" id="tog-shadows"></div></div>
         <div class="setting-row" id="set-cycle"><span class="setting-label">Cycle Forms</span><div class="toggle-switch on" id="tog-cycle"></div></div>
         <div class="setting-row" id="set-scroll"><span class="setting-label">Auto-scroll</span><div class="toggle-switch on" id="tog-scroll"></div></div>
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">Theme</div>
+        <div class="setting-row-slider">
+          <div class="mode-slider" id="theme-slider">
+            <button id="btn-dark" class="active">🌙 Night</button>
+            <button id="btn-light">☀️ Light</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1404,6 +1428,24 @@ const Q = (function() {
     autoScrollEnabled = !autoScrollEnabled;
     $('tog-scroll').classList.toggle('on', autoScrollEnabled);
   });
+
+  $('btn-dark').addEventListener('click', function() {
+    document.body.classList.remove('light');
+    $('btn-dark').classList.add('active');
+    $('btn-light').classList.remove('active');
+    localStorage.setItem('pokequiz_theme', 'dark');
+  });
+  $('btn-light').addEventListener('click', function() {
+    document.body.classList.add('light');
+    $('btn-light').classList.add('active');
+    $('btn-dark').classList.remove('active');
+    localStorage.setItem('pokequiz_theme', 'light');
+  });
+  if (localStorage.getItem('pokequiz_theme') === 'light') {
+    document.body.classList.add('light');
+    $('btn-light').classList.add('active');
+    $('btn-dark').classList.remove('active');
+  }
 
   $('btn-history').addEventListener('click', openScoreboard);
   $('sb-close-btn').addEventListener('click', function() { $('sb-overlay').classList.remove('active'); });
