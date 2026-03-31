@@ -50,10 +50,8 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .progress-wrap { flex: 1; max-width: 260px; min-width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
 .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--text-pinyin)); transition: width 0.35s ease; border-radius: 3px; }
 
-.hint-row { text-align: center; font-size: 0.78rem; color: var(--text-dim); padding: 4px 0 2px; min-height: 22px; display: none; }
-.hint-row .hint-val { color: var(--text-pinyin); font-weight: 600; }
-
-.btn-row { display: flex; gap: 6px; justify-content: center; padding: 4px 0 6px; flex-wrap: wrap; }
+.btn-row { display: flex; gap: 6px; justify-content: center; padding: 4px 0 6px; flex-wrap: wrap; align-items: center; }
+.btn-sep { width: 1px; height: 22px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
 .btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); padding: 5px 14px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; transition: all 0.15s; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
 .btn:hover { border-color: var(--text-pinyin); color: var(--text); }
 .btn.danger { border-color: var(--accent); color: var(--accent); }
@@ -262,6 +260,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
       <span class="best" id="best-display"></span>
+      <button class="btn" id="btn-history" style="padding:3px 10px;font-size:0.65rem;">Scoreboard</button>
     </div>
   </div>
   <div class="input-row">
@@ -270,19 +269,16 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <div class="progress-bar" id="progress-bar"></div>
     </div>
   </div>
-  <div class="hint-row" id="hint-row">
-    Closest match: <span class="hint-val" id="closest-hint">—</span>
-  </div>
   <div class="btn-row">
     <button class="btn danger" id="btn-give-up">Give Up</button>
     <button class="btn" id="btn-reset">Reset</button>
+    <div class="btn-sep"></div>
     <button class="btn" id="btn-shuffle">Shuffle</button>
     <button class="btn" id="btn-order">Freq Order</button>
-    <button class="btn" id="btn-hint">Hint: Off</button>
+    <div class="btn-sep"></div>
     <button class="btn" id="btn-sound" style="display:none">Sound: Off</button>
     <button class="btn" id="btn-shadows" style="display:none">Shadows: Off</button>
     <button class="btn" id="btn-cycle" style="display:none">Cycle Forms: Off</button>
-    <button class="btn" id="btn-history">Scoreboard</button>
   </div>
 </header>
 
@@ -347,7 +343,6 @@ const Q = (function() {
   let elapsedMs = 0;
   let timerRunning = false;
   let givenUp = false;
-  let hintEnabled = false;
   let soundEnabled = false;
   let shadowsEnabled = false;
   let cycleFormsEnabled = false;
@@ -379,8 +374,6 @@ const Q = (function() {
   const $foundCount = $('found-count');
   const $timer = $('timer');
   const $bar = $('progress-bar');
-  const $hint = $('closest-hint');
-  const $hintRow = $('hint-row');
   const $toasts = $('toasts');
   const $overlay = $('overlay');
   const $popup = $('poke-popup');
@@ -410,30 +403,6 @@ const Q = (function() {
     const q = input.toLowerCase().trim();
     if (!q) return [];
     return (keyToIndices[q] || []).filter(i => !foundSet.has(i));
-  }
-
-  function levenshtein(a, b) {
-    const m = a.length, n = b.length;
-    if (!m) return n; if (!n) return m;
-    const d = [];
-    for (let i = 0; i <= m; i++) d[i] = [i];
-    for (let j = 0; j <= n; j++) d[0][j] = j;
-    for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
-      d[i][j] = a[i-1] === b[j-1] ? d[i-1][j-1] : 1 + Math.min(d[i-1][j], d[i][j-1], d[i-1][j-1]);
-    return d[m][n];
-  }
-
-  function closestHint(input) {
-    const q = input.toLowerCase().trim();
-    if (q.length < 1) return '—';
-    let best = '', bestD = Infinity;
-    for (const k of allKeys) {
-      if (Math.abs(k.length - q.length) > 2) continue;
-      if (!(keyToIndices[k] || []).some(i => !foundSet.has(i))) continue;
-      const d = levenshtein(q, k);
-      if (d > 0 && d < bestD) { bestD = d; best = k; if (d === 1) return best; }
-    }
-    return bestD <= 2 ? best : '—';
   }
 
   function fmtTime(ms) { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
@@ -1036,7 +1005,6 @@ const Q = (function() {
     givenUp = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
     $input.value = ''; $input.disabled = false;
-    if (hintEnabled) $hint.textContent = '—';
     if (currentTab === 'wtp') {
       wtpActivate(items);
       return;
@@ -1227,8 +1195,9 @@ const Q = (function() {
     $('btn-cycle').style.display = isPoke ? '' : 'none';
     if (!isPoke) stopCycleForms();
 
-    const gridBtns = ['btn-give-up', 'btn-shuffle', 'btn-order', 'btn-hint', 'btn-shadows', 'btn-cycle'];
+    const gridBtns = ['btn-give-up', 'btn-reset', 'btn-shuffle', 'btn-order', 'btn-shadows', 'btn-cycle'];
     gridBtns.forEach(id => { $(id).style.display = isWtp ? 'none' : ''; });
+    document.querySelectorAll('.btn-sep').forEach(el => { el.style.display = isWtp ? 'none' : ''; });
 
     if ((isPoke || isWtp) && !pokeFamilies) {
       fetch('families.json').then(r => r.json()).then(fams => {
@@ -1270,7 +1239,6 @@ const Q = (function() {
   function activateData(data) {
     items = data; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     $timer.textContent = '00:00'; $input.value = ''; $input.disabled = false;
-    if (hintEnabled) $hint.textContent = '—';
     $('total-count').textContent = items.length;
     buildIndex();
     displayOrder = items.map((_, i) => i);
@@ -1303,8 +1271,6 @@ const Q = (function() {
 
   // ── Input handler ──
 
-  let hintTimer = null;
-
   $input.addEventListener('input', function() {
     const val = this.value.trim();
     if (!timerRunning && !givenUp && val.length > 0) startTimer();
@@ -1320,18 +1286,14 @@ const Q = (function() {
       if (currentTab === 'pokemon' && soundEnabled) playCry(items[matches[0]].id);
       if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
       flashInput(); updateUI(); this.value = '';
-      if (hintEnabled) $hint.textContent = '—';
       save();
       setTimeout(() => { const t = $('c' + matches[0]); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50);
       if (foundSet.size === items.length) { stopTimer(); showModal(true); }
-    } else if (hintEnabled) {
-      clearTimeout(hintTimer);
-      hintTimer = setTimeout(() => { $hint.textContent = closestHint(val); }, 200);
     }
   });
 
   $input.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { this.value = ''; if (hintEnabled) $hint.textContent = '—'; }
+    if (e.key === 'Escape') { this.value = ''; }
     if (e.key === 'Enter' && currentTab === 'wtp') {
       if (!wtpRevealed) { wtpSkip(); }
     }
@@ -1348,14 +1310,6 @@ const Q = (function() {
   $('btn-reset').addEventListener('click', reset);
   $('btn-shuffle').addEventListener('click', shuffle);
   $('btn-order').addEventListener('click', order);
-
-  $('btn-hint').addEventListener('click', function() {
-    hintEnabled = !hintEnabled;
-    this.textContent = 'Hint: ' + (hintEnabled ? 'On' : 'Off');
-    $hintRow.style.display = hintEnabled ? '' : 'none';
-    if (!hintEnabled) $hint.textContent = '—';
-    this.style.borderColor = hintEnabled ? 'var(--text-pinyin)' : '';
-  });
 
   $('btn-sound').addEventListener('click', function() {
     soundEnabled = !soundEnabled;
