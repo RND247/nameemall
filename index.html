@@ -210,6 +210,11 @@ body.light .wtp-img.shadow { filter: brightness(0) drop-shadow(0 0 6px rgba(0,0,
 
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; }
 .overlay.active { display: flex; }
+.pause-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 250; align-items: center; justify-content: center; flex-direction: column; gap: 16px; cursor: pointer; }
+.pause-overlay.active { display: flex; }
+.pause-overlay .pause-icon { font-size: 4rem; opacity: 0.6; }
+.pause-overlay .pause-text { font-size: 1.2rem; font-weight: 800; color: #fff; opacity: 0.8; }
+.pause-overlay .pause-hint { font-size: 0.75rem; color: var(--text-dim); opacity: 0.6; }
 .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 36px 28px; text-align: center; max-width: 380px; width: 90%; }
 .modal h2 { margin-bottom: 10px; font-size: 1.4rem; }
 .modal h2.win { color: var(--green); }
@@ -366,6 +371,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <div class="btn-row" id="action-bar">
     <button class="btn danger" id="btn-give-up">Give Up</button>
     <button class="btn" id="btn-reset">Reset</button>
+    <button class="btn" id="btn-pause">⏸ Pause</button>
     <div class="btn-sep"></div>
     <button class="btn" id="btn-duel-link" style="display:none;">⚔️ Duel Mode</button>
     <div class="btn-sep" id="sep-duel-link" style="display:none;"></div>
@@ -462,6 +468,12 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="sb-list" id="sb-list"></div>
     <div class="sb-clear"><button class="btn danger" id="sb-clear-btn" style="font-size:0.72rem;padding:4px 12px">Clear Scoreboard</button> <button class="btn" id="sb-close-btn" style="font-size:0.72rem;padding:4px 12px">Close</button></div>
   </div>
+</div>
+
+<div class="pause-overlay" id="pause-overlay">
+  <div class="pause-icon">⏸</div>
+  <div class="pause-text">PAUSED</div>
+  <div class="pause-hint">Click anywhere or press any key to resume</div>
 </div>
 
 <div class="overlay" id="overlay">
@@ -568,7 +580,14 @@ const Q = (function() {
     return (keyToIndices[q] || []).filter(i => !foundSet.has(i));
   }
 
-  function fmtTime(ms) { const s = Math.floor(ms / 1000); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function fmtTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const hrs = Math.floor(s / 3600);
+    const mins = Math.floor((s % 3600) / 60);
+    const secs = s % 60;
+    if (hrs > 0) return String(hrs).padStart(2, '0') + ':' + String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  }
 
   function startTimer() {
     if (timerRunning) return;
@@ -1201,6 +1220,7 @@ const Q = (function() {
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
+    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
     $input.value = ''; $input.disabled = false;
     if (currentTab === 'wtp') {
       wtpActivate(items);
@@ -1773,6 +1793,7 @@ const Q = (function() {
   function switchTab(tab) {
     if (tab === currentTab && items.length) return;
     stopTimer(); timerRunning = false; givenUp = false;
+    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
     if (currentTab === 'duel') duelCleanup();
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
@@ -1922,6 +1943,29 @@ const Q = (function() {
   $('btn-give-up').addEventListener('click', giveUp);
   $('btn-reset').addEventListener('click', reset);
   $('btn-duel-link').addEventListener('click', function() { switchTab('duel'); });
+
+  var paused = false;
+  function togglePause() {
+    if (givenUp || !timerRunning && !paused) return;
+    paused = !paused;
+    if (paused) {
+      stopTimer();
+      $input.disabled = true;
+      $('pause-overlay').classList.add('active');
+      $('btn-pause').textContent = '▶ Resume';
+    } else {
+      startTimer();
+      $input.disabled = false;
+      $('pause-overlay').classList.remove('active');
+      $('btn-pause').textContent = '⏸ Pause';
+      $input.focus();
+    }
+  }
+  $('btn-pause').addEventListener('click', togglePause);
+  $('pause-overlay').addEventListener('click', function() { if (paused) togglePause(); });
+  document.addEventListener('keydown', function(e) {
+    if (paused && e.key !== 'F5' && !e.ctrlKey && !e.metaKey) { e.preventDefault(); togglePause(); }
+  });
   $('mode-slider').addEventListener('click', function(e) {
     var btn = e.target.closest('button');
     if (!btn || !btn.dataset.order) return;
