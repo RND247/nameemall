@@ -706,8 +706,8 @@ const Q = (function() {
 
   function openScoreboard() {
     sbCurrentTab = currentTab;
-    const tabs = ['pokemon', 'wtp'];
-    const tabLabels = { pokemon: 'Pokémon Quiz', wtp: "Who's That?" };
+    const tabs = ['pokemon', 'coop'];
+    const tabLabels = { pokemon: 'Regular Mode', coop: '🤝 Co-Op' };
     $('sb-tabs').innerHTML = tabs.map(function(t) {
       return '<button class="sb-tab' + (t === sbCurrentTab ? ' active' : '') + '" data-sb="' + t + '">' + tabLabels[t] + '</button>';
     }).join('');
@@ -2277,6 +2277,7 @@ const Q = (function() {
     var count = coopRevealed.size;
     var total = items.length;
     var pct = Math.round(count / total * 100);
+    saveToHistory(count, total, elapsedMs);
     $('coop-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">🤝 Team Result: ' +
       count + '/' + total + ' (' + pct + '%) in ' + fmtTime(elapsedMs) + '</div>';
   }
@@ -2319,7 +2320,7 @@ const Q = (function() {
     $('duel-sticky').style.display = 'none';
     $('coop-settings-bar').style.display = 'none';
     $('coop-sticky').style.display = 'none';
-    $('btn-history').style.display = isMulti ? 'none' : '';
+    $('btn-history').style.display = isDuel ? 'none' : '';
     $('best-display').style.display = isMulti ? 'none' : '';
 
     if ((isPoke || isMulti) && !pokeFamilies) {
