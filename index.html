@@ -298,6 +298,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .duel-lobby h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
 .duel-lobby p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 16px; }
 .duel-lobby .btn { margin: 6px; }
+.duel-settings { text-align: left; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin: 18px auto 14px; max-width: 340px; }
+.duel-settings .ds-title { font-size: 0.78rem; font-weight: 800; color: var(--text); margin-bottom: 10px; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; }
+.duel-settings .ds-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; }
+.duel-settings .ds-label { font-size: 0.75rem; color: var(--text); }
+.duel-settings .ds-divider { border-top: 1px solid var(--border); margin: 8px 0; }
+.duel-settings .ds-order-btns { display: flex; gap: 4px; }
+.duel-settings .ds-order-btns button { font-size: 0.62rem; padding: 4px 8px; border-radius: 5px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-dim); cursor: pointer; transition: all 0.15s; font-weight: 600; }
+.duel-settings .ds-order-btns button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 .duel-link-box { display: flex; align-items: center; gap: 6px; margin: 16px auto; max-width: 400px; }
 .duel-link-box input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 8px 10px; font-size: 0.8rem; }
 .duel-link-box .btn { flex-shrink: 0; }
@@ -354,6 +362,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="settings-wrap">
       <button class="btn" id="btn-settings" title="Settings">⚙️ Settings</button>
       <div class="settings-panel" id="settings-panel">
+        <div id="set-order-section">
         <div class="settings-section-label">Order By</div>
         <div class="setting-row-slider">
           <div class="mode-slider" id="mode-slider">
@@ -362,6 +371,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
           </div>
         </div>
         <div class="settings-divider"></div>
+        </div>
         <div class="setting-row" id="set-sound"><span class="setting-label">Sound (Cries)</span><div class="toggle-switch on" id="tog-sound"></div></div>
         <div class="setting-row" id="set-shadows"><span class="setting-label">Shadows</span><div class="toggle-switch" id="tog-shadows"></div></div>
         <div class="setting-row" id="set-cycle"><span class="setting-label">Cycle Forms</span><div class="toggle-switch on" id="tog-cycle"></div></div>
@@ -1335,6 +1345,8 @@ const Q = (function() {
     duelRole = null;
   }
 
+  var duelSettings = { shadows: false, orderMode: 'dex-gens' };
+
   function duelShowLobby() {
     $input.style.display = 'none';
     const wrap = $('grid-wrap');
@@ -1347,9 +1359,31 @@ const Q = (function() {
     } else {
       wrap.innerHTML = '<div class="duel-lobby"><h2>⚔️ Duel Mode</h2>' +
         '<p>Challenge a friend! One of you creates the duel, the other joins via link.</p>' +
-        '<button class="btn" id="duel-create-btn" style="font-size:0.9rem;padding:10px 28px;">Create Duel</button>' +
+        '<div class="duel-settings">' +
+          '<div class="ds-title">Room Settings</div>' +
+          '<div class="ds-row"><span class="ds-label">Shadows</span><div class="toggle-switch' + (duelSettings.shadows ? ' on' : '') + '" id="ds-tog-shadows"></div></div>' +
+          '<div class="ds-divider"></div>' +
+          '<div class="ds-row"><span class="ds-label">Order By</span>' +
+            '<div class="ds-order-btns" id="ds-order-btns">' +
+              '<button data-mode="dex-gens"' + (duelSettings.orderMode === 'dex-gens' ? ' class="active"' : '') + '>Dex + Gens</button>' +
+              '<button data-mode="dex"' + (duelSettings.orderMode === 'dex' ? ' class="active"' : '') + '>Dex Order</button>' +
+              '<button data-mode="random"' + (duelSettings.orderMode === 'random' ? ' class="active"' : '') + '>Random</button>' +
+            '</div></div>' +
+        '</div>' +
+        '<button class="btn" id="duel-create-btn" style="font-size:0.9rem;padding:10px 28px;margin-top:10px;">Create Duel</button>' +
         '<div id="duel-link-area"></div>' +
         '<div class="duel-status" id="duel-status"></div></div>';
+
+      $('ds-tog-shadows').addEventListener('click', function() {
+        duelSettings.shadows = !duelSettings.shadows;
+        this.classList.toggle('on', duelSettings.shadows);
+      });
+      $('ds-order-btns').addEventListener('click', function(e) {
+        var btn = e.target.closest('button');
+        if (!btn) return;
+        duelSettings.orderMode = btn.dataset.mode;
+        this.querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b === btn); });
+      });
       $('duel-create-btn').addEventListener('click', duelCreate);
     }
   }
@@ -1427,12 +1461,24 @@ const Q = (function() {
     foundSet = new Set();
     elapsedMs = 0;
     buildIndex();
-    displayOrder = items.map((_, i) => i);
 
     if (duelRole === 'blue') {
-      duelConn.send({ type: 'start', shadows: shadowsEnabled });
+      shadowsEnabled = duelSettings.shadows;
+      displayOrder = items.map((_, i) => i);
+      if (duelSettings.orderMode === 'random') {
+        for (var i = displayOrder.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var t = displayOrder[i]; displayOrder[i] = displayOrder[j]; displayOrder[j] = t;
+        }
+      }
+      duelConn.send({ type: 'start', shadows: duelSettings.shadows, orderMode: duelSettings.orderMode, order: displayOrder });
     }
-    $('set-shadows').style.display = (duelRole === 'blue') ? '' : 'none';
+
+    $('set-shadows').style.display = 'none';
+    $('set-typebg').style.display = 'none';
+    $('set-sound').style.display = '';
+    $('set-cycle').style.display = '';
+    $('set-scroll').style.display = '';
 
     $input.style.display = '';
     $input.value = '';
@@ -1447,7 +1493,6 @@ const Q = (function() {
     startTimer();
     $input.focus();
 
-    // Clear duel param from URL
     if (window.history.replaceState) {
       window.history.replaceState({}, '', window.location.pathname);
     }
@@ -1458,7 +1503,6 @@ const Q = (function() {
     wrap.innerHTML = '';
     wrap.classList.toggle('shadows-on', shadowsEnabled);
 
-    // Duel score bar
     const scoreBar = document.createElement('div');
     scoreBar.className = 'duel-score';
     scoreBar.id = 'duel-score-bar';
@@ -1467,7 +1511,6 @@ const Q = (function() {
       '<span class="ds-red">🔴 Red: <span id="ds-red-count">0</span></span>';
     wrap.appendChild(scoreBar);
 
-    // Finish bar
     const finishBar = document.createElement('div');
     finishBar.className = 'duel-finish-bar';
     finishBar.id = 'duel-finish-bar';
@@ -1475,11 +1518,35 @@ const Q = (function() {
       '<span class="duel-finish-status" id="duel-finish-status"></span>';
     wrap.appendChild(finishBar);
 
-    // Grid (flat, no regions)
-    const grid = document.createElement('div');
-    grid.className = 'region-grid';
-    for (const idx of displayOrder) grid.appendChild(makeCard(idx));
-    wrap.appendChild(grid);
+    if (duelSettings.orderMode === 'dex-gens') {
+      var groups = {};
+      for (var i = 0; i < displayOrder.length; i++) {
+        var idx = displayOrder[i], r = items[idx].g;
+        (groups[r] || (groups[r] = [])).push(idx);
+      }
+      for (var ri = 0; ri < REGION_ORDER.length; ri++) {
+        var region = REGION_ORDER[ri];
+        var list = groups[region];
+        if (!list || !list.length) continue;
+        var sec = document.createElement('div');
+        sec.className = 'region-section';
+        sec.id = 'rs-' + region;
+        var hdr = document.createElement('div');
+        hdr.className = 'region-header';
+        hdr.innerHTML = region + ' (Gen ' + REGION_GEN[region] + ') <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
+        sec.appendChild(hdr);
+        var grid = document.createElement('div');
+        grid.className = 'region-grid';
+        for (var li = 0; li < list.length; li++) grid.appendChild(makeCard(list[li]));
+        sec.appendChild(grid);
+        wrap.appendChild(sec);
+      }
+    } else {
+      var grid = document.createElement('div');
+      grid.className = 'region-grid';
+      for (var i = 0; i < displayOrder.length; i++) grid.appendChild(makeCard(displayOrder[i]));
+      wrap.appendChild(grid);
+    }
 
     $('duel-finish-btn').addEventListener('click', duelFinish);
   }
@@ -1492,6 +1559,14 @@ const Q = (function() {
     el = $('ds-red-count'); if (el) el.textContent = rc;
     el = $('ds-neutral-count'); if (el) el.textContent = items.length - bc - rc;
     $foundCount.textContent = duelMyRevealed.size;
+    if (duelSettings.orderMode === 'dex-gens') {
+      var regionCounts = {};
+      duelMyRevealed.forEach(function(i) { var r = items[i].g; regionCounts[r] = (regionCounts[r] || 0) + 1; });
+      for (var ri = 0; ri < REGION_ORDER.length; ri++) {
+        var rc_el = $('rc-' + REGION_ORDER[ri]);
+        if (rc_el) rc_el.textContent = (regionCounts[REGION_ORDER[ri]] || 0) + '/' + rc_el.textContent.split('/')[1];
+      }
+    }
   }
 
   function duelRevealCard(idx, owner, isMe) {
@@ -1539,13 +1614,21 @@ const Q = (function() {
 
   function duelOnMessage(msg) {
     if (msg.type === 'start') {
+      duelSettings.shadows = msg.shadows;
+      duelSettings.orderMode = msg.orderMode;
       shadowsEnabled = msg.shadows;
       $('tog-shadows').classList.toggle('on', shadowsEnabled);
+      var receivedOrder = msg.order;
       if (duelRole === 'red') {
         const cached = dataSources['pokemon'];
-        if (cached) { duelStart(cached); }
+        var startWithOrder = function(d) {
+          dataSources['pokemon'] = d;
+          displayOrder = receivedOrder;
+          duelStart(d);
+        };
+        if (cached) { startWithOrder(cached); }
         else {
-          fetch('pokemon.json').then(r => r.json()).then(data => { dataSources['pokemon'] = data; duelStart(data); });
+          fetch('pokemon.json').then(function(r) { return r.json(); }).then(startWithOrder);
         }
       }
     } else if (msg.type === 'reveal') {
@@ -1566,10 +1649,6 @@ const Q = (function() {
       if (duelFinishMe) duelEnd();
     } else if (msg.type === 'end') {
       duelEnd();
-    } else if (msg.type === 'shadows') {
-      shadowsEnabled = msg.value;
-      $('tog-shadows').classList.toggle('on', shadowsEnabled);
-      $('grid-wrap').classList.toggle('shadows-on', shadowsEnabled);
     } else if (msg.type === 'join') {
       // guest joined, handled in connection event
     }
@@ -1641,9 +1720,11 @@ const Q = (function() {
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = isWtp ? 'Type the Pokémon name…' : 'Type a Pokémon name…';
     if (!isPoke) stopCycleForms();
+    $('set-order-section').style.display = isDuel ? 'none' : '';
     $('set-sound').style.display = (isPoke || isWtp) ? '' : 'none';
-    $('set-shadows').style.display = (isPoke || isDuel) ? '' : 'none';
+    $('set-shadows').style.display = isPoke ? '' : 'none';
     $('set-cycle').style.display = isPoke ? '' : 'none';
+    $('set-scroll').style.display = isDuel ? 'none' : '';
     $('set-typebg').style.display = isDuel ? 'none' : '';
 
     $('action-bar').style.display = (isWtp || isDuel) ? 'none' : '';
@@ -1786,13 +1867,9 @@ const Q = (function() {
   });
 
   $('set-shadows').addEventListener('click', function() {
-    if (currentTab === 'duel' && duelRole !== 'blue') return;
     shadowsEnabled = !shadowsEnabled;
     $('tog-shadows').classList.toggle('on', shadowsEnabled);
     $('grid-wrap').classList.toggle('shadows-on', shadowsEnabled);
-    if (currentTab === 'duel' && duelConn && duelRole === 'blue') {
-      duelConn.send({ type: 'shadows', value: shadowsEnabled });
-    }
   });
 
   $('set-cycle').addEventListener('click', function() {
