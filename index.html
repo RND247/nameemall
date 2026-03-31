@@ -61,8 +61,6 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 #input-box::placeholder { color: var(--text-dim); }
 #input-box.flash-green { border-color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
 
-.progress-wrap { flex: 1; max-width: 260px; min-width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--green), var(--text-pinyin)); transition: width 0.35s ease; border-radius: 3px; }
 
 .btn-row { display: flex; gap: 6px; justify-content: center; padding: 4px 0 6px; flex-wrap: wrap; align-items: center; }
 .btn-sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; flex-shrink: 0; }
@@ -304,9 +302,6 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
   <div class="input-row">
     <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
   </div>
   <div class="btn-row" id="action-bar">
     <button class="btn danger" id="btn-give-up">Give Up</button>
@@ -433,7 +428,6 @@ const Q = (function() {
   const $input = $('input-box');
   const $foundCount = $('found-count');
   const $timer = $('timer');
-  const $bar = $('progress-bar');
   const $toasts = $('toasts');
   const $overlay = $('overlay');
   const $popup = $('poke-popup');
@@ -891,7 +885,6 @@ const Q = (function() {
 
   function updateUI() {
     $foundCount.textContent = foundSet.size;
-    $bar.style.width = (foundSet.size / items.length * 100) + '%';
     if (currentTab === 'pokemon') {
       for (const region of REGION_ORDER) {
         const list = regionIndices[region];
@@ -1126,7 +1119,6 @@ const Q = (function() {
     foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     $timer.textContent = '00:00'; $input.value = ''; $input.disabled = false;
     $foundCount.textContent = '0'; $('total-count').textContent = items.length;
-    $bar.style.width = '0%';
     displayHighscore();
     wtpRender();
     $input.focus();
@@ -1191,7 +1183,6 @@ const Q = (function() {
       if (info) info.innerHTML = '<div class="wtp-name missed">' + w.n + '</div><div class="wtp-dex">#' + w.id + '</div>';
     }
     $foundCount.textContent = wtpCorrect;
-    $bar.style.width = ((wtpIdx + 1) / items.length * 100) + '%';
     wtpShowGenButtons();
   }
 
