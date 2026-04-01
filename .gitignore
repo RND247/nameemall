@@ -1,5 +1,8 @@
 # Build scripts (not needed for the site)
 build_*.py
 
+# Outreach materials
+outreach/
+
 # OS files
 .DS_Store
