@@ -662,16 +662,10 @@ const Q = (function() {
     return foundSet;
   }
 
-  function hasUnrevealedExtension(q) {
-    var revealed = getRelevantFoundSet();
+  function hasAnyExtension(q) {
     for (var ki = 0; ki < allKeys.length; ki++) {
       var k = allKeys[ki];
-      if (k.length > q.length && k.startsWith(q)) {
-        var kIndices = keyToIndices[k];
-        for (var ii = 0; ii < kIndices.length; ii++) {
-          if (!revealed.has(kIndices[ii])) return true;
-        }
-      }
+      if (k.length > q.length && k.startsWith(q)) return true;
     }
     return false;
   }
@@ -2018,7 +2012,7 @@ const Q = (function() {
         }, 50);
       } else {
         var q = val.toLowerCase().trim();
-        if (!hasUnrevealedExtension(q)) {
+        if (!hasAnyExtension(q)) {
           toastDupe(items[matches[0]]);
           flashInputDupe();
           $input.value = '';
@@ -2533,7 +2527,7 @@ const Q = (function() {
         if (coopRevealed.size === items.length) { stopTimer(); coopEnd(); }
       } else {
         var q = val.toLowerCase().trim();
-        if (!hasUnrevealedExtension(q)) {
+        if (!hasAnyExtension(q)) {
           toastDupe(items[matches[0]]);
           flashInputDupe();
           $input.value = '';
@@ -2656,6 +2650,12 @@ const Q = (function() {
 
   function switchTab(tab) {
     if (tab === currentTab && items.length) return;
+    if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
+      if (!confirm('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?')) return;
+      givenUp = true; stopTimer(); $input.disabled = true;
+      for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+      showModal(false);
+    }
     if ((currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)) {
       if (!confirm('Leaving will end the current session for both players. Continue?')) return;
       var conn = currentTab === 'duel' ? duelConn : coopConn;
@@ -2805,7 +2805,7 @@ const Q = (function() {
       var q = val.toLowerCase().trim();
       var dupeIndices = keyToIndices[q];
       if (dupeIndices && dupeIndices.length > 0 && dupeIndices.every(function(i) { return foundSet.has(i); })) {
-        if (!hasUnrevealedExtension(q)) {
+        if (!hasAnyExtension(q)) {
           toastDupe(items[dupeIndices[0]]);
           flashInputDupe();
           this.value = '';
