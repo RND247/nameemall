@@ -143,7 +143,8 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 body.light .wtp-img.shadow { filter: brightness(0) drop-shadow(0 0 6px rgba(0,0,0,0.2)); }
 
 .card .poke-sprite { width: 56px; height: 56px; object-fit: contain; }
-.card.unrevealed .poke-sprite { filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(56,189,248,0.3)); opacity: 0; position: absolute; }
+.card .poke-sprite { -webkit-user-drag: none; user-select: none; }
+.card.unrevealed .poke-sprite { filter: brightness(0) invert(1) drop-shadow(0 0 3px rgba(56,189,248,0.3)); opacity: 0; position: absolute; pointer-events: none; }
 body.light .card.unrevealed .poke-sprite { filter: brightness(0) drop-shadow(0 0 3px rgba(0,0,0,0.2)); }
 .card.unrevealed .poke-name { display: none; }
 .card.unrevealed .poke-gen { display: none; }
@@ -926,7 +927,7 @@ const Q = (function() {
     } else {
       c.innerHTML = '<span class="rank">#' + w.id + '</span>' +
         '<div class="poke-placeholder">?</div>' +
-        '<img class="poke-sprite" src="' + w.s + '" alt="" loading="lazy">' +
+        '<img class="poke-sprite" src="' + w.s + '" alt="" loading="lazy" draggable="false">' +
         '<div class="poke-name"></div><div class="poke-gen"></div>';
       c.dataset.pid = w.id;
     }
