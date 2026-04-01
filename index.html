@@ -131,6 +131,7 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .card.found .pinyin { font-size: 0.48rem; color: var(--text-pinyin); margin-top: 1px; }
 .card.found .english { font-size: 0.4rem; color: var(--text-dim); margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card.missed { border-color: rgba(233,69,96,0.5); }
+.card.duel-missed { border-color: #555; }
 .card.missed .char { font-size: 1.35rem; color: var(--accent); opacity: 0.85; line-height: 1.2; }
 .card.missed .pinyin { font-size: 0.48rem; color: var(--accent); opacity: 0.6; margin-top: 1px; }
 .card.missed .english { font-size: 0.4rem; color: var(--accent); opacity: 0.5; margin-top: 1px; text-align: center; max-width: 92%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -178,8 +179,10 @@ body.light .wtp-img.shadow { filter: brightness(0) drop-shadow(0 0 6px rgba(0,0,
   padding: 20px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   pointer-events: none;
+  transition: left 0.08s ease-out, top 0.08s ease-out, opacity 0.15s;
+  opacity: 0;
 }
-.poke-popup.active { display: block; }
+.poke-popup.active { display: block; opacity: 1; }
 .poke-popup .pp-top { display: flex; gap: 14px; align-items: flex-start; }
 .poke-popup .pp-sprite { width: 96px; height: 96px; object-fit: contain; image-rendering: pixelated; background: var(--bg-card); border-radius: 10px; flex-shrink: 0; }
 .poke-popup .pp-info { flex: 1; min-width: 0; }
@@ -1188,12 +1191,13 @@ const Q = (function() {
   }
 
   function checkRegionComplete() {
-    if (currentTab !== 'pokemon') return;
+    if (currentTab !== 'pokemon' && currentTab !== 'coop') return;
+    var revealed = currentTab === 'coop' ? coopRevealed : foundSet;
     for (const region of REGION_ORDER) {
       if (completedRegions.has(region)) continue;
       const list = regionIndices[region];
       if (!list || !list.length) continue;
-      if (list.every(i => foundSet.has(i))) {
+      if (list.every(i => revealed.has(i))) {
         completedRegions.add(region);
         const sec = $('rs-' + region);
         if (sec) sec.classList.add('region-complete');
@@ -1277,6 +1281,20 @@ const Q = (function() {
   }
 
   let popupTimer = null;
+  var mouseX = 0, mouseY = 0;
+
+  function positionPopup() {
+    var pw = 330, ph = $popup.offsetHeight || 300;
+    var gap = 16;
+    var left = mouseX + gap;
+    var top = mouseY + gap;
+    if (left + pw > window.innerWidth) left = mouseX - pw - gap;
+    if (left < 8) left = 8;
+    if (top + ph > window.innerHeight) top = mouseY - ph - gap;
+    if (top < 8) top = 8;
+    $popup.style.left = left + 'px';
+    $popup.style.top = top + 'px';
+  }
 
   function showPopup(card, w) {
     const id = w.id;
@@ -1300,15 +1318,7 @@ const Q = (function() {
       ).join('');
     }
 
-    const rect = card.getBoundingClientRect();
-    let left = rect.right + 12;
-    let top = rect.top;
-    if (left + 330 > window.innerWidth) left = rect.left - 332;
-    if (left < 8) left = 8;
-    if (top + 300 > window.innerHeight) top = window.innerHeight - 310;
-    if (top < 8) top = 8;
-    $popup.style.left = left + 'px';
-    $popup.style.top = top + 'px';
+    positionPopup();
     $popup.classList.add('active');
 
     fetchPokeDetails(id).then(d => {
@@ -1328,10 +1338,17 @@ const Q = (function() {
         '<dt>Abilities</dt><dd>' + d.abilities.join(', ') + '</dd>';
 
       $('pp-flavor').textContent = d.flavor;
+      positionPopup();
     });
   }
 
   function hidePopup() { $popup.classList.remove('active'); }
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if ($popup.classList.contains('active')) positionPopup();
+  });
 
   document.addEventListener('mouseover', function(e) {
     if (!hoverEnabled) { clearTimeout(popupTimer); hidePopup(); return; }
@@ -1622,6 +1639,7 @@ const Q = (function() {
 
   function duelShowLobby() {
     $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
     const wrap = $('grid-wrap');
     const params = new URLSearchParams(window.location.search);
     const joinId = params.get('duel');
@@ -1875,6 +1893,7 @@ const Q = (function() {
     $timer.textContent = '00:00';
     $foundCount.textContent = '0';
     $('total-count').textContent = items.length;
+    document.querySelector('.stats').style.display = '';
 
     duelRenderGrid();
     duelUpdateScore();
@@ -1997,6 +2016,13 @@ const Q = (function() {
           var card = $('c' + newReveals[0]);
           if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 50);
+      } else {
+        var q = val.toLowerCase().trim();
+        if (!hasUnrevealedExtension(q)) {
+          toastDupe(items[matches[0]]);
+          flashInputDupe();
+          $input.value = '';
+        }
       }
     }
   }
@@ -2085,7 +2111,7 @@ const Q = (function() {
           var col = duelOwner[i] === 'blue' ? 'duel-blue' : 'duel-red';
           c.className = 'card duel-mine ' + col;
         } else {
-          c.className = 'card missed';
+          c.className = 'card missed duel-missed';
         }
         applyTypeBg(c, w);
       }
@@ -2133,6 +2159,7 @@ const Q = (function() {
 
   function coopShowLobby() {
     $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
     const wrap = $('grid-wrap');
     const params = new URLSearchParams(window.location.search);
     const joinId = params.get('coop');
@@ -2355,6 +2382,7 @@ const Q = (function() {
     coopFinishOpponent = false;
     foundSet = new Set();
     completedFamilies = new Set();
+    completedRegions = new Set();
     elapsedMs = 0;
     buildIndex();
 
@@ -2379,6 +2407,7 @@ const Q = (function() {
     $timer.textContent = '00:00';
     $foundCount.textContent = '0';
     $('total-count').textContent = items.length;
+    document.querySelector('.stats').style.display = '';
 
     coopRenderGrid();
     coopUpdateScore();
@@ -2409,6 +2438,7 @@ const Q = (function() {
     $('coop-finish-btn').addEventListener('click', coopFinish);
     $('coop-accept-finish').addEventListener('click', coopFinish);
 
+    regionIndices = {};
     if (coopSettings.orderMode === 'dex-gens') {
       var groups = {};
       for (var i = 0; i < displayOrder.length; i++) {
@@ -2419,6 +2449,7 @@ const Q = (function() {
         var region = REGION_ORDER[ri];
         var list = groups[region];
         if (!list || !list.length) continue;
+        regionIndices[region] = list;
         var sec = document.createElement('div');
         sec.className = 'region-section';
         sec.id = 'rs-' + region;
@@ -2435,7 +2466,11 @@ const Q = (function() {
     } else {
       var grid = document.createElement('div');
       grid.className = 'region-grid';
-      for (var i = 0; i < displayOrder.length; i++) grid.appendChild(makeCard(displayOrder[i]));
+      for (var i = 0; i < displayOrder.length; i++) {
+        var idx = displayOrder[i], r = items[idx].g;
+        (regionIndices[r] || (regionIndices[r] = [])).push(idx);
+        grid.appendChild(makeCard(idx));
+      }
       wrap.appendChild(grid);
     }
   }
@@ -2487,6 +2522,7 @@ const Q = (function() {
         for (var ri = 0; ri < newReveals.length; ri++) toast(items[newReveals[ri]]);
         if (soundEnabled) playCry(items[newReveals[0]].id);
         checkFamilyComplete(newReveals.map(function(i) { return items[i].id; }));
+        checkRegionComplete();
         coopUpdateScore();
         flashInput();
         $input.value = '';
@@ -2495,6 +2531,13 @@ const Q = (function() {
           if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 50);
         if (coopRevealed.size === items.length) { stopTimer(); coopEnd(); }
+      } else {
+        var q = val.toLowerCase().trim();
+        if (!hasUnrevealedExtension(q)) {
+          toastDupe(items[matches[0]]);
+          flashInputDupe();
+          $input.value = '';
+        }
       }
     }
   }
@@ -2535,6 +2578,7 @@ const Q = (function() {
         if (partnerCard) partnerCard.classList.add('coop-last-partner');
         if (soundEnabled) playCry(items[remoteNew[0]].id);
         checkFamilyComplete(remoteNew.map(function(i) { return items[i].id; }));
+        checkRegionComplete();
         if (autoScrollEnabled) setTimeout(function() {
           if (partnerCard) partnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 50);
@@ -2621,6 +2665,9 @@ const Q = (function() {
     if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
     if (currentTab === 'duel') duelCleanup();
     if (currentTab === 'coop') coopCleanup();
+    $input.style.display = '';
+    $input.disabled = false;
+    document.querySelector('.stats').style.display = '';
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
 
@@ -2632,6 +2679,7 @@ const Q = (function() {
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = 'Type a Pokémon name…';
     if (!isPoke) stopCycleForms();
+    else if (cycleFormsEnabled) startCycleForms();
     $('set-order-section').style.display = isMulti ? 'none' : '';
     $('set-sound').style.display = (isPoke || isCoop) ? '' : 'none';
     $('set-shadows').style.display = isPoke ? '' : 'none';
@@ -2655,7 +2703,16 @@ const Q = (function() {
       }).catch(() => {});
     }
     if ((isPoke || isMulti) && !pokeForms) {
-      fetch('pokemon_forms.json').then(r => r.json()).then(data => { pokeForms = data; refreshTypeBgs(); }).catch(() => {});
+      fetch('pokemon_forms.json').then(r => r.json()).then(data => {
+        pokeForms = data;
+        refreshTypeBgs();
+        if (currentTab === 'pokemon') {
+          foundSet.forEach(function(i) {
+            var c = $('c' + i);
+            if (c && items[i]) addFormToggle(c, items[i]);
+          });
+        }
+      }).catch(() => {});
     }
     if ((isPoke || isMulti) && !pokeDetails) {
       fetch('pokemon_details.json').then(r => r.json()).then(data => {
@@ -2744,6 +2801,16 @@ const Q = (function() {
         if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 50);
       if (foundSet.size === items.length) { stopTimer(); showModal(true); }
+    } else if (val.length > 0) {
+      var q = val.toLowerCase().trim();
+      var dupeIndices = keyToIndices[q];
+      if (dupeIndices && dupeIndices.length > 0 && dupeIndices.every(function(i) { return foundSet.has(i); })) {
+        if (!hasUnrevealedExtension(q)) {
+          toastDupe(items[dupeIndices[0]]);
+          flashInputDupe();
+          this.value = '';
+        }
+      }
     }
   });
 
