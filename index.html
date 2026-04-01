@@ -404,7 +404,6 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
-      <span class="best" id="best-display"></span>
       <button class="btn" id="btn-history" style="padding:3px 10px;font-size:0.65rem;">Scoreboard</button>
     </div>
   </div>
@@ -795,13 +794,7 @@ const Q = (function() {
     return hs;
   }
 
-  function displayHighscore() {
-    const hs = loadHighscore();
-    const parts = [];
-    if (hs.bestCount) parts.push('Best: ' + hs.bestCount + '/' + items.length);
-    if (hs.bestTime) parts.push('Record: ' + fmtTime(hs.bestTime));
-    $('best-display').textContent = parts.join(' · ');
-  }
+  function displayHighscore() {}
 
   // ── Score history ──
 
@@ -2830,7 +2823,6 @@ const Q = (function() {
     $('coop-settings-bar').style.display = 'none';
     $('coop-sticky').style.display = 'none';
     $('btn-history').style.display = isDuel ? 'none' : '';
-    $('best-display').style.display = isMulti ? 'none' : '';
 
     if ((isPoke || isMulti) && !pokeFamilies) {
       fetch('families.json').then(r => r.json()).then(fams => {
