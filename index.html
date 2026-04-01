@@ -966,14 +966,15 @@ const Q = (function() {
   }
 
   function checkFamilyComplete(revealedIds) {
-    if (currentTab !== 'pokemon' || !pokeFamilies) return;
+    if ((currentTab !== 'pokemon' && currentTab !== 'coop') || !pokeFamilies) return;
+    var revealedSet = currentTab === 'coop' ? coopRevealed : foundSet;
     const checked = new Set();
     for (const pid of revealedIds) {
       const famIdx = pokeFamilyMap[pid];
       if (famIdx === undefined || checked.has(famIdx) || completedFamilies.has(famIdx)) continue;
       checked.add(famIdx);
       const family = pokeFamilies[famIdx];
-      if (family.m.every(fid => items.some((w, i) => w.id === fid && foundSet.has(i)))) {
+      if (family.m.every(fid => items.some((w, i) => w.id === fid && revealedSet.has(i)))) {
         completedFamilies.add(famIdx);
         setTimeout(() => familyToast(family), 400);
       }
@@ -2083,6 +2084,7 @@ const Q = (function() {
     coopFinishMe = false;
     coopFinishOpponent = false;
     foundSet = new Set();
+    completedFamilies = new Set();
     elapsedMs = 0;
     buildIndex();
 
@@ -2205,7 +2207,9 @@ const Q = (function() {
       }
       if (newReveals.length > 0) {
         coopConn.send({ type: 'reveal', indices: newReveals });
+        for (var ri = 0; ri < newReveals.length; ri++) toast(items[newReveals[ri]]);
         if (soundEnabled) playCry(items[newReveals[0]].id);
+        checkFamilyComplete(newReveals.map(function(i) { return items[i].id; }));
         coopUpdateScore();
         flashInput();
         $input.value = '';
@@ -2237,11 +2241,18 @@ const Q = (function() {
         }
       }
     } else if (msg.type === 'reveal') {
+      var remoteNew = [];
       for (const idx of msg.indices) {
         if (!coopRevealed.has(idx)) {
           coopRevealed.add(idx);
           coopRevealCard(idx);
+          toast(items[idx]);
+          remoteNew.push(idx);
         }
+      }
+      if (remoteNew.length > 0) {
+        if (soundEnabled) playCry(items[remoteNew[0]].id);
+        checkFamilyComplete(remoteNew.map(function(i) { return items[i].id; }));
       }
       coopUpdateScore();
       if (coopRevealed.size === items.length) { stopTimer(); coopEnd(); }
