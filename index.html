@@ -224,6 +224,13 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 .pause-overlay .pause-icon { font-size: 4rem; opacity: 0.6; }
 .pause-overlay .pause-text { font-size: 1.2rem; font-weight: 800; color: #fff; opacity: 0.8; }
 .pause-overlay .pause-hint { font-size: 0.75rem; color: var(--text-dim); opacity: 0.6; }
+.disconnect-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 260; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+.disconnect-overlay.active { display: flex; }
+.disconnect-overlay .dc-icon { font-size: 3.5rem; opacity: 0.7; }
+.disconnect-overlay .dc-text { font-size: 1.1rem; font-weight: 800; color: #fff; opacity: 0.9; text-align: center; max-width: 80%; line-height: 1.5; }
+.disconnect-overlay .dc-hint { font-size: 0.75rem; color: var(--text-dim); opacity: 0.6; }
+.disconnect-overlay .dc-spinner { width: 32px; height: 32px; border: 3px solid var(--text-dim); border-top-color: var(--accent); border-radius: 50%; animation: dc-spin 0.8s linear infinite; margin-top: 4px; }
+@keyframes dc-spin { to { transform: rotate(360deg); } }
 .modal { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 36px 28px; text-align: center; max-width: 380px; width: 90%; }
 .modal h2 { margin-bottom: 10px; font-size: 1.4rem; }
 .modal h2.win { color: var(--green); }
@@ -336,6 +343,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .gen-selector-actions { display: flex; gap: 6px; justify-content: center; }
 .gen-selector-actions button { font-size: 0.58rem; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-dim); cursor: pointer; font-weight: 600; }
 .gen-selector-actions button:hover { color: var(--text); border-color: var(--text-dim); }
+.gen-total { font-size: 0.68rem; color: var(--text-dim); text-align: center; margin-top: 2px; font-weight: 600; }
 .countdown-display { font-size: 0.75rem; font-weight: 700; color: var(--accent); margin-left: 8px; }
 .countdown-display.warning { color: #ef4444; animation: pulse-warn 1s ease-in-out infinite; }
 @keyframes pulse-warn { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -559,6 +567,13 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <div class="pause-icon">⏸</div>
   <div class="pause-text">PAUSED</div>
   <div class="pause-hint">Click anywhere or press any key to resume</div>
+</div>
+
+<div class="disconnect-overlay" id="disconnect-overlay">
+  <div class="dc-icon">🔌</div>
+  <div class="dc-text">The other player disconnected.<br>Waiting for them to reconnect…</div>
+  <div class="dc-spinner"></div>
+  <button class="btn danger" id="disconnect-quit-btn" style="margin-top:12px;font-size:0.8rem;padding:8px 24px;">Quit Room</button>
 </div>
 
 <div class="overlay" id="overlay">
@@ -867,6 +882,14 @@ const Q = (function() {
     return data.filter(function(p) { return gens.has(REGION_GEN[p.g]); });
   }
 
+  const GEN_COUNTS = {1:151, 2:100, 3:135, 4:107, 5:156, 6:72, 7:88, 8:96, 9:120};
+
+  function genTotal(gensSet) {
+    var total = 0;
+    gensSet.forEach(function(g) { total += GEN_COUNTS[g] || 0; });
+    return total;
+  }
+
   function buildGenSelectorHTML(prefix, activeGens) {
     var html = '<div class="gen-selector-wrap"><div class="gen-selector" id="' + prefix + '-gen-btns">';
     for (var g = 1; g <= 9; g++) {
@@ -875,8 +898,13 @@ const Q = (function() {
     html += '</div><div class="gen-selector-actions">' +
       '<button data-action="all" id="' + prefix + '-gen-all">All</button>' +
       '<button data-action="none" id="' + prefix + '-gen-none">None</button>' +
-      '</div></div>';
+      '</div><div class="gen-total" id="' + prefix + '-gen-total">' + genTotal(activeGens) + ' Pokémon</div></div>';
     return html;
+  }
+
+  function updateGenTotal(prefix, gensSet) {
+    var el = $(prefix + '-gen-total');
+    if (el) el.textContent = genTotal(gensSet) + ' Pokémon';
   }
 
   function wireGenSelector(prefix, gensSet, onChange) {
@@ -893,11 +921,13 @@ const Q = (function() {
         gensSet.add(g);
         btn.classList.add('active');
       }
+      updateGenTotal(prefix, gensSet);
       if (onChange) onChange();
     });
     $(prefix + '-gen-all').addEventListener('click', function() {
       for (var g = 1; g <= 9; g++) gensSet.add(g);
       container.querySelectorAll('button').forEach(function(b) { b.classList.add('active'); });
+      updateGenTotal(prefix, gensSet);
       if (onChange) onChange();
     });
     $(prefix + '-gen-none').addEventListener('click', function() {
@@ -907,6 +937,7 @@ const Q = (function() {
       container.querySelectorAll('button').forEach(function(b) {
         b.classList.toggle('active', parseInt(b.dataset.gen) === first);
       });
+      updateGenTotal(prefix, gensSet);
       if (onChange) onChange();
     });
   }
@@ -1085,7 +1116,7 @@ const Q = (function() {
   }
 
   function addFormToggle(c, w) {
-    if (currentTab !== 'pokemon' || !pokeForms) return;
+    if ((currentTab !== 'pokemon' && currentTab !== 'duel' && currentTab !== 'coop') || !pokeForms) return;
     const forms = pokeForms[String(w.id)];
     if (!forms || forms.length < 2) return;
     if (c.querySelector('.form-toggle')) return;
@@ -1105,7 +1136,7 @@ const Q = (function() {
   function startCycleForms() {
     stopCycleForms();
     cycleFormsInterval = setInterval(function() {
-      if (currentTab !== 'pokemon' || !pokeForms) return;
+      if ((currentTab !== 'pokemon' && currentTab !== 'duel' && currentTab !== 'coop') || !pokeForms) return;
       document.querySelectorAll('.card[data-has-multi-forms="1"]').forEach(function(c) {
         var pid = c.dataset.pid;
         if (!pid) return;
@@ -1703,8 +1734,46 @@ const Q = (function() {
     }
   }
 
+  // ── Room Session (reconnection support) ──
+
+  var ROOM_SESSION_KEY = 'nea-room-session';
+  var disconnectWaiting = false;
+
+  function saveRoomSession(mode, roomId, role) {
+    try { sessionStorage.setItem(ROOM_SESSION_KEY, JSON.stringify({ mode: mode, roomId: roomId, role: role })); } catch(e) {}
+  }
+  function clearRoomSession() {
+    try { sessionStorage.removeItem(ROOM_SESSION_KEY); } catch(e) {}
+  }
+  function getRoomSession() {
+    try { var s = sessionStorage.getItem(ROOM_SESSION_KEY); return s ? JSON.parse(s) : null; } catch(e) { return null; }
+  }
+  function setRoomUrl(mode, roomId) {
+    if (window.history.replaceState) window.history.replaceState({}, '', window.location.pathname + '?' + mode + '=' + roomId);
+  }
+  function clearRoomUrl() {
+    if (window.history.replaceState) window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  function showDisconnectOverlay() {
+    disconnectWaiting = true;
+    stopTimer();
+    paused = true;
+    $input.disabled = true;
+    $('disconnect-overlay').classList.add('active');
+  }
+  function hideDisconnectOverlay() {
+    disconnectWaiting = false;
+    paused = false;
+    $('disconnect-overlay').classList.remove('active');
+    startTimer();
+    $input.disabled = false;
+    $input.focus();
+  }
+
   // ── Duel Mode ──
 
+  var duelRoomId = null;
   let duelPeer = null;
   let duelConn = null;
   let duelRole = null; // 'blue' (host) or 'red' (guest)
@@ -1735,6 +1804,10 @@ const Q = (function() {
     if (duelConn) { try { duelConn.close(); } catch(e){} duelConn = null; }
     if (duelPeer) { try { duelPeer.destroy(); } catch(e){} duelPeer = null; }
     duelRole = null;
+    duelRoomId = null;
+    clearRoomSession();
+    clearRoomUrl();
+    if (disconnectWaiting) { disconnectWaiting = false; $('disconnect-overlay').classList.remove('active'); }
   }
 
   var duelSettings = { shadows: false, orderMode: 'dex-gens', timerMs: 0, gens: new Set([1,2,3,4,5,6,7,8,9]) };
@@ -1862,6 +1935,7 @@ const Q = (function() {
 
   function duelCreate() {
     const roomId = duelGenId();
+    duelRoomId = roomId;
     duelRole = 'blue';
     $('duel-create-btn').disabled = true;
     $('duel-create-btn').textContent = 'Creating…';
@@ -1908,32 +1982,36 @@ const Q = (function() {
       duelConn.on('data', duelOnMessage);
       duelConn.on('close', function() {
         clearTimeout(duelConnTimeout);
-        if (duelActive) { duelActive = false; duelShowStatus('Opponent disconnected.'); }
+        if (duelActive) { duelWaitReconnect(); }
       });
       duelConn.on('error', function(err) {
         clearTimeout(duelConnTimeout);
-        $('duel-status').textContent = 'Data connection error. Try refreshing.';
+        if (!duelActive) $('duel-status').textContent = 'Data connection error. Try refreshing.';
       });
     });
     duelPeer.on('error', function(err) {
       clearTimeout(duelConnTimeout);
-      $('duel-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
-      $('duel-create-btn').style.display = '';
-      $('duel-create-btn').disabled = false;
-      $('duel-create-btn').textContent = 'Create Duel';
+      if (err.type === 'peer-unavailable') return;
+      if (!duelActive) {
+        $('duel-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+        $('duel-create-btn').style.display = '';
+        $('duel-create-btn').disabled = false;
+        $('duel-create-btn').textContent = 'Create Duel';
+      }
     });
     duelPeer.on('disconnected', function() {
       if (!duelActive) {
         $('duel-status').textContent = 'Lost connection to server. Reconnecting…';
-        try { duelPeer.reconnect(); } catch(e) {}
       }
+      try { duelPeer.reconnect(); } catch(e) {}
     });
   }
 
   function duelJoin(hostId) {
     duelRole = 'red';
+    duelRoomId = hostId;
     $('duel-status').textContent = 'Connecting to signaling server…';
-    duelPeer = new Peer({ config: duelIceConfig });
+    duelPeer = new Peer(hostId + '-2', { config: duelIceConfig });
     duelPeer.on('open', function() {
       $('duel-status').textContent = 'Connected to server. Reaching host…';
       duelConn = duelPeer.connect(hostId, { reliable: true });
@@ -1948,22 +2026,28 @@ const Q = (function() {
       duelConn.on('data', duelOnMessage);
       duelConn.on('close', function() {
         clearTimeout(duelConnTimeout);
-        if (duelActive) { duelActive = false; duelShowStatus('Host disconnected.'); }
+        if (duelActive) { duelWaitReconnect(); }
       });
       duelConn.on('error', function(err) {
         clearTimeout(duelConnTimeout);
-        $('duel-status').textContent = 'Data connection error. Try refreshing.';
+        if (!duelActive) $('duel-status').textContent = 'Data connection error. Try refreshing.';
       });
     });
     duelPeer.on('error', function(err) {
       clearTimeout(duelConnTimeout);
+      if (err.type === 'peer-unavailable') return;
+      if (err.type === 'unavailable-id') {
+        $('duel-status').textContent = 'Room is busy. Retrying…';
+        setTimeout(function() { duelJoin(hostId); }, 2000);
+        return;
+      }
       $('duel-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
     });
     duelPeer.on('disconnected', function() {
       if (!duelActive) {
         $('duel-status').textContent = 'Lost connection to server. Reconnecting…';
-        try { duelPeer.reconnect(); } catch(e) {}
       }
+      try { duelPeer.reconnect(); } catch(e) {}
     });
   }
 
@@ -2011,11 +2095,11 @@ const Q = (function() {
     duelUpdateScore();
     startTimer();
     startCountdown(duelSettings.timerMs);
+    if (cycleFormsEnabled) startCycleForms();
     $input.focus();
 
-    if (window.history.replaceState) {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+    setRoomUrl('duel', duelRoomId);
+    saveRoomSession('duel', duelRoomId, duelRole);
   }
 
   function duelRenderGrid() {
@@ -2097,6 +2181,7 @@ const Q = (function() {
       c.querySelector('.poke-name').textContent = w.n;
       c.querySelector('.poke-gen').textContent = w.g;
       applyTypeBg(c, w);
+      addFormToggle(c, w);
     } else {
       if (c.classList.contains('duel-mine')) return;
       c.className = 'card duel-claimed ' + colorClass;
@@ -2192,6 +2277,19 @@ const Q = (function() {
       applyMultiPause('duel', false);
     } else if (msg.type === 'join') {
       // guest joined, handled in connection event
+    } else if (msg.type === 'rejoin') {
+      var countdownRem = 0;
+      if (countdownInterval && countdownEndTime) countdownRem = Math.max(0, countdownEndTime - Date.now());
+      duelConn.send({
+        type: 'sync', mode: 'duel',
+        displayOrder: displayOrder,
+        settings: { shadows: shadowsEnabled, orderMode: duelSettings.orderMode, timerMs: duelSettings.timerMs, gens: Array.from(duelSettings.gens) },
+        duelBlue: Array.from(duelBlue), duelRed: Array.from(duelRed), duelOwner: duelOwner,
+        elapsedMs: elapsedMs, countdownRemaining: countdownRem
+      });
+      hideDisconnectOverlay();
+    } else if (msg.type === 'sync') {
+      duelRebuildFromSync(msg);
     }
   }
 
@@ -2214,6 +2312,9 @@ const Q = (function() {
     stopTimer();
     paused = false;
     $('pause-overlay').classList.remove('active');
+    if (disconnectWaiting) { disconnectWaiting = false; $('disconnect-overlay').classList.remove('active'); }
+    clearRoomSession();
+    clearRoomUrl();
     $input.disabled = true;
     var invite = $('duel-finish-invite');
     if (invite) invite.classList.remove('show');
@@ -2252,8 +2353,88 @@ const Q = (function() {
     if (st) st.textContent = msg;
   }
 
+  function duelWaitReconnect() {
+    showDisconnectOverlay();
+    if (!duelPeer || duelPeer.destroyed) return;
+    var handled = false;
+    duelPeer.on('connection', function(newConn) {
+      if (handled) { try { newConn.close(); } catch(e) {} return; }
+      handled = true;
+      duelConn = newConn;
+      newConn.on('data', function(msg) {
+        if (msg.type === 'rejoin') {
+          var countdownRem = 0;
+          if (countdownInterval && countdownEndTime) countdownRem = Math.max(0, countdownEndTime - Date.now());
+          duelConn.send({
+            type: 'sync', mode: 'duel',
+            displayOrder: displayOrder,
+            settings: { shadows: shadowsEnabled, orderMode: duelSettings.orderMode, timerMs: duelSettings.timerMs, gens: Array.from(duelSettings.gens) },
+            duelBlue: Array.from(duelBlue), duelRed: Array.from(duelRed), duelOwner: duelOwner,
+            elapsedMs: elapsedMs, countdownRemaining: countdownRem
+          });
+          hideDisconnectOverlay();
+        } else {
+          duelOnMessage(msg);
+        }
+      });
+      newConn.on('close', function() { if (duelActive) duelWaitReconnect(); });
+      newConn.on('error', function() {});
+    });
+  }
+
+  function duelRebuildFromSync(msg) {
+    duelSettings.shadows = msg.settings.shadows;
+    duelSettings.orderMode = msg.settings.orderMode;
+    duelSettings.timerMs = msg.settings.timerMs;
+    duelSettings.gens = new Set(msg.settings.gens);
+    shadowsEnabled = msg.settings.shadows;
+    displayOrder = msg.displayOrder;
+    duelBlue = new Set(msg.duelBlue);
+    duelRed = new Set(msg.duelRed);
+    duelOwner = msg.duelOwner;
+    duelMyRevealed = new Set();
+    duelFinishMe = false;
+    duelFinishOpponent = false;
+    elapsedMs = msg.elapsedMs;
+    foundSet = new Set();
+
+    function render(data) {
+      dataSources['pokemon'] = data;
+      items = filterByGens(data, duelSettings.gens);
+      duelActive = true;
+      buildIndex();
+      $('duel-settings-bar').style.display = 'flex';
+      $input.style.display = '';
+      $input.value = '';
+      $input.disabled = false;
+      $input.placeholder = 'Type a Pokémon name…';
+      $timer.textContent = fmtTime(elapsedMs);
+      $foundCount.textContent = '0';
+      $('total-count').textContent = items.length;
+      document.querySelector('.stats').style.display = '';
+
+      duelRenderGrid();
+
+      for (var key in duelOwner) {
+        var idx = parseInt(key);
+        duelRevealCard(idx, duelOwner[key], true);
+        duelMyRevealed.add(idx);
+      }
+      duelUpdateScore();
+      startTimer();
+      if (msg.countdownRemaining > 0) startCountdown(msg.countdownRemaining);
+      if (cycleFormsEnabled) startCycleForms();
+      $input.focus();
+      saveRoomSession('duel', duelRoomId, duelRole);
+    }
+    var cached = dataSources['pokemon'];
+    if (cached) render(cached);
+    else fetch('pokemon.json').then(function(r) { return r.json(); }).then(render);
+  }
+
   // ── Co-Op Mode ──
 
+  var coopRoomId = null;
   let coopActive = false;
   let coopPeer = null;
   let coopConn = null;
@@ -2276,6 +2457,10 @@ const Q = (function() {
     if (coopConn) { try { coopConn.close(); } catch(e){} coopConn = null; }
     if (coopPeer) { try { coopPeer.destroy(); } catch(e){} coopPeer = null; }
     coopRole = null;
+    coopRoomId = null;
+    clearRoomSession();
+    clearRoomUrl();
+    if (disconnectWaiting) { disconnectWaiting = false; $('disconnect-overlay').classList.remove('active'); }
   }
 
   function coopShowLobby() {
@@ -2395,6 +2580,7 @@ const Q = (function() {
 
   function coopCreate() {
     const roomId = coopGenId();
+    coopRoomId = roomId;
     coopRole = 'host';
     $('coop-create-btn').disabled = true;
     $('coop-create-btn').textContent = 'Creating…';
@@ -2442,32 +2628,36 @@ const Q = (function() {
       coopConn.on('data', coopOnMessage);
       coopConn.on('close', function() {
         clearTimeout(coopConnTimeout);
-        if (coopActive) { coopActive = false; coopShowStatus('Partner disconnected.'); }
+        if (coopActive) { coopWaitReconnect(); }
       });
       coopConn.on('error', function(err) {
         clearTimeout(coopConnTimeout);
-        $('coop-status').textContent = 'Data connection error. Try refreshing.';
+        if (!coopActive) $('coop-status').textContent = 'Data connection error. Try refreshing.';
       });
     });
     coopPeer.on('error', function(err) {
       clearTimeout(coopConnTimeout);
-      $('coop-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
-      $('coop-create-btn').style.display = '';
-      $('coop-create-btn').disabled = false;
-      $('coop-create-btn').textContent = 'Create Room';
+      if (err.type === 'peer-unavailable') return;
+      if (!coopActive) {
+        $('coop-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+        $('coop-create-btn').style.display = '';
+        $('coop-create-btn').disabled = false;
+        $('coop-create-btn').textContent = 'Create Room';
+      }
     });
     coopPeer.on('disconnected', function() {
       if (!coopActive) {
         $('coop-status').textContent = 'Lost connection to server. Reconnecting…';
-        try { coopPeer.reconnect(); } catch(e) {}
       }
+      try { coopPeer.reconnect(); } catch(e) {}
     });
   }
 
   function coopJoin(hostId) {
     coopRole = 'guest';
+    coopRoomId = hostId;
     $('coop-status').textContent = 'Connecting to signaling server…';
-    coopPeer = new Peer({ config: duelIceConfig });
+    coopPeer = new Peer(hostId + '-2', { config: duelIceConfig });
     coopPeer.on('open', function() {
       $('coop-status').textContent = 'Connected to server. Reaching host…';
       coopConn = coopPeer.connect(hostId, { reliable: true });
@@ -2482,22 +2672,28 @@ const Q = (function() {
       coopConn.on('data', coopOnMessage);
       coopConn.on('close', function() {
         clearTimeout(coopConnTimeout);
-        if (coopActive) { coopActive = false; coopShowStatus('Host disconnected.'); }
+        if (coopActive) { coopWaitReconnect(); }
       });
       coopConn.on('error', function(err) {
         clearTimeout(coopConnTimeout);
-        $('coop-status').textContent = 'Data connection error. Try refreshing.';
+        if (!coopActive) $('coop-status').textContent = 'Data connection error. Try refreshing.';
       });
     });
     coopPeer.on('error', function(err) {
       clearTimeout(coopConnTimeout);
+      if (err.type === 'peer-unavailable') return;
+      if (err.type === 'unavailable-id') {
+        $('coop-status').textContent = 'Room is busy. Retrying…';
+        setTimeout(function() { coopJoin(hostId); }, 2000);
+        return;
+      }
       $('coop-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
     });
     coopPeer.on('disconnected', function() {
       if (!coopActive) {
         $('coop-status').textContent = 'Lost connection to server. Reconnecting…';
-        try { coopPeer.reconnect(); } catch(e) {}
       }
+      try { coopPeer.reconnect(); } catch(e) {}
     });
   }
 
@@ -2540,11 +2736,11 @@ const Q = (function() {
     coopUpdateScore();
     startTimer();
     startCountdown(coopSettings.timerMs);
+    if (cycleFormsEnabled) startCycleForms();
     $input.focus();
 
-    if (window.history.replaceState) {
-      window.history.replaceState({}, '', window.location.pathname);
-    }
+    setRoomUrl('coop', coopRoomId);
+    saveRoomSession('coop', coopRoomId, coopRole);
   }
 
   function coopRenderGrid() {
@@ -2627,6 +2823,7 @@ const Q = (function() {
     c.querySelector('.poke-name').textContent = w.n;
     c.querySelector('.poke-gen').textContent = w.g;
     applyTypeBg(c, w);
+    addFormToggle(c, w);
   }
 
   function coopHandleInput(val) {
@@ -2715,9 +2912,6 @@ const Q = (function() {
         if (soundEnabled) playCry(items[remoteNew[0]].id);
         checkFamilyComplete(remoteNew.map(function(i) { return items[i].id; }));
         checkRegionComplete();
-        if (autoScrollEnabled) setTimeout(function() {
-          if (partnerCard) partnerCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 50);
       }
       coopUpdateScore();
       if (coopRevealed.size === items.length) { stopTimer(); coopEnd(); }
@@ -2734,6 +2928,19 @@ const Q = (function() {
       applyMultiPause('coop', false);
     } else if (msg.type === 'join') {
       // guest joined
+    } else if (msg.type === 'rejoin') {
+      var countdownRem = 0;
+      if (countdownInterval && countdownEndTime) countdownRem = Math.max(0, countdownEndTime - Date.now());
+      coopConn.send({
+        type: 'sync', mode: 'coop',
+        displayOrder: displayOrder,
+        settings: { shadows: shadowsEnabled, orderMode: coopSettings.orderMode, timerMs: coopSettings.timerMs, gens: Array.from(coopSettings.gens) },
+        coopRevealed: Array.from(coopRevealed),
+        elapsedMs: elapsedMs, countdownRemaining: countdownRem
+      });
+      hideDisconnectOverlay();
+    } else if (msg.type === 'sync') {
+      coopRebuildFromSync(msg);
     }
   }
 
@@ -2756,6 +2963,9 @@ const Q = (function() {
     stopTimer();
     paused = false;
     $('pause-overlay').classList.remove('active');
+    if (disconnectWaiting) { disconnectWaiting = false; $('disconnect-overlay').classList.remove('active'); }
+    clearRoomSession();
+    clearRoomUrl();
     $input.disabled = true;
     var invite = $('coop-finish-invite');
     if (invite) invite.classList.remove('show');
@@ -2786,6 +2996,80 @@ const Q = (function() {
   function coopShowStatus(msg) {
     var st = $('coop-status');
     if (st) st.textContent = msg;
+  }
+
+  function coopWaitReconnect() {
+    showDisconnectOverlay();
+    if (!coopPeer || coopPeer.destroyed) return;
+    var handled = false;
+    coopPeer.on('connection', function(newConn) {
+      if (handled) { try { newConn.close(); } catch(e) {} return; }
+      handled = true;
+      coopConn = newConn;
+      newConn.on('data', function(msg) {
+        if (msg.type === 'rejoin') {
+          var countdownRem = 0;
+          if (countdownInterval && countdownEndTime) countdownRem = Math.max(0, countdownEndTime - Date.now());
+          coopConn.send({
+            type: 'sync', mode: 'coop',
+            displayOrder: displayOrder,
+            settings: { shadows: shadowsEnabled, orderMode: coopSettings.orderMode, timerMs: coopSettings.timerMs, gens: Array.from(coopSettings.gens) },
+            coopRevealed: Array.from(coopRevealed),
+            elapsedMs: elapsedMs, countdownRemaining: countdownRem
+          });
+          hideDisconnectOverlay();
+        } else {
+          coopOnMessage(msg);
+        }
+      });
+      newConn.on('close', function() { if (coopActive) coopWaitReconnect(); });
+      newConn.on('error', function() {});
+    });
+  }
+
+  function coopRebuildFromSync(msg) {
+    coopSettings.shadows = msg.settings.shadows;
+    coopSettings.orderMode = msg.settings.orderMode;
+    coopSettings.timerMs = msg.settings.timerMs;
+    coopSettings.gens = new Set(msg.settings.gens);
+    shadowsEnabled = msg.settings.shadows;
+    displayOrder = msg.displayOrder;
+    coopRevealed = new Set(msg.coopRevealed);
+    coopFinishMe = false;
+    coopFinishOpponent = false;
+    elapsedMs = msg.elapsedMs;
+    foundSet = new Set();
+    completedFamilies = new Set();
+    completedRegions = new Set();
+
+    function render(data) {
+      dataSources['pokemon'] = data;
+      items = filterByGens(data, coopSettings.gens);
+      coopActive = true;
+      buildIndex();
+      $('coop-settings-bar').style.display = 'flex';
+      $input.style.display = '';
+      $input.value = '';
+      $input.disabled = false;
+      $input.placeholder = 'Type a Pokémon name…';
+      $timer.textContent = fmtTime(elapsedMs);
+      $foundCount.textContent = coopRevealed.size.toString();
+      $('total-count').textContent = items.length;
+      document.querySelector('.stats').style.display = '';
+
+      coopRenderGrid();
+
+      coopRevealed.forEach(function(idx) { coopRevealCard(idx); });
+      coopUpdateScore();
+      startTimer();
+      if (msg.countdownRemaining > 0) startCountdown(msg.countdownRemaining);
+      if (cycleFormsEnabled) startCycleForms();
+      $input.focus();
+      saveRoomSession('coop', coopRoomId, coopRole);
+    }
+    var cached = dataSources['pokemon'];
+    if (cached) render(cached);
+    else fetch('pokemon.json').then(function(r) { return r.json(); }).then(render);
   }
 
   // ── Tab switching ──
@@ -2820,8 +3104,8 @@ const Q = (function() {
     const subtitles = { pokemon: 'Regular Mode', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode' };
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = 'Type a Pokémon name…';
-    if (!isPoke) stopCycleForms();
-    else if (cycleFormsEnabled) startCycleForms();
+    if (!isPoke && !isMulti) stopCycleForms();
+    else if (cycleFormsEnabled && isPoke) startCycleForms();
     $('set-order-section').style.display = isMulti ? 'none' : '';
     $('set-gens-section').style.display = isPoke ? '' : 'none';
     $('set-sound').style.display = (isPoke || isCoop) ? '' : 'none';
@@ -3025,7 +3309,7 @@ const Q = (function() {
 
   $('btn-pause').addEventListener('click', togglePause);
   $('pause-overlay').addEventListener('click', function() {
-    if (!paused) return;
+    if (!paused || disconnectWaiting) return;
     if (currentTab === 'duel' || currentTab === 'coop') {
       multiTogglePause(currentTab);
     } else {
@@ -3033,13 +3317,25 @@ const Q = (function() {
     }
   });
   document.addEventListener('keydown', function(e) {
-    if (paused && e.key !== 'F5' && !e.ctrlKey && !e.metaKey) {
+    if (paused && !disconnectWaiting && e.key !== 'F5' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       if (currentTab === 'duel' || currentTab === 'coop') {
         multiTogglePause(currentTab);
       } else {
         togglePause();
       }
+    }
+  });
+
+  $('disconnect-quit-btn').addEventListener('click', function() {
+    if (currentTab === 'duel') {
+      duelActive = false;
+      duelCleanup();
+      switchTab('duel');
+    } else if (currentTab === 'coop') {
+      coopActive = false;
+      coopCleanup();
+      switchTab('coop');
     }
   });
   $('mode-slider').addEventListener('click', function(e) {
@@ -3231,13 +3527,138 @@ const Q = (function() {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
+  function attemptReconnect(session) {
+    var mode = session.mode;
+    var roomId = session.roomId;
+    var role = session.role;
+    var isHost = (role === 'blue' || role === 'host');
+    var otherPeerId = isHost ? roomId + '-2' : roomId;
+
+    currentTab = mode;
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === mode); });
+    var subtitles = { duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode' };
+    $('subtitle').textContent = subtitles[mode] || mode;
+    $('action-bar').style.display = 'none';
+    $('duel-settings-bar').style.display = 'none';
+    $('duel-sticky').style.display = 'none';
+    $('coop-settings-bar').style.display = 'none';
+    $('coop-sticky').style.display = 'none';
+    $('btn-history').style.display = 'none';
+    $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
+
+    var wrap = $('grid-wrap');
+    var modeLabel = mode === 'duel' ? '⚔️ Duel Mode' : '🤝 Co-Op Mode';
+    var statusId = 'reconn-status';
+    wrap.innerHTML = '<div class="duel-lobby"><h2>' + modeLabel + '</h2>' +
+      '<p>Reconnecting to room…</p>' +
+      '<div class="duel-status" id="' + statusId + '">Connecting to server…</div>' +
+      '<div style="margin-top:16px;"><button class="btn danger" id="reconn-cancel-btn" style="font-size:0.8rem;padding:6px 18px;">Cancel</button></div>' +
+      '</div>';
+
+    var cancelled = false;
+    var connected = false;
+    var retryInterval = null;
+    var retryTimeout = null;
+
+    var peer = new Peer({ config: duelIceConfig });
+    if (mode === 'duel') { duelPeer = peer; duelRole = role; duelRoomId = roomId; }
+    else { coopPeer = peer; coopRole = role; coopRoomId = roomId; }
+
+    function cleanup() {
+      cancelled = true;
+      if (retryInterval) clearInterval(retryInterval);
+      if (retryTimeout) clearTimeout(retryTimeout);
+      if (mode === 'duel') duelCleanup();
+      else coopCleanup();
+      switchTab(mode);
+    }
+
+    setTimeout(function() {
+      var cancelBtn = $('reconn-cancel-btn');
+      if (cancelBtn) cancelBtn.addEventListener('click', cleanup);
+    }, 0);
+
+    peer.on('open', function() {
+      if (cancelled) return;
+      $(statusId).textContent = 'Connected. Looking for the other player…';
+
+      function tryConnect() {
+        if (connected || cancelled || !peer || peer.destroyed) return;
+        try {
+          var conn = peer.connect(otherPeerId, { reliable: true });
+          conn.on('open', function() {
+            if (connected || cancelled) { try { conn.close(); } catch(e) {} return; }
+            connected = true;
+            if (retryInterval) clearInterval(retryInterval);
+            if (retryTimeout) clearTimeout(retryTimeout);
+            $(statusId).textContent = 'Connected! Syncing game state…';
+
+            if (mode === 'duel') {
+              duelConn = conn;
+              conn.on('data', function(msg) {
+                if (msg.type === 'sync') duelRebuildFromSync(msg);
+                else duelOnMessage(msg);
+              });
+              conn.on('close', function() { if (duelActive) duelWaitReconnect(); });
+            } else {
+              coopConn = conn;
+              conn.on('data', function(msg) {
+                if (msg.type === 'sync') coopRebuildFromSync(msg);
+                else coopOnMessage(msg);
+              });
+              conn.on('close', function() { if (coopActive) coopWaitReconnect(); });
+            }
+            conn.send({ type: 'rejoin', role: role });
+          });
+          conn.on('error', function() {});
+        } catch(e) {}
+      }
+
+      tryConnect();
+      retryInterval = setInterval(tryConnect, 3000);
+
+      retryTimeout = setTimeout(function() {
+        if (!connected && !cancelled) {
+          if (retryInterval) clearInterval(retryInterval);
+          $(statusId).textContent = 'Could not reconnect. The room may have expired.';
+          clearRoomSession();
+          var cancelBtn = $('reconn-cancel-btn');
+          if (cancelBtn) cancelBtn.textContent = 'Back to Lobby';
+        }
+      }, 30000);
+    });
+
+    peer.on('error', function(err) {
+      if (cancelled) return;
+      if (err.type === 'peer-unavailable') return;
+      $(statusId).textContent = 'Error: ' + err.type + '. ' + (err.message || '');
+    });
+
+    peer.on('disconnected', function() {
+      if (!cancelled) {
+        $(statusId).textContent = 'Lost connection to server. Reconnecting…';
+        try { peer.reconnect(); } catch(e) {}
+      }
+    });
+  }
+
   var urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('duel')) {
-    switchTab('duel');
-  } else if (urlParams.get('coop')) {
-    switchTab('coop');
+  var _roomSession = getRoomSession();
+  var _duelParam = urlParams.get('duel');
+  var _coopParam = urlParams.get('coop');
+
+  if (_roomSession && (_duelParam === _roomSession.roomId || _coopParam === _roomSession.roomId)) {
+    attemptReconnect(_roomSession);
   } else {
-    switchTab('pokemon');
+    if (_roomSession) clearRoomSession();
+    if (_duelParam) {
+      switchTab('duel');
+    } else if (_coopParam) {
+      switchTab('coop');
+    } else {
+      switchTab('pokemon');
+    }
   }
   if (cycleFormsEnabled) startCycleForms();
 
