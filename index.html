@@ -1538,13 +1538,13 @@ const Q = (function() {
   // ── Save / Load ──
 
   function saveKey() { return 'langquiz_' + currentTab; }
-  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens) })); }
+  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined })); }
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(saveKey()));
       if (d && d.f && d.f.length) {
         if (d.g) { var savedGens = new Set(d.g); if (savedGens.size !== selectedGens.size || ![...savedGens].every(g => selectedGens.has(g))) return false; }
-        foundSet = new Set(d.f); elapsedMs = d.e || 0; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
+        foundSet = new Set(d.f); elapsedMs = d.e || 0; givenUp = !!d.gu; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
       }
     } catch(e) {}
     return false;
@@ -1557,6 +1557,7 @@ const Q = (function() {
     if (!confirm('Give up? All remaining Pokémon will be revealed.')) return;
     givenUp = true; stopTimer(); $input.disabled = true;
     for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+    save();
     showModal(false);
   }
 
@@ -3194,6 +3195,7 @@ const Q = (function() {
       if (!confirm('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?')) return;
       givenUp = true; stopTimer(); $input.disabled = true;
       for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+      save();
       showModal(false);
     }
     var _preserveSession = null;
@@ -3315,8 +3317,14 @@ const Q = (function() {
           }
         }
       }
+      if (givenUp) {
+        $input.disabled = true;
+        for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+        showModal(false);
+      }
     }
-    updateUI(); displayHighscore(); $input.focus();
+    updateUI(); displayHighscore();
+    if (!givenUp) $input.focus();
   }
 
   // ── Input handler ──
