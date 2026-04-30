@@ -406,6 +406,44 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .coop-score { display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .coop-score .cs-team { color: #34d399; }
 .coop-score .cs-neutral { color: var(--text-dim); }
+
+/* ── Daily Mode ── */
+.daily-lobby { text-align: center; padding: 28px 20px 36px; max-width: 460px; margin: 0 auto; }
+.daily-lobby .dl-eyebrow { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.4px; margin-bottom: 6px; }
+.daily-lobby h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.01em; }
+.daily-lobby .dl-date { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 18px; }
+.daily-lobby .dl-streak-row { display: flex; justify-content: center; gap: 18px; margin-bottom: 18px; flex-wrap: wrap; }
+.daily-lobby .dl-stat { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; min-width: 90px; }
+.daily-lobby .dl-stat .dl-stat-num { font-size: 1.4rem; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-stat .dl-stat-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+.daily-lobby .dl-stat.dl-streak .dl-stat-num { color: #f59e0b; }
+.daily-lobby .btn.dl-play { font-size: 0.95rem; padding: 12px 32px; min-width: 220px; margin-top: 4px; }
+.daily-lobby .dl-completed-banner { background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05)); border: 1px solid rgba(34,197,94,0.4); border-radius: 12px; padding: 14px 18px; margin: 6px auto 14px; max-width: 380px; }
+.daily-lobby .dl-completed-banner .dl-cb-title { font-size: 0.95rem; font-weight: 800; color: #22c55e; margin-bottom: 4px; }
+.daily-lobby .dl-completed-banner .dl-cb-stat { font-size: 0.8rem; color: var(--text); }
+.daily-lobby .dl-countdown { font-size: 0.78rem; color: var(--text-dim); margin: 12px 0 4px; font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-countdown .dl-cd-val { color: var(--accent); font-weight: 700; }
+.daily-lobby .dl-history { margin-top: 22px; text-align: left; }
+.daily-lobby .dl-history h3 { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; text-align: center; }
+.daily-lobby .dl-hist-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 4px; font-size: 0.78rem; }
+.daily-lobby .dl-hist-row .dl-h-day { color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-hist-row .dl-h-score { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-hist-row .dl-h-time { color: var(--text-pinyin); font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-hist-row.dl-h-perfect { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.06); }
+.daily-lobby .dl-hist-row.dl-h-perfect .dl-h-score { color: #22c55e; }
+
+.daily-sticky { padding: 6px 0 4px; border-top: 1px solid var(--border); margin-top: 6px; }
+.daily-badge { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.78rem; color: var(--text-dim); }
+.daily-badge .db-num { color: var(--accent); font-weight: 800; }
+.daily-badge .db-streak { color: #f59e0b; font-weight: 700; }
+
+.daily-result-grid { font-family: 'SF Mono', Menlo, monospace; font-size: 1rem; line-height: 1.15; letter-spacing: 2px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0; user-select: all; white-space: pre; word-break: keep-all; }
+.daily-share-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.daily-share-row .btn { min-width: 130px; }
+.daily-share-toast { display: inline-block; margin-left: 8px; font-size: 0.72rem; color: #22c55e; opacity: 0; transition: opacity 0.2s; }
+.daily-share-toast.show { opacity: 1; }
+.daily-next { font-size: 0.78rem; color: var(--text-dim); margin-top: 14px; font-variant-numeric: tabular-nums; }
+.daily-next .dl-cd-val { color: var(--accent); font-weight: 700; }
 .card.coop-found { border-color: #34d399; box-shadow: 0 0 6px rgba(52,211,153,0.3); }
 .card.coop-found .poke-placeholder { display: none; }
 .card.coop-found .poke-sprite { filter: none; opacity: 1; position: static; }
@@ -430,6 +468,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
 <nav class="tab-bar">
   <button class="tab-btn active" data-tab="pokemon">Regular Mode</button>
+  <button class="tab-btn" data-tab="daily">🗓️ Daily</button>
   <button class="tab-btn" data-tab="duel">⚔️ Duel Mode</button>
   <button class="tab-btn" data-tab="coop">🤝 Co-Op</button>
 </nav>
@@ -505,6 +544,13 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="daily-sticky" id="daily-sticky" style="display:none;">
+    <div class="daily-badge" id="daily-badge">
+      <span>🗓️ Daily <span class="db-num" id="db-num">#0</span></span>
+      <span id="db-date" style="color:var(--text-dim);"></span>
+      <span id="db-streak-wrap" style="display:none;">· <span class="db-streak"><span id="db-streak">0</span>🔥</span></span>
     </div>
   </div>
   <div class="duel-sticky" id="duel-sticky" style="display:none;">
@@ -613,6 +659,23 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="modal-best"></p>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+  </div>
+</div>
+
+<div class="overlay" id="daily-result-overlay">
+  <div class="modal">
+    <h2 id="daily-result-title">Daily Complete!</h2>
+    <p id="daily-result-sub" style="margin-bottom:4px;">🗓️ Daily #0 · Today</p>
+    <div class="big" id="daily-result-score">0 / 0</div>
+    <p id="daily-result-time"></p>
+    <p id="daily-result-streak"></p>
+    <div class="daily-result-grid" id="daily-result-grid"></div>
+    <div class="daily-share-row">
+      <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
+      <button class="btn danger" id="daily-share-btn">🔗 Share</button>
+    </div>
+    <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
+    <button class="btn" id="daily-result-close" style="margin-top:14px;">Close</button>
   </div>
 </div>
 
@@ -1011,6 +1074,15 @@ const Q = (function() {
       const frag = document.createDocumentFragment();
       for (const idx of displayOrder) frag.appendChild(makeCard(idx));
       grid.appendChild(frag);
+    } else if (currentTab === 'daily') {
+      wrap.innerHTML = '';
+      wrap.classList.toggle('shadows-on', shadowsEnabled);
+      regionIndices = {};
+      for (const idx of displayOrder) { const r = items[idx].g; (regionIndices[r] ||= []).push(idx); }
+      const grid = document.createElement('div');
+      grid.className = 'region-grid';
+      for (const idx of displayOrder) grid.appendChild(makeCard(idx));
+      wrap.appendChild(grid);
     } else if (orderMode !== 'dex-gens') {
       wrap.innerHTML = '';
       wrap.classList.toggle('shadows-on', shadowsEnabled);
@@ -1578,6 +1650,14 @@ const Q = (function() {
   // ── Actions ──
 
   function giveUp() {
+    if (currentTab === 'daily') {
+      if (!dailyState.active) return;
+      if (!confirm('Give up the daily challenge? Remaining Pokémon will be revealed.')) return;
+      stopTimer(); $input.disabled = true;
+      for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+      dailyComplete(false);
+      return;
+    }
     if (givenUp) return;
     if (!confirm('Give up? All remaining Pokémon will be revealed.')) return;
     givenUp = true; stopTimer(); $input.disabled = true;
@@ -1587,6 +1667,14 @@ const Q = (function() {
   }
 
   function reset() {
+    if (currentTab === 'daily') {
+      if (dailyState.active && foundSet.size > 0 && !confirm('Exit the daily challenge? Your progress will be lost.')) return;
+      dailyState.active = false;
+      stopTimer(); timerRunning = false;
+      $('daily-result-overlay').classList.remove('active');
+      dailyShowLobby();
+      return;
+    }
     if (foundSet.size > 0 && !confirm('Reset? All progress will be lost.')) return;
     givenUp = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
@@ -2592,6 +2680,355 @@ const Q = (function() {
     else fetch('pokemon.json').then(function(r) { return r.json(); }).then(render);
   }
 
+  // ── Daily Mode ──
+
+  var DAILY_EPOCH = '2026-04-30'; // Daily #1 = this date
+  var DAILY_SIZE = 100; // pokemon per daily challenge
+  var DAILY_STORAGE_KEY = 'daily_results';
+
+  var dailyState = { active: false, dailyNum: 0, dateStr: '', completedSavedToday: false };
+  var dailyCountdownTimer = null;
+
+  function dailyTodayStr(d) {
+    d = d || new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  function dailyDateLabel(s) {
+    // s = "YYYY-MM-DD"
+    var parts = s.split('-');
+    var d = new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
+    return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+  }
+
+  function dailyDaysSinceEpoch(yyyymmdd) {
+    var a = DAILY_EPOCH.split('-'), b = yyyymmdd.split('-');
+    var d1 = Date.UTC(+a[0], +a[1] - 1, +a[2]);
+    var d2 = Date.UTC(+b[0], +b[1] - 1, +b[2]);
+    return Math.floor((d2 - d1) / 86400000);
+  }
+
+  function dailyNumberFor(yyyymmdd) {
+    return Math.max(1, dailyDaysSinceEpoch(yyyymmdd) + 1);
+  }
+
+  // mulberry32: small, fast, deterministic PRNG
+  function mulberry32(seed) {
+    return function() {
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function dailySeedFor(yyyymmdd) {
+    var s = 0;
+    for (var i = 0; i < yyyymmdd.length; i++) s = (s * 31 + yyyymmdd.charCodeAt(i)) | 0;
+    return s >>> 0;
+  }
+
+  function dailyShuffle(arr, rng) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  function dailyLoadResults() {
+    try {
+      var raw = localStorage.getItem(DAILY_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch(e) { return {}; }
+  }
+
+  function dailySaveResult(dateStr, result) {
+    var all = dailyLoadResults();
+    all[dateStr] = result;
+    try { localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(all)); } catch(e) {}
+  }
+
+  function dailyComputeStreak(allResults, todayStr) {
+    var streak = 0;
+    var d = new Date(todayStr.split('-')[0], parseInt(todayStr.split('-')[1], 10) - 1, todayStr.split('-')[2]);
+    // Today doesn't break streak if not yet played; we count back from yesterday if today is unplayed
+    if (!allResults[todayStr]) d.setDate(d.getDate() - 1);
+    while (true) {
+      var key = dailyTodayStr(d);
+      if (allResults[key] && allResults[key].score > 0) { streak++; d.setDate(d.getDate() - 1); }
+      else break;
+    }
+    return streak;
+  }
+
+  function dailyMsToMidnightLocal() {
+    var now = new Date();
+    var midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    return midnight - now;
+  }
+
+  function dailyFmtCountdown(ms) {
+    var s = Math.max(0, Math.floor(ms / 1000));
+    var h = Math.floor(s / 3600);
+    var m = Math.floor((s % 3600) / 60);
+    var sec = s % 60;
+    var pad = function(n) { return String(n).padStart(2, '0'); };
+    return pad(h) + ':' + pad(m) + ':' + pad(sec);
+  }
+
+  function dailyStartCountdown(elId, onTick) {
+    if (dailyCountdownTimer) { clearInterval(dailyCountdownTimer); dailyCountdownTimer = null; }
+    var tick = function() {
+      var ms = dailyMsToMidnightLocal();
+      var el = $(elId);
+      if (el) el.textContent = dailyFmtCountdown(ms);
+      if (onTick) onTick(ms);
+      if (ms <= 0) { clearInterval(dailyCountdownTimer); dailyCountdownTimer = null; }
+    };
+    tick();
+    dailyCountdownTimer = setInterval(tick, 1000);
+  }
+
+  function dailyStopCountdown() {
+    if (dailyCountdownTimer) { clearInterval(dailyCountdownTimer); dailyCountdownTimer = null; }
+  }
+
+  function dailyShowLobby() {
+    $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
+    $('action-bar').style.display = 'none';
+    $('daily-sticky').style.display = 'none';
+
+    var todayStr = dailyTodayStr();
+    var dailyNum = dailyNumberFor(todayStr);
+    dailyState.dateStr = todayStr;
+    dailyState.dailyNum = dailyNum;
+
+    var all = dailyLoadResults();
+    var todays = all[todayStr];
+    var streak = dailyComputeStreak(all, todayStr);
+
+    var wrap = $('grid-wrap');
+    wrap.innerHTML = '';
+    wrap.classList.remove('shadows-on');
+
+    var lobby = document.createElement('div');
+    lobby.className = 'daily-lobby';
+    lobby.innerHTML =
+      '<div class="dl-eyebrow">Today\'s Challenge</div>' +
+      '<h2>🗓️ Daily #' + dailyNum + '</h2>' +
+      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · ' + DAILY_SIZE + ' Pokémon</div>' +
+      '<div class="dl-streak-row">' +
+        '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + streak + '🔥</div><div class="dl-stat-label">Streak</div></div>' +
+        '<div class="dl-stat"><div class="dl-stat-num">' + Object.keys(all).length + '</div><div class="dl-stat-label">Played</div></div>' +
+      '</div>' +
+      (todays
+        ? '<div class="dl-completed-banner">' +
+            '<div class="dl-cb-title">' + (todays.score === todays.total ? '🏆 Perfect run!' : '✓ Completed') + '</div>' +
+            '<div class="dl-cb-stat">' + todays.score + ' / ' + todays.total + ' · ' + fmtTime(todays.time) + '</div>' +
+          '</div>' +
+          '<button class="btn dl-play" id="dl-play-btn">View Result</button>' +
+          '<button class="btn dl-play" id="dl-replay-btn" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text-dim);">Replay (unranked)</button>'
+        : '<button class="btn danger dl-play" id="dl-play-btn">Play Today\'s Challenge</button>') +
+      '<div class="dl-countdown">Next daily in <span class="dl-cd-val" id="dl-countdown">--:--:--</span></div>' +
+      '<div class="dl-history" id="dl-history"></div>';
+    wrap.appendChild(lobby);
+
+    dailyRenderHistory(all, todayStr);
+    dailyStartCountdown('dl-countdown');
+
+    var btn = $('dl-play-btn');
+    if (btn) btn.addEventListener('click', function() {
+      if (todays) { dailyShowResult(todays, false); }
+      else { dailyStart(false); }
+    });
+    var replay = $('dl-replay-btn');
+    if (replay) replay.addEventListener('click', function() { dailyStart(true); });
+  }
+
+  function dailyRenderHistory(all, todayStr) {
+    var hist = $('dl-history');
+    if (!hist) return;
+    var keys = Object.keys(all).filter(function(k) { return k !== todayStr; }).sort().reverse().slice(0, 7);
+    if (keys.length === 0) { hist.innerHTML = ''; return; }
+    var rows = '<h3>Last 7 Days</h3>';
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i], r = all[k];
+      var perfect = r.score === r.total;
+      rows += '<div class="dl-hist-row' + (perfect ? ' dl-h-perfect' : '') + '">' +
+              '<span class="dl-h-day">#' + dailyNumberFor(k) + ' · ' + dailyDateLabel(k) + '</span>' +
+              '<span class="dl-h-score">' + r.score + '/' + r.total + (perfect ? ' 🏆' : '') + '</span>' +
+              '<span class="dl-h-time">' + fmtTime(r.time) + '</span>' +
+              '</div>';
+    }
+    hist.innerHTML = rows;
+  }
+
+  function dailyStart(unranked) {
+    dailyStopCountdown();
+    var todayStr = dailyTodayStr();
+    dailyState.dateStr = todayStr;
+    dailyState.dailyNum = dailyNumberFor(todayStr);
+    dailyState.active = true;
+    dailyState.unranked = !!unranked;
+    dailyState.completedSavedToday = false;
+
+    var seed = dailySeedFor(todayStr);
+    var rng = mulberry32(seed);
+
+    var startWith = function(data) {
+      dataSources['pokemon'] = data;
+      // Daily uses all gens, deterministically subset to DAILY_SIZE
+      var allGens = new Set([1,2,3,4,5,6,7,8,9]);
+      items = filterByGens(data, allGens);
+      // Deterministic subset & shuffle
+      var indices = items.map(function(_, i) { return i; });
+      var shuffled = dailyShuffle(indices, rng);
+      var pickCount = Math.min(DAILY_SIZE, items.length);
+      var picked = shuffled.slice(0, pickCount).sort(function(a, b) { return a - b; });
+      items = picked.map(function(i) { return items[i]; });
+      // Display order: re-shuffle the picked items for grid layout
+      displayOrder = dailyShuffle(items.map(function(_, i) { return i; }), mulberry32(seed ^ 0x9E3779B9));
+
+      foundSet = new Set();
+      elapsedMs = 0;
+      completedFamilies = new Set();
+      completedRegions = new Set();
+      givenUp = false;
+      buildIndex();
+
+      $input.style.display = '';
+      $input.value = '';
+      $input.disabled = false;
+      $input.placeholder = 'Type a Pokémon name…';
+      $timer.textContent = '00:00';
+      $foundCount.textContent = '0';
+      $('total-count').textContent = items.length;
+      document.querySelector('.stats').style.display = '';
+      $('action-bar').style.display = '';
+      $('daily-sticky').style.display = '';
+
+      $('db-num').textContent = '#' + dailyState.dailyNum;
+      $('db-date').textContent = dailyDateLabel(todayStr) + (dailyState.unranked ? ' · Unranked' : '');
+      var allResults = dailyLoadResults();
+      var streak = dailyComputeStreak(allResults, todayStr);
+      if (streak > 0 && !dailyState.unranked) {
+        $('db-streak-wrap').style.display = '';
+        $('db-streak').textContent = streak;
+      } else {
+        $('db-streak-wrap').style.display = 'none';
+      }
+
+      renderGrid();
+      $input.focus();
+    };
+
+    var cached = dataSources['pokemon'];
+    if (cached) startWith(cached);
+    else {
+      $('grid-wrap').innerHTML = '<div class="loading">Loading…</div>';
+      fetch('pokemon.json').then(function(r) { return r.json(); }).then(startWith);
+    }
+  }
+
+  function dailyComplete(won) {
+    if (!dailyState.active) return;
+    dailyState.active = false;
+    stopTimer();
+    $input.disabled = true;
+
+    var todayStr = dailyState.dateStr;
+    var result = {
+      score: foundSet.size,
+      total: items.length,
+      time: elapsedMs,
+      gaveUp: !won,
+      dailyNum: dailyState.dailyNum,
+      order: displayOrder.slice(),
+      foundOrder: Array.from(foundSet) // by reveal order would be ideal; we use index order which is fine for grid
+    };
+
+    if (!dailyState.unranked) {
+      var existing = dailyLoadResults()[todayStr];
+      // Only save if no prior result, or prior was given up and this one did better
+      if (!existing || (existing.gaveUp && !result.gaveUp) || (existing.score < result.score)) {
+        dailySaveResult(todayStr, result);
+      }
+      dailyState.completedSavedToday = true;
+    }
+
+    dailyShowResult(result, !!won);
+  }
+
+  function dailyShowResult(result, justWon) {
+    var todayStr = dailyState.dateStr;
+    var dailyNum = result.dailyNum || dailyState.dailyNum;
+    var perfect = result.score === result.total;
+    var titleEl = $('daily-result-title');
+    if (titleEl) {
+      titleEl.textContent = perfect ? '🏆 Perfect Run!' : (justWon ? 'Daily Complete!' : 'Daily Result');
+      titleEl.className = perfect || justWon ? 'win' : 'lose';
+    }
+    $('daily-result-sub').textContent = '🗓️ Daily #' + dailyNum + ' · ' + dailyDateLabel(todayStr);
+    $('daily-result-score').textContent = result.score + ' / ' + result.total;
+    $('daily-result-time').textContent = 'in ' + fmtTime(result.time);
+    var allResults = dailyLoadResults();
+    var streak = dailyComputeStreak(allResults, todayStr);
+    $('daily-result-streak').textContent = streak > 0 ? ('🔥 ' + streak + '-day streak') : '';
+
+    var grid = dailyBuildShareGrid(result);
+    $('daily-result-grid').textContent = grid;
+
+    dailyStartCountdown('daily-result-countdown');
+    $('daily-result-overlay').classList.add('active');
+  }
+
+  function dailyBuildShareGrid(result) {
+    var rowsCount = 5;
+    var cols = Math.ceil(result.total / rowsCount);
+    var foundIdx = new Set();
+    if (result.foundOrder) for (var i = 0; i < result.foundOrder.length; i++) foundIdx.add(result.foundOrder[i]);
+    // Use displayOrder if available so rows mirror the in-game grid layout
+    var order = result.order && result.order.length === result.total ? result.order : null;
+    var lines = [];
+    for (var r = 0; r < rowsCount; r++) {
+      var line = '';
+      for (var c = 0; c < cols; c++) {
+        var idx = r * cols + c;
+        if (idx >= result.total) break;
+        var realIdx = order ? order[idx] : idx;
+        line += foundIdx.has(realIdx) ? '🟩' : '⬛';
+      }
+      lines.push(line);
+    }
+    return lines.join('\n');
+  }
+
+  function dailyShareText(result) {
+    var dailyNum = result.dailyNum || dailyState.dailyNum;
+    var pct = Math.round((result.score / result.total) * 100);
+    var header = 'NameEmAll · Daily #' + dailyNum;
+    var stats = result.score + '/' + result.total + ' (' + pct + '%) in ' + fmtTime(result.time);
+    var grid = dailyBuildShareGrid(result);
+    var url = 'https://rnd247.github.io/pokequiz/';
+    return header + '\n' + stats + '\n\n' + grid + '\n\n' + url;
+  }
+
+  function dailyExitToLobby() {
+    $('daily-result-overlay').classList.remove('active');
+    dailyStopCountdown();
+    if (currentTab === 'daily') {
+      dailyShowLobby();
+    }
+  }
+
+  // ── End Daily Mode ──
+
   // ── Co-Op Mode ──
 
   var coopRoomId = null;
@@ -3263,6 +3700,10 @@ const Q = (function() {
       save();
       showModal(false);
     }
+    if (currentTab === 'daily' && dailyState.active && foundSet.size > 0) {
+      if (!confirm('Leaving will end your daily challenge. Continue?')) return;
+      dailyComplete(false);
+    }
     var _preserveSession = null;
     if ((currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)) {
       if (!confirm('You\'ll disconnect from the room. The other player can wait for you to reconnect.')) return;
@@ -3272,6 +3713,7 @@ const Q = (function() {
     if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
     if (currentTab === 'duel') duelCleanup();
     if (currentTab === 'coop') coopCleanup();
+    if (currentTab === 'daily') { dailyState.active = false; dailyStopCountdown(); $('daily-result-overlay').classList.remove('active'); $('daily-sticky').style.display = 'none'; }
     if (_preserveSession) saveRoomSession(_preserveSession.mode, _preserveSession.roomId, _preserveSession.role);
     $input.style.display = '';
     $input.disabled = false;
@@ -3286,17 +3728,19 @@ const Q = (function() {
     const isPoke = tab === 'pokemon';
     const isDuel = tab === 'duel';
     const isCoop = tab === 'coop';
+    const isDaily = tab === 'daily';
     const isMulti = isDuel || isCoop;
-    const subtitles = { pokemon: 'Regular Mode', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode' };
+    const isPokeLike = isPoke || isDaily;
+    const subtitles = { pokemon: 'Regular Mode', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode', daily: '🗓️ Daily Challenge' };
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = 'Type a Pokémon name…';
-    if (!isPoke && !isMulti) stopCycleForms();
-    else if (cycleFormsEnabled && isPoke) startCycleForms();
-    $('set-order-section').style.display = isMulti ? 'none' : '';
+    if (!isPokeLike && !isMulti) stopCycleForms();
+    else if (cycleFormsEnabled && isPokeLike) startCycleForms();
+    $('set-order-section').style.display = (isMulti || isDaily) ? 'none' : '';
     $('set-gens-section').style.display = isPoke ? '' : 'none';
-    $('set-sound').style.display = (isPoke || isCoop) ? '' : 'none';
+    $('set-sound').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-shadows').style.display = isPoke ? '' : 'none';
-    $('set-cycle').style.display = (isPoke || isCoop) ? '' : 'none';
+    $('set-cycle').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-scroll').style.display = isMulti ? 'none' : '';
     $('set-typebg').style.display = isMulti ? 'none' : '';
 
@@ -3305,16 +3749,17 @@ const Q = (function() {
     $('duel-sticky').style.display = 'none';
     $('coop-settings-bar').style.display = 'none';
     $('coop-sticky').style.display = 'none';
-    $('btn-history').style.display = isDuel ? 'none' : '';
+    $('daily-sticky').style.display = 'none';
+    $('btn-history').style.display = (isDuel || isDaily) ? 'none' : '';
 
-    if ((isPoke || isMulti) && !pokeFamilies) {
+    if ((isPokeLike || isMulti) && !pokeFamilies) {
       fetch('families.json').then(r => r.json()).then(fams => {
         pokeFamilies = fams;
         pokeFamilyMap = {};
         fams.forEach((fam, i) => fam.m.forEach(pid => { pokeFamilyMap[pid] = i; }));
       }).catch(() => {});
     }
-    if ((isPoke || isMulti) && !pokeForms) {
+    if ((isPokeLike || isMulti) && !pokeForms) {
       fetch('pokemon_forms.json').then(r => r.json()).then(data => {
         pokeForms = data;
         refreshTypeBgs();
@@ -3326,7 +3771,7 @@ const Q = (function() {
         }
       }).catch(() => {});
     }
-    if ((isPoke || isMulti) && !pokeDetails) {
+    if ((isPokeLike || isMulti) && !pokeDetails) {
       fetch('pokemon_details.json').then(r => r.json()).then(data => {
         pokeDetails = data;
         refreshTypeBgs();
@@ -3340,6 +3785,11 @@ const Q = (function() {
 
     if (isCoop) {
       coopShowLobby();
+      return;
+    }
+
+    if (isDaily) {
+      dailyShowLobby();
       return;
     }
 
@@ -3408,18 +3858,23 @@ const Q = (function() {
       return;
     }
 
+    var isDailyTab = currentTab === 'daily';
     const matches = findAllMatches(val);
     if (matches.length > 0) {
       for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
-      if (currentTab === 'pokemon' && soundEnabled) playCry(items[matches[0]].id);
+      if ((currentTab === 'pokemon' || isDailyTab) && soundEnabled) playCry(items[matches[0]].id);
       if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
       flashInput(); updateUI(); this.value = '';
-      save();
+      if (!isDailyTab) save();
       if (autoScrollEnabled) setTimeout(function() {
         var card = $('c' + matches[0]);
         if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 50);
-      if (foundSet.size === items.length) { stopTimer(); showModal(true); }
+      if (foundSet.size === items.length) {
+        stopTimer();
+        if (isDailyTab) dailyComplete(true);
+        else showModal(true);
+      }
     } else if (val.length > 0) {
       var q = val.toLowerCase().trim();
       var dupeIndices = keyToIndices[q];
@@ -3533,6 +3988,47 @@ const Q = (function() {
 
   $('duel-decided-keep').addEventListener('click', duelDecidedKeepPlaying);
   $('duel-decided-call').addEventListener('click', duelDecidedCallIt);
+
+  // ── Daily result modal wiring ──
+  $('daily-result-close').addEventListener('click', function() { dailyExitToLobby(); });
+  $('daily-copy-btn').addEventListener('click', function() {
+    var existing = dailyLoadResults()[dailyState.dateStr];
+    var result = existing || { score: foundSet.size, total: items.length, time: elapsedMs, dailyNum: dailyState.dailyNum, order: displayOrder.slice(), foundOrder: Array.from(foundSet) };
+    var text = dailyShareText(result);
+    var btn = this;
+    var done = function() {
+      var orig = btn.textContent;
+      btn.textContent = '✓ Copied!';
+      setTimeout(function() { btn.textContent = orig; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function() {
+        prompt('Copy your result:', text);
+      });
+    } else {
+      prompt('Copy your result:', text);
+    }
+  });
+  $('daily-share-btn').addEventListener('click', function() {
+    var existing = dailyLoadResults()[dailyState.dateStr];
+    var result = existing || { score: foundSet.size, total: items.length, time: elapsedMs, dailyNum: dailyState.dailyNum, order: displayOrder.slice(), foundOrder: Array.from(foundSet) };
+    var text = dailyShareText(result);
+    if (navigator.share) {
+      navigator.share({
+        title: 'NameEmAll Daily #' + (result.dailyNum || dailyState.dailyNum),
+        text: text
+      }).catch(function() {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() {
+        var btn = $('daily-share-btn');
+        var orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      });
+    } else {
+      prompt('Copy your result:', text);
+    }
+  });
   $('mode-slider').addEventListener('click', function(e) {
     var btn = e.target.closest('button');
     if (!btn || !btn.dataset.order) return;
@@ -3853,7 +4349,7 @@ const Q = (function() {
       switchTab('coop');
     } else {
       var _hash = window.location.hash.replace('#', '');
-      switchTab((_hash === 'duel' || _hash === 'coop') ? _hash : 'pokemon');
+      switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily') ? _hash : 'pokemon');
     }
   }
   if (cycleFormsEnabled) startCycleForms();
