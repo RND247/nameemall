@@ -602,6 +602,17 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </div>
 
+<div class="overlay" id="duel-decided-overlay">
+  <div class="modal">
+    <h2 id="duel-decided-title">Match decided!</h2>
+    <p id="duel-decided-msg">One player has already secured the win.</p>
+    <div class="big" id="duel-decided-score">🔵 0 — 0 🔴</div>
+    <p>Keep playing for fun, or call it?</p>
+    <button class="btn" id="duel-decided-keep">Keep Playing</button>
+    <button class="btn danger" id="duel-decided-call">Call It</button>
+  </div>
+</div>
+
 <footer>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
@@ -1859,6 +1870,7 @@ const Q = (function() {
   let duelOwner = {}; // idx -> 'blue'|'red' (first revealer)
   let duelFinishMe = false;
   let duelFinishOpponent = false;
+  let duelDecisionShown = false;
 
   function genRoomCode() {
     var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -1875,6 +1887,8 @@ const Q = (function() {
     duelActive = false;
     duelFinishMe = false;
     duelFinishOpponent = false;
+    duelDecisionShown = false;
+    var _dec = $('duel-decided-overlay'); if (_dec) _dec.classList.remove('active');
     stopHeartbeat();
     if (duelConnTimeout) { clearTimeout(duelConnTimeout); duelConnTimeout = null; }
     if (duelConn) { try { duelConn.close(); } catch(e){} duelConn = null; }
@@ -2153,6 +2167,8 @@ const Q = (function() {
     duelOwner = {};
     duelFinishMe = false;
     duelFinishOpponent = false;
+    duelDecisionShown = false;
+    var _dec = $('duel-decided-overlay'); if (_dec) _dec.classList.remove('active');
     foundSet = new Set();
     elapsedMs = 0;
     buildIndex();
@@ -2257,6 +2273,38 @@ const Q = (function() {
         if (rc_el) rc_el.textContent = (regionCounts[REGION_ORDER[ri]] || 0) + '/' + rc_el.textContent.split('/')[1];
       }
     }
+    duelCheckDecided(bc, rc);
+  }
+
+  function duelCheckDecided(bc, rc) {
+    if (!duelActive || duelDecisionShown || duelFinishMe || duelFinishOpponent) return;
+    var total = items.length;
+    if (total <= 0) return;
+    // A player has guaranteed the win when their score exceeds half the total
+    // (the opponent + remaining unrevealed cards can no longer catch up).
+    var leaderScore = Math.max(bc, rc);
+    if (leaderScore * 2 <= total) return;
+    duelDecisionShown = true;
+    var leader = bc > rc ? 'blue' : 'red';
+    var iAmLeader = duelRole === leader;
+    var title = iAmLeader ? "You've already won!" : 'Match decided!';
+    var msg = iAmLeader
+      ? "Your opponent can't catch up anymore."
+      : "Your opponent has already secured the win.";
+    var t = $('duel-decided-title'); if (t) t.textContent = title;
+    var m = $('duel-decided-msg'); if (m) m.textContent = msg;
+    var s = $('duel-decided-score'); if (s) s.textContent = '🔵 ' + bc + ' — ' + rc + ' 🔴';
+    var ov = $('duel-decided-overlay'); if (ov) ov.classList.add('active');
+  }
+
+  function duelDecidedKeepPlaying() {
+    var ov = $('duel-decided-overlay'); if (ov) ov.classList.remove('active');
+    if ($input && !$input.disabled) $input.focus();
+  }
+
+  function duelDecidedCallIt() {
+    var ov = $('duel-decided-overlay'); if (ov) ov.classList.remove('active');
+    if (duelActive && !duelFinishMe) duelFinish();
   }
 
   function duelRevealCard(idx, owner, isMe) {
@@ -2410,6 +2458,7 @@ const Q = (function() {
     $input.disabled = true;
     var invite = $('duel-finish-invite');
     if (invite) invite.classList.remove('show');
+    var _dec = $('duel-decided-overlay'); if (_dec) _dec.classList.remove('active');
     for (var i = 0; i < items.length; i++) {
       var c = $('c' + i);
       if (!c) continue;
@@ -2489,6 +2538,8 @@ const Q = (function() {
     duelMyRevealed = new Set();
     duelFinishMe = false;
     duelFinishOpponent = false;
+    duelDecisionShown = false;
+    var _dec = $('duel-decided-overlay'); if (_dec) _dec.classList.remove('active');
     elapsedMs = msg.elapsedMs;
     foundSet = new Set();
 
@@ -3465,6 +3516,9 @@ const Q = (function() {
       switchTab('coop');
     }
   });
+
+  $('duel-decided-keep').addEventListener('click', duelDecidedKeepPlaying);
+  $('duel-decided-call').addEventListener('click', duelDecidedCallIt);
   $('mode-slider').addEventListener('click', function(e) {
     var btn = e.target.closest('button');
     if (!btn || !btn.dataset.order) return;
