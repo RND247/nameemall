@@ -433,6 +433,8 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-hist-row.dl-h-perfect .dl-h-score { color: #22c55e; }
 
 .daily-sticky { padding: 6px 0 4px; border-top: 1px solid var(--border); margin-top: 6px; }
+/* Daily silhouettes: hide pokedex number on unrevealed cards so it's a pure visual challenge */
+.daily-board .card.unrevealed .rank { display: none; }
 .daily-badge { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.78rem; color: var(--text-dim); }
 .daily-badge .db-num { color: var(--accent); font-weight: 800; }
 .daily-badge .db-streak { color: #f59e0b; font-weight: 700; }
@@ -1076,7 +1078,8 @@ const Q = (function() {
       grid.appendChild(frag);
     } else if (currentTab === 'daily') {
       wrap.innerHTML = '';
-      wrap.classList.toggle('shadows-on', shadowsEnabled);
+      wrap.classList.add('shadows-on');
+      wrap.classList.add('daily-board');
       regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (regionIndices[r] ||= []).push(idx); }
       const grid = document.createElement('div');
@@ -1085,6 +1088,7 @@ const Q = (function() {
       wrap.appendChild(grid);
     } else if (orderMode !== 'dex-gens') {
       wrap.innerHTML = '';
+      wrap.classList.remove('daily-board');
       wrap.classList.toggle('shadows-on', shadowsEnabled);
       regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (regionIndices[r] ||= []).push(idx); }
@@ -1094,6 +1098,7 @@ const Q = (function() {
       wrap.appendChild(grid);
     } else {
       wrap.innerHTML = '';
+      wrap.classList.remove('daily-board');
       wrap.classList.toggle('shadows-on', shadowsEnabled);
       const groups = {};
       regionIndices = {};
@@ -2816,13 +2821,14 @@ const Q = (function() {
     var wrap = $('grid-wrap');
     wrap.innerHTML = '';
     wrap.classList.remove('shadows-on');
+    wrap.classList.remove('daily-board');
 
     var lobby = document.createElement('div');
     lobby.className = 'daily-lobby';
     lobby.innerHTML =
       '<div class="dl-eyebrow">Today\'s Challenge</div>' +
       '<h2>🗓️ Daily #' + dailyNum + '</h2>' +
-      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · ' + DAILY_SIZE + ' Pokémon</div>' +
+      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · ' + DAILY_SIZE + ' silhouettes 🔍</div>' +
       '<div class="dl-streak-row">' +
         '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + streak + '🔥</div><div class="dl-stat-label">Streak</div></div>' +
         '<div class="dl-stat"><div class="dl-stat-num">' + Object.keys(all).length + '</div><div class="dl-stat-label">Played</div></div>' +
