@@ -432,7 +432,30 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-hist-row.dl-h-perfect { border-color: rgba(34,197,94,0.4); background: rgba(34,197,94,0.06); }
 .daily-lobby .dl-hist-row.dl-h-perfect .dl-h-score { color: #22c55e; }
 
+.daily-lobby .dl-modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 4px 0 6px; }
+.daily-lobby .dl-mode-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 8px; }
+.daily-lobby .dl-mode-card.dl-mode-done { border-color: rgba(34,197,94,0.4); background: linear-gradient(135deg, rgba(34,197,94,0.10), rgba(34,197,94,0.02)); }
+.daily-lobby .dl-mode-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.daily-lobby .dl-mode-name { font-size: 1.05rem; font-weight: 800; }
+.daily-lobby .dl-mode-size { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; }
+.daily-lobby .dl-mode-blurb { font-size: 0.78rem; color: var(--text-dim); min-height: 2.2em; }
+.daily-lobby .dl-mode-result { font-size: 0.85rem; font-weight: 700; color: #22c55e; font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-mode-card .btn.dl-play { min-width: 0; width: 100%; padding: 9px 12px; font-size: 0.85rem; margin-top: 0; }
+.daily-lobby .dl-mode-card .btn.dl-replay { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+.daily-lobby .dl-hist-row .dl-h-scores { display: flex; gap: 10px; }
+.daily-lobby .dl-hist-row .dl-h-none { color: var(--text-dim); font-weight: 400; }
+.daily-lobby .dl-hist-row .dl-h-perfect-score { color: #22c55e; }
+.daily-done-bar { display: flex; justify-content: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .daily-sticky { padding: 6px 0 4px; border-top: 1px solid var(--border); margin-top: 6px; }
+/* Daily board: centered grid matching the share layout (Mini 5 across, Midi 6 across) */
+.daily-board { max-width: 760px; }
+.daily-board .region-grid { grid-template-columns: repeat(var(--daily-cols, 5), minmax(0, 120px)); justify-content: center; gap: 8px; padding: 8px 0 16px; }
+.daily-board .card { border-radius: 10px; border-width: 2px; padding: 4px; }
+.daily-board .card .poke-sprite { width: 72%; height: auto; max-width: 84px; aspect-ratio: 1; }
+.daily-board .card.found .poke-name, .daily-board .card.missed .poke-name { font-size: clamp(0.5rem, 1.6vw, 0.72rem); text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.daily-board .card.found .poke-gen, .daily-board .card.missed .poke-gen { font-size: clamp(0.42rem, 1.2vw, 0.55rem); }
+.daily-board .card.last-revealed { border-width: 2px !important; box-shadow: 0 0 10px 2px rgba(250,204,21,0.5); }
+@media (max-width: 480px) { .daily-board .region-grid { gap: 5px; } .daily-board .card { border-radius: 8px; padding: 2px; } }
 /* Daily silhouettes: hide pokedex number on unrevealed cards so it's a pure visual challenge */
 .daily-board .card.unrevealed .rank { display: none; }
 .daily-badge { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.78rem; color: var(--text-dim); }
@@ -564,6 +587,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <span id="db-date" style="color:var(--text-dim);"></span>
       <span id="db-streak-wrap" style="display:none;">· <span class="db-streak"><span id="db-streak">0</span>🔥</span></span>
     </div>
+    <div class="daily-done-bar" id="daily-done-bar" style="display:none;">
+      <button class="btn" id="daily-view-result-btn">📊 View Result</button>
+      <button class="btn" id="daily-back-btn">← Back to Daily</button>
+    </div>
   </div>
   <div class="duel-sticky" id="duel-sticky" style="display:none;">
     <div class="duel-score" id="duel-score-bar">
@@ -687,7 +714,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <button class="btn danger" id="daily-share-btn">🔗 Share</button>
     </div>
     <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
-    <button class="btn" id="daily-result-close" style="margin-top:14px;">Close</button>
+    <div class="daily-share-row" style="margin-top:14px;">
+      <button class="btn" id="daily-result-close">👀 See Board</button>
+      <button class="btn" id="daily-result-lobby">← Back to Daily</button>
+    </div>
   </div>
 </div>
 
@@ -695,7 +725,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <div class="modal">
     <h2 id="duel-decided-title">Match decided!</h2>
     <p id="duel-decided-msg">One player has already secured the win.</p>
-    <div class="big" id="duel-decided-score">🔵 0 — 0 🔴</div>
+    <div class="big" id="duel-decided-score">🔵 0 - 0 🔴</div>
     <p>Keep playing for fun, or call it?</p>
     <button class="btn" id="duel-decided-keep">Keep Playing</button>
     <button class="btn danger" id="duel-decided-call">Call It</button>
@@ -817,7 +847,7 @@ const Q = (function() {
   function toastDupe(w) {
     var el = document.createElement('div');
     el.className = 'toast toast-dupe';
-    el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n + ' — already found!';
+    el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n + ' - already found!';
     $toasts.appendChild(el);
     setTimeout(function() { el.remove(); }, 2000);
   }
@@ -1090,6 +1120,7 @@ const Q = (function() {
       wrap.innerHTML = '';
       wrap.classList.add('shadows-on');
       wrap.classList.add('daily-board');
+      wrap.style.setProperty('--daily-cols', items.length <= 10 ? items.length : (items.length % 5 === 0 && items.length / 5 <= 10 ? items.length / 5 : 8));
       regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (regionIndices[r] ||= []).push(idx); }
       const grid = document.createElement('div');
@@ -1288,7 +1319,7 @@ const Q = (function() {
       c.style.background = 'var(--bg-card-found)';
       c.querySelector('.pinyin').textContent = w.p;
       c.querySelector('.english').textContent = displayMeaning(w);
-      c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
+      c.title = w.t + ' (' + w.p + ') - ' + fullMeaning(w);
     } else {
       c.querySelector('.poke-sprite').src = w.s;
       c.querySelector('.poke-name').textContent = w.n;
@@ -1306,7 +1337,7 @@ const Q = (function() {
       c.style.background = 'var(--bg-card-found)';
       c.querySelector('.pinyin').textContent = w.p;
       c.querySelector('.english').textContent = displayMeaning(w);
-      c.title = w.t + ' (' + w.p + ') — ' + fullMeaning(w);
+      c.title = w.t + ' (' + w.p + ') - ' + fullMeaning(w);
     } else {
       c.querySelector('.poke-sprite').src = w.s;
       c.querySelector('.poke-name').textContent = w.n;
@@ -1320,7 +1351,7 @@ const Q = (function() {
     const el = document.createElement('div');
     el.className = 'toast';
     if (currentTab === 'mandarin') {
-      el.innerHTML = '<span class="tc">' + w.t + '</span> ' + w.p + ' — ' + displayMeaning(w);
+      el.innerHTML = '<span class="tc">' + w.t + '</span> ' + w.p + ' - ' + displayMeaning(w);
     } else {
       el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n;
     }
@@ -1345,13 +1376,13 @@ const Q = (function() {
   }
 
   var FAMILY_PUNS = {
-    1:"That's pokemon BULBA-sics right there!",4:"You're on FIRE with that one!",7:"Shell yeah, you did it!",10:"That evolution was BUTTER than expected!",13:"Bee-lieve it or not, you got 'em all!",16:"That's a PIDGEY amount of effort for a great result!",19:"Rat race? More like rat ACE!",21:"No FEAR-ow when you're on a roll!",23:"That family really knows how to COBRA-te!",172:"Pika-CHOOSE you!",27:"You really DUG deep for that one!",29:"She's the QUEEN of poison types!",32:"Long live the KING!",173:"That was FAIRy easy, wasn't it?",37:"Nine out of NINE tales told!",174:"Don't sleep on this family... oh wait.",41:"That evolution was CROBAT-ically insane!",43:"You really let this family BLOOM!",46:"That's a fungi to be around... wait, wrong kingdom.",48:"Moth-er of all completions!",50:"You really DUG TRIO the competition!",52:"That's PURR-fection!",54:"Finally using that PSY-duck brain!",56:"You went APE on that one!",58:"That's LEGENDARY... wait, it's not, but still!",60:"POLI-tically speaking, that was impressive.",63:"ABRA-cadabra, family complete!",66:"MACHAMP-ion of evolution families!",69:"You BELLSPROUT of nowhere with that one!",72:"TENTACOOL move completing that family!",74:"That was ROCK solid!",77:"You're on a RAPIDASH to finish!",79:"SLOW and steady wins the race!",81:"That family is MAGNETICALLY attractive!",83:"That was a FARFETCH'D achievement... or was it?",84:"DODuO or die, and you chose wisely!",86:"That was SEEL-iously good!",88:"GRIME time is over!",90:"You really came out of your SHELL!",92:"That was GHAST-ly good!",95:"STEEL yourself — that was impressive!",96:"Don't SLEEP on this accomplishment!",98:"That was KING-ler of completions!",100:"That was an ELECTR-ifying finish!",102:"EGG-cellent work!",104:"You really BONE'd up on your knowledge!",236:"HITMON-COMPLETE!",108:"You LICKED that challenge!",109:"That completion was a GAS!",111:"You really CHARGED through that one!",440:"That made me HAPPINY inside!",114:"You're all TANGLED up in success!",116:"KING of the sea!",118:"You're the real GOLDEN catch!",120:"STAR-mie, you're amazing!",439:"That was no MIME-stake!",123:"That was a real CUT above!",238:"You SMOOCH-ed that challenge!",239:"That was an ELECTR-ifying trio!",240:"You're on FIRE... MAGMAR-velous!",129:"From useless to GYARA-t! What a glow-up!",133:"EEVEE-ryone is impressed!",137:"PORYGON... PORYGONE... PORY-DONE!",138:"That's an ancient achievement — OMASTAR-ding!",140:"You really KABUTOP-ped that off!",446:"That family is a big SNORE... just kidding!",147:"DRAGON these families to completion!",152:"MEGA-nium effort right there!",155:"You're on FIRE — TYPHLO-sion style!",158:"CHOMP CHOMP, family done!",161:"You FUR-ET out every last one!",163:"That was a real HOOT!",165:"LED-ian the way to completion!",167:"Caught in the web of SUCCESS!",170:"That family really LIGHTS up the deep!",175:"TOGE-ther at last!",177:"XATU-ally nailed it!",179:"That was SHOCKINGLY good!",298:"MARA-LL you need is skill!",438:"Stop FAKING it... oh wait, you're legit!",187:"You JUMPED right through that one!",190:"That completion was HANDY!",191:"You really let your skills BLOOM!",193:"You MEGA-evolved that knowledge!",194:"WOOP WOOP! Family complete!",198:"That was a DARK-ly impressive feat!",200:"Truly MIS-leading how easy you made that look!",360:"WOBBUF-FET you do it again?!",203:"That was no ordinary GIRAFFE-air!",204:"You FORT-ified that completion!",206:"DUN-DUN-DUNNN... SPARCE-ly anyone gets these!",207:"You really SOARED with that one!",209:"That's GRANBULL-ar confidence!",211:"That was a POINTED victory!",215:"WEAVILE-y done!",216:"You're BEAR-y good at this!",218:"That was slow and MAGMA-nificent!",220:"ICE work completing that family!",222:"CORAL-ations on completing that one!",223:"You OCTO-pied yourself well!",458:"That was a MANTA-stic completion!",228:"HOUND-ed every last one down!",231:"ELEPHAN-tastic work!",234:"STANT-ler? More like STAR-ler!",246:"You TYRANITAR-ically dominated that!",252:"TREE-mendous work!",255:"That was BLAZIKEN hot!",258:"I HERD you like Mudkipz... all of them!",261:"You showed real MIGHT-yena!",263:"No more ZIGZAG-ging — straight to completion!",265:"That was a BEAUTIFUL-ly complex family!",270:"That was LUDI-crously good!",273:"You really SHIFTED into gear!",276:"You SWELLOW-ed that family whole!",278:"PELIP-perfect!",280:"You GUARDED that family well!",283:"MASQUER-ading as a genius, clearly!",285:"SHROOM for improvement? Nah, that was perfect!",287:"Stop SLAKING and celebrate!",290:"That was a real NINJA move!",293:"That was EXPLOUD-ingly good!",296:"You HARIYAMA-naged it perfectly!",299:"Your sense of direction is PROBO-passing all tests!",300:"That was PURR-fectly done!",304:"That was an AGGRON-izing wait but worth it!",307:"MEDI-tate on that success!",309:"That was ELECTRIC!",406:"Stop and smell the ROSES!",316:"You SWALLOWED that challenge whole!",318:"That was SHARP!",320:"WAIL of a good time!",322:"That was a HUMPING good completion... NUMEL pun intended!",325:"Stop SPOINK-ing around and celebrate!",328:"You really FLEW through that one!",331:"That was a PRICKLY family to catch!",333:"You're ALTARIA-natively talented!",339:"You WHIS-ked through that family!",341:"CRAW-ling to the finish? Nah, you sprinted!",343:"That was perfectly BALANCED!",345:"That's an ancient LILY of a family!",347:"That was ARMALDO-rable!",349:"From ugly duckling to MILOTIC beauty!",353:"That family is BANETTE from your list!",355:"That was DUSK-ily impressive!",433:"That family CHIMED in perfectly!",361:"That was ICE COLD efficiency!",363:"You SEALED the deal!",366:"PEARL of a completion!",371:"You SALA-MENCED through it!",374:"That was META-l as heck!",
-    387:"TURT-ally awesome!",390:"That was a BLAZING finish!",393:"You EMPOLEON-ed your way through!",396:"That was a STAR performance!",399:"BIDOOF the GOAT!",401:"That was music to my ears — KRICKE-TUNE!",403:"That was LUXUR-iously done!",408:"You really RAMMED through that!",410:"Great DEFENSE with that family!",412:"That family has many FORMS of excellence!",415:"BEE-utiful completion!",418:"You FLOATED through that!",420:"CHERRY on top!",422:"That was GASTRO-nomically good!",425:"You DRIFTED right through it!",427:"HOP to it — oh wait, you already did!",431:"That was PURR-etty impressive!",434:"That family really STUNK... in a good way!",436:"BRONZE medal? No, GOLD!",443:"You CHOMPED through that family!",447:"The AURA is strong with this one!",449:"That was HIPPO-critically good!",451:"You STUNG that completion!",453:"That was a real CROAK of genius!",456:"That family is LUMINOUS!",459:"That was SNOW joke — well done!",
-    495:"SERPENTine path to victory!",498:"You're EMBOAR-rassingly good!",501:"That was OTTER-ly amazing!",504:"You were WATCHING for that one!",506:"That was STOUT-hearted!",509:"You PURR-loined that victory!",511:"That was a SAGE decision!",513:"You SIMMERED to perfection!",515:"POUR it on!",517:"A DREAM come true!",519:"That was UN-FEZANT-ly easy for you!",522:"That was a STRIKING completion!",524:"You really ROCKED that!",527:"You BAT that out of the park!",529:"You DRILLED through that family!",532:"That took some serious MUSCLE!",535:"That was SEISMIC-ally good!",540:"You WEAVED through that one!",543:"That was VENOM-ously efficient!",546:"That was WHIMSICAL!",548:"LILLI-gant or not, you earned it!",550:"You went against the CURRENT!",551:"Later, KROOKODILE — family done!",554:"You were on FIRE... literally!",557:"You really CRUSHED it!",559:"That was SCRAPPY!",562:"That was an ancient victory UNMASKED!",564:"TURTL-y awesome!",566:"You really TOOK FLIGHT!",568:"One trainer's TRASH is another's treasure!",570:"That was an ILLUSION of difficulty!",572:"That was CLEAN!",574:"GOTH to love it!",577:"That was a REUNI-fying moment!",580:"SWAN-derful!",582:"That was SWEET!",585:"Oh DEER, you did it!",588:"You CAVALIER-ly completed that!",590:"There's a FUNGUS AMONG-USS... and you found them!",592:"That was JELLY good!",595:"That was SHOCKING-ly tiny but mighty!",597:"IRON will right there!",599:"All the GEARS clicked into place!",602:"That was EEL-ectrifying!",605:"That was out of this WORLD!",607:"That family really LIT up!",610:"You AXE-d that challenge!",613:"That was BEAR-ably cool!",616:"You ACCELERAT-ed through that!",619:"That was MARTIAL arts mastery!",622:"That was GO-LURK-ious!",624:"You played that like a CHESS master — CHECKMATE!",627:"That took BRAV-ery!",629:"That was a VULTURE-ous victory!",633:"HYDRA-powered completion!",636:"That was a VOLCANIC achievement!",
-    650:"You CHESNAUGHT-ed that family!",653:"That was FOX-y!",656:"NINJA-like precision!",659:"You DIG it!",661:"That was a FLAME-boyant finish!",664:"That was BEAUTIFUL-ly scattered!",667:"That was ROAR-some!",669:"That was FLORA-l perfection!",672:"You really GOAT it done!",674:"That was PANDEMONIUM!",677:"That was PSY-ber cool!",679:"That was a SHARP achievement!",682:"That was AROMATIC!",684:"SWEET victory!",686:"You turned that family UPSIDE DOWN!",688:"That was a BARNACLE-busting finish!",690:"That was DRAGON-ly impressive!",692:"CLAW-some completion!",694:"That was ELECTR-ifyingly cool!",696:"That was TYRANT-ically good!",698:"That was an ICE AGE achievement!",704:"That was GOOD-ra — no, GREAT!",708:"That was TREE-mendous!",710:"SPOOKY good!",712:"That was AVALANCHE-level dominance!",714:"That was NOISY but victorious!",
-    722:"OWL be darned, you did it!",725:"That was a real CAT-astrophe of awesomeness!",728:"SEAL of approval!",731:"That was TOUCAN-do attitude!",734:"You GUMSHOE-d your way through!",736:"That was a real BUZZ!",739:"CRAB-tastic!",742:"That was BEE-utiful!",744:"You really ROCKED that, RUFF!",747:"That was TOXIC-ally good!",749:"You MUDDLED through like a champ!",751:"You SPUN a web of success!",753:"That was MANTIS-level focus!",755:"That MUSHROOM-ed into a great completion!",757:"That was FIRE AND POISON — deadly combo!",759:"BEAR HUG for that completion!",761:"That was ROYALLY done!",767:"Not so WIMPY after all!",769:"SAND-castle of achievements!",772:"NULL and void? More like FULL and COMPLETE!",782:"That was KOMMO-tion worthy!",789:"That was COSMICALLY good!",803:"That was ULTRA impressive!",808:"That was METAL as heck!",
+    1:"That's pokemon BULBA-sics right there!",4:"You're on FIRE with that one!",7:"Shell yeah, you did it!",10:"That evolution was BUTTER than expected!",13:"Bee-lieve it or not, you got 'em all!",16:"That's a PIDGEY amount of effort for a great result!",19:"Rat race? More like rat ACE!",21:"No FEAR-ow when you're on a roll!",23:"That family really knows how to COBRA-te!",172:"Pika-CHOOSE you!",27:"You really DUG deep for that one!",29:"She's the QUEEN of poison types!",32:"Long live the KING!",173:"That was FAIRy easy, wasn't it?",37:"Nine out of NINE tales told!",174:"Don't sleep on this family... oh wait.",41:"That evolution was CROBAT-ically insane!",43:"You really let this family BLOOM!",46:"That's a fungi to be around... wait, wrong kingdom.",48:"Moth-er of all completions!",50:"You really DUG TRIO the competition!",52:"That's PURR-fection!",54:"Finally using that PSY-duck brain!",56:"You went APE on that one!",58:"That's LEGENDARY... wait, it's not, but still!",60:"POLI-tically speaking, that was impressive.",63:"ABRA-cadabra, family complete!",66:"MACHAMP-ion of evolution families!",69:"You BELLSPROUT of nowhere with that one!",72:"TENTACOOL move completing that family!",74:"That was ROCK solid!",77:"You're on a RAPIDASH to finish!",79:"SLOW and steady wins the race!",81:"That family is MAGNETICALLY attractive!",83:"That was a FARFETCH'D achievement... or was it?",84:"DODuO or die, and you chose wisely!",86:"That was SEEL-iously good!",88:"GRIME time is over!",90:"You really came out of your SHELL!",92:"That was GHAST-ly good!",95:"STEEL yourself, that was impressive!",96:"Don't SLEEP on this accomplishment!",98:"That was KING-ler of completions!",100:"That was an ELECTR-ifying finish!",102:"EGG-cellent work!",104:"You really BONE'd up on your knowledge!",236:"HITMON-COMPLETE!",108:"You LICKED that challenge!",109:"That completion was a GAS!",111:"You really CHARGED through that one!",440:"That made me HAPPINY inside!",114:"You're all TANGLED up in success!",116:"KING of the sea!",118:"You're the real GOLDEN catch!",120:"STAR-mie, you're amazing!",439:"That was no MIME-stake!",123:"That was a real CUT above!",238:"You SMOOCH-ed that challenge!",239:"That was an ELECTR-ifying trio!",240:"You're on FIRE... MAGMAR-velous!",129:"From useless to GYARA-t! What a glow-up!",133:"EEVEE-ryone is impressed!",137:"PORYGON... PORYGONE... PORY-DONE!",138:"That's an ancient achievement, OMASTAR-ding!",140:"You really KABUTOP-ped that off!",446:"That family is a big SNORE... just kidding!",147:"DRAGON these families to completion!",152:"MEGA-nium effort right there!",155:"You're on FIRE, TYPHLO-sion style!",158:"CHOMP CHOMP, family done!",161:"You FUR-ET out every last one!",163:"That was a real HOOT!",165:"LED-ian the way to completion!",167:"Caught in the web of SUCCESS!",170:"That family really LIGHTS up the deep!",175:"TOGE-ther at last!",177:"XATU-ally nailed it!",179:"That was SHOCKINGLY good!",298:"MARA-LL you need is skill!",438:"Stop FAKING it... oh wait, you're legit!",187:"You JUMPED right through that one!",190:"That completion was HANDY!",191:"You really let your skills BLOOM!",193:"You MEGA-evolved that knowledge!",194:"WOOP WOOP! Family complete!",198:"That was a DARK-ly impressive feat!",200:"Truly MIS-leading how easy you made that look!",360:"WOBBUF-FET you do it again?!",203:"That was no ordinary GIRAFFE-air!",204:"You FORT-ified that completion!",206:"DUN-DUN-DUNNN... SPARCE-ly anyone gets these!",207:"You really SOARED with that one!",209:"That's GRANBULL-ar confidence!",211:"That was a POINTED victory!",215:"WEAVILE-y done!",216:"You're BEAR-y good at this!",218:"That was slow and MAGMA-nificent!",220:"ICE work completing that family!",222:"CORAL-ations on completing that one!",223:"You OCTO-pied yourself well!",458:"That was a MANTA-stic completion!",228:"HOUND-ed every last one down!",231:"ELEPHAN-tastic work!",234:"STANT-ler? More like STAR-ler!",246:"You TYRANITAR-ically dominated that!",252:"TREE-mendous work!",255:"That was BLAZIKEN hot!",258:"I HERD you like Mudkipz... all of them!",261:"You showed real MIGHT-yena!",263:"No more ZIGZAG-ging, straight to completion!",265:"That was a BEAUTIFUL-ly complex family!",270:"That was LUDI-crously good!",273:"You really SHIFTED into gear!",276:"You SWELLOW-ed that family whole!",278:"PELIP-perfect!",280:"You GUARDED that family well!",283:"MASQUER-ading as a genius, clearly!",285:"SHROOM for improvement? Nah, that was perfect!",287:"Stop SLAKING and celebrate!",290:"That was a real NINJA move!",293:"That was EXPLOUD-ingly good!",296:"You HARIYAMA-naged it perfectly!",299:"Your sense of direction is PROBO-passing all tests!",300:"That was PURR-fectly done!",304:"That was an AGGRON-izing wait but worth it!",307:"MEDI-tate on that success!",309:"That was ELECTRIC!",406:"Stop and smell the ROSES!",316:"You SWALLOWED that challenge whole!",318:"That was SHARP!",320:"WAIL of a good time!",322:"That was a HUMPING good completion... NUMEL pun intended!",325:"Stop SPOINK-ing around and celebrate!",328:"You really FLEW through that one!",331:"That was a PRICKLY family to catch!",333:"You're ALTARIA-natively talented!",339:"You WHIS-ked through that family!",341:"CRAW-ling to the finish? Nah, you sprinted!",343:"That was perfectly BALANCED!",345:"That's an ancient LILY of a family!",347:"That was ARMALDO-rable!",349:"From ugly duckling to MILOTIC beauty!",353:"That family is BANETTE from your list!",355:"That was DUSK-ily impressive!",433:"That family CHIMED in perfectly!",361:"That was ICE COLD efficiency!",363:"You SEALED the deal!",366:"PEARL of a completion!",371:"You SALA-MENCED through it!",374:"That was META-l as heck!",
+    387:"TURT-ally awesome!",390:"That was a BLAZING finish!",393:"You EMPOLEON-ed your way through!",396:"That was a STAR performance!",399:"BIDOOF the GOAT!",401:"That was music to my ears, KRICKE-TUNE!",403:"That was LUXUR-iously done!",408:"You really RAMMED through that!",410:"Great DEFENSE with that family!",412:"That family has many FORMS of excellence!",415:"BEE-utiful completion!",418:"You FLOATED through that!",420:"CHERRY on top!",422:"That was GASTRO-nomically good!",425:"You DRIFTED right through it!",427:"HOP to it, oh wait, you already did!",431:"That was PURR-etty impressive!",434:"That family really STUNK... in a good way!",436:"BRONZE medal? No, GOLD!",443:"You CHOMPED through that family!",447:"The AURA is strong with this one!",449:"That was HIPPO-critically good!",451:"You STUNG that completion!",453:"That was a real CROAK of genius!",456:"That family is LUMINOUS!",459:"That was SNOW joke, well done!",
+    495:"SERPENTine path to victory!",498:"You're EMBOAR-rassingly good!",501:"That was OTTER-ly amazing!",504:"You were WATCHING for that one!",506:"That was STOUT-hearted!",509:"You PURR-loined that victory!",511:"That was a SAGE decision!",513:"You SIMMERED to perfection!",515:"POUR it on!",517:"A DREAM come true!",519:"That was UN-FEZANT-ly easy for you!",522:"That was a STRIKING completion!",524:"You really ROCKED that!",527:"You BAT that out of the park!",529:"You DRILLED through that family!",532:"That took some serious MUSCLE!",535:"That was SEISMIC-ally good!",540:"You WEAVED through that one!",543:"That was VENOM-ously efficient!",546:"That was WHIMSICAL!",548:"LILLI-gant or not, you earned it!",550:"You went against the CURRENT!",551:"Later, KROOKODILE, family done!",554:"You were on FIRE... literally!",557:"You really CRUSHED it!",559:"That was SCRAPPY!",562:"That was an ancient victory UNMASKED!",564:"TURTL-y awesome!",566:"You really TOOK FLIGHT!",568:"One trainer's TRASH is another's treasure!",570:"That was an ILLUSION of difficulty!",572:"That was CLEAN!",574:"GOTH to love it!",577:"That was a REUNI-fying moment!",580:"SWAN-derful!",582:"That was SWEET!",585:"Oh DEER, you did it!",588:"You CAVALIER-ly completed that!",590:"There's a FUNGUS AMONG-USS... and you found them!",592:"That was JELLY good!",595:"That was SHOCKING-ly tiny but mighty!",597:"IRON will right there!",599:"All the GEARS clicked into place!",602:"That was EEL-ectrifying!",605:"That was out of this WORLD!",607:"That family really LIT up!",610:"You AXE-d that challenge!",613:"That was BEAR-ably cool!",616:"You ACCELERAT-ed through that!",619:"That was MARTIAL arts mastery!",622:"That was GO-LURK-ious!",624:"You played that like a CHESS master, CHECKMATE!",627:"That took BRAV-ery!",629:"That was a VULTURE-ous victory!",633:"HYDRA-powered completion!",636:"That was a VOLCANIC achievement!",
+    650:"You CHESNAUGHT-ed that family!",653:"That was FOX-y!",656:"NINJA-like precision!",659:"You DIG it!",661:"That was a FLAME-boyant finish!",664:"That was BEAUTIFUL-ly scattered!",667:"That was ROAR-some!",669:"That was FLORA-l perfection!",672:"You really GOAT it done!",674:"That was PANDEMONIUM!",677:"That was PSY-ber cool!",679:"That was a SHARP achievement!",682:"That was AROMATIC!",684:"SWEET victory!",686:"You turned that family UPSIDE DOWN!",688:"That was a BARNACLE-busting finish!",690:"That was DRAGON-ly impressive!",692:"CLAW-some completion!",694:"That was ELECTR-ifyingly cool!",696:"That was TYRANT-ically good!",698:"That was an ICE AGE achievement!",704:"That was GOOD-ra, no, GREAT!",708:"That was TREE-mendous!",710:"SPOOKY good!",712:"That was AVALANCHE-level dominance!",714:"That was NOISY but victorious!",
+    722:"OWL be darned, you did it!",725:"That was a real CAT-astrophe of awesomeness!",728:"SEAL of approval!",731:"That was TOUCAN-do attitude!",734:"You GUMSHOE-d your way through!",736:"That was a real BUZZ!",739:"CRAB-tastic!",742:"That was BEE-utiful!",744:"You really ROCKED that, RUFF!",747:"That was TOXIC-ally good!",749:"You MUDDLED through like a champ!",751:"You SPUN a web of success!",753:"That was MANTIS-level focus!",755:"That MUSHROOM-ed into a great completion!",757:"That was FIRE AND POISON, deadly combo!",759:"BEAR HUG for that completion!",761:"That was ROYALLY done!",767:"Not so WIMPY after all!",769:"SAND-castle of achievements!",772:"NULL and void? More like FULL and COMPLETE!",782:"That was KOMMO-tion worthy!",789:"That was COSMICALLY good!",803:"That was ULTRA impressive!",808:"That was METAL as heck!",
     810:"You really DRUMMED up that family!",813:"That was a real KICK!",816:"SPY-der sense? More like INTEL-ligence!",819:"You were GREEDY for that completion!",821:"That was KNIGHT-ly!",824:"That was ORBEE-tally good!",827:"You THIEV-ed all the glory!",829:"That BLOSSOM-ed nicely!",831:"EWE did it!",833:"You took a real BITE out of that!",835:"That was BOLT-ingly fast!",837:"That was COAL-ossal!",840:"That family is the APPLE of my eye!",843:"That was SNAKE-y good!",846:"That was FAST as an arrow!",848:"That was TOXIC-ally awesome!",850:"That was FIRE with a hundred legs!",852:"You GRAPPL-ed with that family and won!",854:"TEA-riffic completion!",856:"That was ENCHANT-ing!",859:"That was GRIM-ly satisfying!",868:"That was the CREAM of the crop!",872:"That was FROST-ily elegant!",878:"You showed COPPER-ation!",884:"That was STEEL-ar!",885:"That was a GHASTLY fast completion... DRAGAPULT speed!",891:"That took real MARTIAL arts mastery!",
-    906:"That was MEOW-gnificent!",909:"That was FIRE-CROC-king good!",912:"That was QUACK-tastic!",915:"No more being a LECHONK — that was lean and mean!",917:"You SPUN a web of victory!",919:"You really BUGGED the competition!",921:"That was PAW-sitively electric!",924:"That was a MOUSE-terpiece!",926:"That was a real TREAT — like DACHSBUN!",928:"OLIVE that family is complete!",932:"You really SALT-ed away that victory!",935:"That was a CHAR-ming completion!",938:"That was a BRIGHT idea!",940:"WATT a completion!",942:"That was BOSS!",944:"You really PAINTED that family!",946:"That TUMBLE-d into place!",948:"That was a real FUNGI find!",951:"That was SPICY!",953:"That really ROLLED into place!",955:"That was PSY-chedelic!",957:"TINK-ering paid off!",960:"You WIGGLED your way to victory!",963:"That was a FLIPPING good completion!",965:"You really REVVED up for that!",969:"That was a GEM of a family!",971:"That was GRAVE-ly impressive!",974:"That was a WHALE of a completion!",996:"That was ICE COLD domination!",999:"That was worth its weight in GHOLDENGO!",1012:"Another TEA-rrific completion!"
+    906:"That was MEOW-gnificent!",909:"That was FIRE-CROC-king good!",912:"That was QUACK-tastic!",915:"No more being a LECHONK, that was lean and mean!",917:"You SPUN a web of victory!",919:"You really BUGGED the competition!",921:"That was PAW-sitively electric!",924:"That was a MOUSE-terpiece!",926:"That was a real TREAT, like DACHSBUN!",928:"OLIVE that family is complete!",932:"You really SALT-ed away that victory!",935:"That was a CHAR-ming completion!",938:"That was a BRIGHT idea!",940:"WATT a completion!",942:"That was BOSS!",944:"You really PAINTED that family!",946:"That TUMBLE-d into place!",948:"That was a real FUNGI find!",951:"That was SPICY!",953:"That really ROLLED into place!",955:"That was PSY-chedelic!",957:"TINK-ering paid off!",960:"You WIGGLED your way to victory!",963:"That was a FLIPPING good completion!",965:"You really REVVED up for that!",969:"That was a GEM of a family!",971:"That was GRAVE-ly impressive!",974:"That was a WHALE of a completion!",996:"That was ICE COLD domination!",999:"That was worth its weight in GHOLDENGO!",1012:"Another TEA-rrific completion!"
   };
 
   function familyToast(family) {
@@ -1686,8 +1717,7 @@ const Q = (function() {
       if (dailyState.active && foundSet.size > 0 && !confirm('Exit the daily challenge? Your progress will be lost.')) return;
       dailyState.active = false;
       stopTimer(); timerRunning = false;
-      $('daily-result-overlay').classList.remove('active');
-      dailyShowLobby();
+      dailyExitToLobby();
       return;
     }
     if (foundSet.size > 0 && !confirm('Reset? All progress will be lost.')) return;
@@ -2213,7 +2243,7 @@ const Q = (function() {
       clearTimeout(duelConnTimeout);
       if (err.type === 'peer-unavailable') return;
       if (!duelActive) {
-        $('duel-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+        $('duel-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
         $('duel-create-btn').style.display = '';
         $('duel-create-btn').disabled = false;
         $('duel-create-btn').textContent = 'Create Duel';
@@ -2261,7 +2291,7 @@ const Q = (function() {
         setTimeout(function() { duelJoin(hostId); }, 2000);
         return;
       }
-      $('duel-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+      $('duel-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
     });
     duelPeer.on('disconnected', function() {
       if (!duelActive) {
@@ -2410,7 +2440,7 @@ const Q = (function() {
       : "Your opponent has already secured the win.";
     var t = $('duel-decided-title'); if (t) t.textContent = title;
     var m = $('duel-decided-msg'); if (m) m.textContent = msg;
-    var s = $('duel-decided-score'); if (s) s.textContent = '🔵 ' + bc + ' — ' + rc + ' 🔴';
+    var s = $('duel-decided-score'); if (s) s.textContent = '🔵 ' + bc + ' - ' + rc + ' 🔴';
     var ov = $('duel-decided-overlay'); if (ov) ov.classList.add('active');
   }
 
@@ -2603,7 +2633,7 @@ const Q = (function() {
     var myColor = duelRole === 'blue' ? 'Blue' : 'Red';
     var result = winner === 'Tie' ? "It's a tie!" : (winner === myColor ? 'You win!' : 'You lose!');
     $('duel-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">' + result +
-      ' — 🔵 ' + bc + ' vs ' + rc + ' 🔴</div>';
+      ' - 🔵 ' + bc + ' vs ' + rc + ' 🔴</div>';
   }
 
   function duelShowStatus(msg) {
@@ -2698,11 +2728,18 @@ const Q = (function() {
   // ── Daily Mode ──
 
   var DAILY_EPOCH = '2026-04-30'; // Daily #1 = this date
-  var DAILY_SIZE = 100; // pokemon per daily challenge
-  var DAILY_STORAGE_KEY = 'daily_results';
+  var DAILY_MODES = {
+    mini: { key: 'mini', label: 'Mini', size: 5,  icon: '⚡', blurb: 'Quick 5, perfect for a coffee break' },
+    midi: { key: 'midi', label: 'Midi', size: 30, icon: '🎯', blurb: '30 silhouettes for a real test' }
+  };
+  var DAILY_MODE_ORDER = ['mini', 'midi'];
+  var DAILY_STORAGE_KEY = 'daily_results_v2';   // { 'YYYY-MM-DD': { mini: result, midi: result } }
+  var DAILY_LEGACY_KEY = 'daily_results';       // pre-v1.4 single 100-Pokémon daily (kept for streaks)
 
-  var dailyState = { active: false, dailyNum: 0, dateStr: '', completedSavedToday: false };
+  var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, lastResult: null };
   var dailyCountdownTimer = null;
+
+  function dailyModeCfg(mode) { return DAILY_MODES[mode] || DAILY_MODES.mini; }
 
   function dailyTodayStr(d) {
     d = d || new Date();
@@ -2740,9 +2777,11 @@ const Q = (function() {
     };
   }
 
-  function dailySeedFor(yyyymmdd) {
+  // Each mode gets its own seed so Mini isn't just the first 5 of Midi
+  function dailySeedFor(yyyymmdd, mode) {
+    var str = yyyymmdd + ':' + mode;
     var s = 0;
-    for (var i = 0; i < yyyymmdd.length; i++) s = (s * 31 + yyyymmdd.charCodeAt(i)) | 0;
+    for (var i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) | 0;
     return s >>> 0;
   }
 
@@ -2755,29 +2794,52 @@ const Q = (function() {
     return a;
   }
 
-  function dailyLoadResults() {
+  function dailyLoadJSON(key) {
     try {
-      var raw = localStorage.getItem(DAILY_STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
+      var raw = localStorage.getItem(key);
+      var v = raw ? JSON.parse(raw) : {};
+      return v && typeof v === 'object' ? v : {};
     } catch(e) { return {}; }
   }
 
-  function dailySaveResult(dateStr, result) {
+  function dailyLoadResults() { return dailyLoadJSON(DAILY_STORAGE_KEY); }
+  function dailyLoadLegacy() { return dailyLoadJSON(DAILY_LEGACY_KEY); }
+
+  function dailyGetResult(dateStr, mode) {
+    var day = dailyLoadResults()[dateStr];
+    return day && day[mode] ? day[mode] : null;
+  }
+
+  function dailySaveResult(dateStr, mode, result) {
     var all = dailyLoadResults();
-    all[dateStr] = result;
+    all[dateStr] = all[dateStr] || {};
+    all[dateStr][mode] = result;
     try { localStorage.setItem(DAILY_STORAGE_KEY, JSON.stringify(all)); } catch(e) {}
   }
 
-  function dailyComputeStreak(allResults, todayStr) {
+  // A mode's day counts toward its streak only if every Pokémon was named (giving up resets it)
+  function dailyIsSuccess(r) { return !!(r && !r.gaveUp && r.score === r.total); }
+
+  function dailyDaySucceeded(all, key, mode) {
+    return dailyIsSuccess(all[key] && all[key][mode]);
+  }
+
+  function dailyPlayedDays(all, legacy) {
+    var keys = new Set(Object.keys(legacy));
+    Object.keys(all).forEach(function(k) { keys.add(k); });
+    return keys.size;
+  }
+
+  // Per-mode streak: consecutive successful days ending today (or yesterday, if today isn't played yet)
+  function dailyComputeStreak(todayStr, mode) {
+    var all = dailyLoadResults();
     var streak = 0;
-    var d = new Date(todayStr.split('-')[0], parseInt(todayStr.split('-')[1], 10) - 1, todayStr.split('-')[2]);
-    // Today doesn't break streak if not yet played; we count back from yesterday if today is unplayed
-    if (!allResults[todayStr]) d.setDate(d.getDate() - 1);
-    while (true) {
-      var key = dailyTodayStr(d);
-      if (allResults[key] && allResults[key].score > 0) { streak++; d.setDate(d.getDate() - 1); }
-      else break;
-    }
+    var p = todayStr.split('-');
+    var d = new Date(p[0], parseInt(p[1], 10) - 1, p[2]);
+    var today = all[todayStr] && all[todayStr][mode];
+    if (today && !dailyIsSuccess(today)) return 0; // gave up / missed some today → streak broken
+    if (!today) d.setDate(d.getDate() - 1);
+    while (dailyDaySucceeded(all, dailyTodayStr(d), mode)) { streak++; d.setDate(d.getDate() - 1); }
     return streak;
   }
 
@@ -2813,11 +2875,20 @@ const Q = (function() {
     if (dailyCountdownTimer) { clearInterval(dailyCountdownTimer); dailyCountdownTimer = null; }
   }
 
+  function dailySetDoneBar(show) {
+    $('daily-done-bar').style.display = show ? '' : 'none';
+    $('btn-give-up').style.display = show ? 'none' : '';
+    $('btn-pause').style.display = show ? 'none' : '';
+  }
+
   function dailyShowLobby() {
     $input.style.display = 'none';
     document.querySelector('.stats').style.display = 'none';
     $('action-bar').style.display = 'none';
     $('daily-sticky').style.display = 'none';
+    dailySetDoneBar(false);
+    dailyState.active = false;
+    dailyState.finished = false;
 
     var todayStr = dailyTodayStr();
     var dailyNum = dailyNumberFor(todayStr);
@@ -2825,94 +2896,122 @@ const Q = (function() {
     dailyState.dailyNum = dailyNum;
 
     var all = dailyLoadResults();
-    var todays = all[todayStr];
-    var streak = dailyComputeStreak(all, todayStr);
+    var legacy = dailyLoadLegacy();
+    var today = all[todayStr] || {};
 
     var wrap = $('grid-wrap');
     wrap.innerHTML = '';
     wrap.classList.remove('shadows-on');
     wrap.classList.remove('daily-board');
 
+    var cards = '';
+    DAILY_MODE_ORDER.forEach(function(mode) {
+      var cfg = DAILY_MODES[mode];
+      var r = today[mode];
+      var perfect = r && r.score === r.total;
+      cards +=
+        '<div class="dl-mode-card' + (r ? ' dl-mode-done' : '') + (perfect ? ' dl-mode-perfect' : '') + '">' +
+          '<div class="dl-mode-head"><span class="dl-mode-name">' + cfg.icon + ' ' + cfg.label + '</span>' +
+            '<span class="dl-mode-size">' + cfg.size + ' Pokémon</span></div>' +
+          (r
+            ? '<div class="dl-mode-result">' + (perfect ? '🏆 ' : (r.gaveUp ? '🏳️ ' : '✓ ')) + r.score + ' / ' + r.total + ' · ' + fmtTime(r.time) + '</div>' +
+              '<button class="btn dl-play" data-dl-view="' + mode + '">View Result</button>' +
+              '<button class="btn dl-play dl-replay" data-dl-replay="' + mode + '">Replay (unranked)</button>'
+            : '<div class="dl-mode-blurb">' + cfg.blurb + '</div>' +
+              '<button class="btn danger dl-play" data-dl-play="' + mode + '">Play ' + cfg.label + '</button>') +
+        '</div>';
+    });
+
     var lobby = document.createElement('div');
     lobby.className = 'daily-lobby';
     lobby.innerHTML =
-      '<div class="dl-eyebrow">Today\'s Challenge</div>' +
+      '<div class="dl-eyebrow">Today\'s Challenges</div>' +
       '<h2>🗓️ Daily #' + dailyNum + '</h2>' +
-      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · ' + DAILY_SIZE + ' silhouettes 🔍</div>' +
+      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · silhouettes 🔍</div>' +
       '<div class="dl-streak-row">' +
-        '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + streak + '🔥</div><div class="dl-stat-label">Streak</div></div>' +
-        '<div class="dl-stat"><div class="dl-stat-num">' + Object.keys(all).length + '</div><div class="dl-stat-label">Played</div></div>' +
+        DAILY_MODE_ORDER.map(function(m) {
+          return '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + dailyComputeStreak(todayStr, m) + '🔥</div>' +
+                 '<div class="dl-stat-label">' + DAILY_MODES[m].label + ' Streak</div></div>';
+        }).join('') +
+        '<div class="dl-stat"><div class="dl-stat-num">' + dailyPlayedDays(all, legacy) + '</div><div class="dl-stat-label">Days Played</div></div>' +
       '</div>' +
-      (todays
-        ? '<div class="dl-completed-banner">' +
-            '<div class="dl-cb-title">' + (todays.score === todays.total ? '🏆 Perfect run!' : '✓ Completed') + '</div>' +
-            '<div class="dl-cb-stat">' + todays.score + ' / ' + todays.total + ' · ' + fmtTime(todays.time) + '</div>' +
-          '</div>' +
-          '<button class="btn dl-play" id="dl-play-btn">View Result</button>' +
-          '<button class="btn dl-play" id="dl-replay-btn" style="margin-top:8px;background:transparent;border:1px solid var(--border);color:var(--text-dim);">Replay (unranked)</button>'
-        : '<button class="btn danger dl-play" id="dl-play-btn">Play Today\'s Challenge</button>') +
+      '<div class="dl-modes">' + cards + '</div>' +
       '<div class="dl-countdown">Next daily in <span class="dl-cd-val" id="dl-countdown">--:--:--</span></div>' +
       '<div class="dl-history" id="dl-history"></div>';
     wrap.appendChild(lobby);
 
-    dailyRenderHistory(all, todayStr);
+    dailyRenderHistory(all, legacy, todayStr);
     dailyStartCountdown('dl-countdown');
 
-    var btn = $('dl-play-btn');
-    if (btn) btn.addEventListener('click', function() {
-      if (todays) { dailyShowResult(todays, false); }
-      else { dailyStart(false); }
+    lobby.addEventListener('click', function(e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      if (b.dataset.dlPlay) dailyStart(b.dataset.dlPlay, false);
+      else if (b.dataset.dlReplay) dailyStart(b.dataset.dlReplay, true);
+      else if (b.dataset.dlView) dailyStart(b.dataset.dlView, false, today[b.dataset.dlView]);
     });
-    var replay = $('dl-replay-btn');
-    if (replay) replay.addEventListener('click', function() { dailyStart(true); });
   }
 
-  function dailyRenderHistory(all, todayStr) {
+  function dailyRenderHistory(all, legacy, todayStr) {
     var hist = $('dl-history');
     if (!hist) return;
-    var keys = Object.keys(all).filter(function(k) { return k !== todayStr; }).sort().reverse().slice(0, 7);
+    var keySet = new Set(Object.keys(all).concat(Object.keys(legacy)));
+    keySet.delete(todayStr);
+    var keys = Array.from(keySet).sort().reverse().slice(0, 7);
     if (keys.length === 0) { hist.innerHTML = ''; return; }
+    var fmt = function(label, r) {
+      if (!r) return '<span class="dl-h-score dl-h-none">' + label + ' –</span>';
+      var perfect = r.score === r.total;
+      return '<span class="dl-h-score' + (perfect ? ' dl-h-perfect-score' : '') + '" title="' + fmtTime(r.time) + '">' +
+             label + ' ' + r.score + '/' + r.total + (perfect ? ' 🏆' : '') + '</span>';
+    };
     var rows = '<h3>Last 7 Days</h3>';
     for (var i = 0; i < keys.length; i++) {
-      var k = keys[i], r = all[k];
-      var perfect = r.score === r.total;
-      rows += '<div class="dl-hist-row' + (perfect ? ' dl-h-perfect' : '') + '">' +
+      var k = keys[i], day = all[k];
+      var scores;
+      if (day) scores = fmt('Mini', day.mini) + fmt('Midi', day.midi);
+      else scores = fmt('Classic', legacy[k]);
+      rows += '<div class="dl-hist-row">' +
               '<span class="dl-h-day">#' + dailyNumberFor(k) + ' · ' + dailyDateLabel(k) + '</span>' +
-              '<span class="dl-h-score">' + r.score + '/' + r.total + (perfect ? ' 🏆' : '') + '</span>' +
-              '<span class="dl-h-time">' + fmtTime(r.time) + '</span>' +
+              '<span class="dl-h-scores">' + scores + '</span>' +
               '</div>';
     }
     hist.innerHTML = rows;
   }
 
-  function dailyStart(unranked) {
+  // Deterministically build today's Pokémon subset for a mode
+  function dailyBuildItems(data, todayStr, mode) {
+    var cfg = dailyModeCfg(mode);
+    var seed = dailySeedFor(todayStr, mode);
+    var rng = mulberry32(seed);
+    var pool = filterByGens(data, new Set([1,2,3,4,5,6,7,8,9]));
+    var indices = pool.map(function(_, i) { return i; });
+    var pickCount = Math.min(cfg.size, pool.length);
+    var picked = dailyShuffle(indices, rng).slice(0, pickCount).sort(function(a, b) { return a - b; });
+    items = picked.map(function(i) { return pool[i]; });
+    displayOrder = dailyShuffle(items.map(function(_, i) { return i; }), mulberry32(seed ^ 0x9E3779B9));
+  }
+
+  // Start a daily. If `review` (a saved result) is passed, rebuild the finished board instead.
+  function dailyStart(mode, unranked, review) {
     dailyStopCountdown();
     var todayStr = dailyTodayStr();
+    dailyState.mode = mode;
     dailyState.dateStr = todayStr;
     dailyState.dailyNum = dailyNumberFor(todayStr);
-    dailyState.active = true;
+    dailyState.active = !review;
+    dailyState.finished = !!review;
     dailyState.unranked = !!unranked;
-    dailyState.completedSavedToday = false;
-
-    var seed = dailySeedFor(todayStr);
-    var rng = mulberry32(seed);
+    dailyState.lastResult = review || null;
+    var cfg = dailyModeCfg(mode);
 
     var startWith = function(data) {
       dataSources['pokemon'] = data;
-      // Daily uses all gens, deterministically subset to DAILY_SIZE
-      var allGens = new Set([1,2,3,4,5,6,7,8,9]);
-      items = filterByGens(data, allGens);
-      // Deterministic subset & shuffle
-      var indices = items.map(function(_, i) { return i; });
-      var shuffled = dailyShuffle(indices, rng);
-      var pickCount = Math.min(DAILY_SIZE, items.length);
-      var picked = shuffled.slice(0, pickCount).sort(function(a, b) { return a - b; });
-      items = picked.map(function(i) { return items[i]; });
-      // Display order: re-shuffle the picked items for grid layout
-      displayOrder = dailyShuffle(items.map(function(_, i) { return i; }), mulberry32(seed ^ 0x9E3779B9));
+      dailyBuildItems(data, todayStr, mode);
+      if (review && review.order && review.order.length === items.length) displayOrder = review.order.slice();
 
-      foundSet = new Set();
-      elapsedMs = 0;
+      foundSet = new Set(review && review.foundOrder ? review.foundOrder.filter(function(i) { return i >= 0 && i < items.length; }) : []);
+      elapsedMs = review ? (review.time || 0) : 0;
       completedFamilies = new Set();
       completedRegions = new Set();
       givenUp = false;
@@ -2920,28 +3019,31 @@ const Q = (function() {
 
       $input.style.display = '';
       $input.value = '';
-      $input.disabled = false;
-      $input.placeholder = 'Type a Pokémon name…';
-      $timer.textContent = '00:00';
-      $foundCount.textContent = '0';
+      $input.disabled = !!review;
+      $input.placeholder = review ? 'Challenge finished' : 'Type a Pokémon name…';
+      $timer.textContent = fmtTime(elapsedMs);
+      $foundCount.textContent = String(foundSet.size);
       $('total-count').textContent = items.length;
       document.querySelector('.stats').style.display = '';
       $('action-bar').style.display = '';
       $('daily-sticky').style.display = '';
 
-      $('db-num').textContent = '#' + dailyState.dailyNum;
+      $('db-num').textContent = cfg.label + ' #' + dailyState.dailyNum;
       $('db-date').textContent = dailyDateLabel(todayStr) + (dailyState.unranked ? ' · Unranked' : '');
-      var allResults = dailyLoadResults();
-      var streak = dailyComputeStreak(allResults, todayStr);
-      if (streak > 0 && !dailyState.unranked) {
-        $('db-streak-wrap').style.display = '';
-        $('db-streak').textContent = streak;
-      } else {
-        $('db-streak-wrap').style.display = 'none';
-      }
+      dailyUpdateStreakBadge();
 
       renderGrid();
-      $input.focus();
+      if (review) {
+        foundSet.forEach(function(i) { revealCard(i, false); });
+        for (var i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+        var last = document.querySelector('.card.last-revealed');
+        if (last) last.classList.remove('last-revealed');
+        dailySetDoneBar(true);
+        dailyShowResult(review, false);
+      } else {
+        dailySetDoneBar(false);
+        $input.focus();
+      }
     };
 
     var cached = dataSources['pokemon'];
@@ -2952,37 +3054,52 @@ const Q = (function() {
     }
   }
 
+  function dailyUpdateStreakBadge() {
+    var streak = dailyComputeStreak(dailyState.dateStr, dailyState.mode);
+    var show = streak > 0 && !dailyState.unranked;
+    $('db-streak-wrap').style.display = show ? '' : 'none';
+    if (show) $('db-streak').textContent = streak;
+  }
+
   function dailyComplete(won) {
     if (!dailyState.active) return;
     dailyState.active = false;
+    dailyState.finished = true;
     stopTimer();
     $input.disabled = true;
+    $input.placeholder = 'Challenge finished';
 
     var todayStr = dailyState.dateStr;
+    var mode = dailyState.mode;
     var result = {
+      mode: mode,
       score: foundSet.size,
       total: items.length,
       time: elapsedMs,
       gaveUp: !won,
       dailyNum: dailyState.dailyNum,
       order: displayOrder.slice(),
-      foundOrder: Array.from(foundSet) // by reveal order would be ideal; we use index order which is fine for grid
+      foundOrder: Array.from(foundSet)
     };
+    dailyState.lastResult = result;
 
     if (!dailyState.unranked) {
-      var existing = dailyLoadResults()[todayStr];
-      // Only save if no prior result, or prior was given up and this one did better
+      var existing = dailyGetResult(todayStr, mode);
+      // Only save if no prior result, or this one did better
       if (!existing || (existing.gaveUp && !result.gaveUp) || (existing.score < result.score)) {
-        dailySaveResult(todayStr, result);
+        dailySaveResult(todayStr, mode, result);
       }
-      dailyState.completedSavedToday = true;
     }
 
+    // Keep the finished board on screen so players can study what they missed
+    dailyUpdateStreakBadge();
+    dailySetDoneBar(true);
     dailyShowResult(result, !!won);
   }
 
   function dailyShowResult(result, justWon) {
     var todayStr = dailyState.dateStr;
+    var cfg = dailyModeCfg(result.mode || dailyState.mode);
     var dailyNum = result.dailyNum || dailyState.dailyNum;
     var perfect = result.score === result.total;
     var titleEl = $('daily-result-title');
@@ -2990,33 +3107,33 @@ const Q = (function() {
       titleEl.textContent = perfect ? '🏆 Perfect Run!' : (justWon ? 'Daily Complete!' : 'Daily Result');
       titleEl.className = perfect || justWon ? 'win' : 'lose';
     }
-    $('daily-result-sub').textContent = '🗓️ Daily #' + dailyNum + ' · ' + dailyDateLabel(todayStr);
+    $('daily-result-sub').textContent = '🗓️ Daily ' + cfg.label + ' #' + dailyNum + ' · ' + dailyDateLabel(todayStr) + (dailyState.unranked ? ' · Unranked' : '');
     $('daily-result-score').textContent = result.score + ' / ' + result.total;
     $('daily-result-time').textContent = 'in ' + fmtTime(result.time);
-    var allResults = dailyLoadResults();
-    var streak = dailyComputeStreak(allResults, todayStr);
-    $('daily-result-streak').textContent = streak > 0 ? ('🔥 ' + streak + '-day streak') : '';
+    var streak = dailyComputeStreak(todayStr, cfg.key);
+    var streakMsg = '';
+    if (!dailyState.unranked) {
+      if (streak > 0) streakMsg = '🔥 ' + streak + '-day ' + cfg.label + ' streak';
+      else if (!dailyIsSuccess(result)) streakMsg = '💔 ' + cfg.label + ' streak reset, name them all to keep it going';
+    }
+    $('daily-result-streak').textContent = streakMsg;
 
-    var grid = dailyBuildShareGrid(result);
-    $('daily-result-grid').textContent = grid;
+    $('daily-result-grid').textContent = dailyBuildShareGrid(result);
 
     dailyStartCountdown('daily-result-countdown');
     $('daily-result-overlay').classList.add('active');
   }
 
   function dailyBuildShareGrid(result) {
-    var rowsCount = 5;
-    var cols = Math.ceil(result.total / rowsCount);
-    var foundIdx = new Set();
-    if (result.foundOrder) for (var i = 0; i < result.foundOrder.length; i++) foundIdx.add(result.foundOrder[i]);
-    // Use displayOrder if available so rows mirror the in-game grid layout
-    var order = result.order && result.order.length === result.total ? result.order : null;
+    var total = result.total;
+    // Mini (5) → one row; Midi (30) → 5 rows × 6; anything else → ≤10 per row
+    var cols = total <= 10 ? total : (total % 5 === 0 && total / 5 <= 10 ? total / 5 : 10);
+    var foundIdx = new Set(result.foundOrder || []);
+    var order = result.order && result.order.length === total ? result.order : null;
     var lines = [];
-    for (var r = 0; r < rowsCount; r++) {
+    for (var start = 0; start < total; start += cols) {
       var line = '';
-      for (var c = 0; c < cols; c++) {
-        var idx = r * cols + c;
-        if (idx >= result.total) break;
+      for (var idx = start; idx < Math.min(total, start + cols); idx++) {
         var realIdx = order ? order[idx] : idx;
         line += foundIdx.has(realIdx) ? '🟩' : '⬛';
       }
@@ -3026,21 +3143,32 @@ const Q = (function() {
   }
 
   function dailyShareText(result) {
+    var cfg = dailyModeCfg(result.mode || dailyState.mode);
     var dailyNum = result.dailyNum || dailyState.dailyNum;
     var pct = Math.round((result.score / result.total) * 100);
-    var header = 'NameEmAll · Daily #' + dailyNum;
+    var header = 'NameEmAll · Daily ' + cfg.label + ' #' + dailyNum;
     var stats = result.score + '/' + result.total + ' (' + pct + '%) in ' + fmtTime(result.time);
     var grid = dailyBuildShareGrid(result);
     var url = 'https://rnd247.github.io/pokequiz/';
     return header + '\n' + stats + '\n\n' + grid + '\n\n' + url;
   }
 
-  function dailyExitToLobby() {
+  function dailyCurrentResult() {
+    return dailyState.lastResult || {
+      mode: dailyState.mode, score: foundSet.size, total: items.length, time: elapsedMs,
+      dailyNum: dailyState.dailyNum, order: displayOrder.slice(), foundOrder: Array.from(foundSet)
+    };
+  }
+
+  // Closing the result modal keeps the revealed board visible (bug fix: it used to jump to the lobby)
+  function dailyCloseResult() {
     $('daily-result-overlay').classList.remove('active');
     dailyStopCountdown();
-    if (currentTab === 'daily') {
-      dailyShowLobby();
-    }
+  }
+
+  function dailyExitToLobby() {
+    dailyCloseResult();
+    if (currentTab === 'daily') dailyShowLobby();
   }
 
   // ── End Daily Mode ──
@@ -3266,7 +3394,7 @@ const Q = (function() {
       clearTimeout(coopConnTimeout);
       if (err.type === 'peer-unavailable') return;
       if (!coopActive) {
-        $('coop-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+        $('coop-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
         $('coop-create-btn').style.display = '';
         $('coop-create-btn').disabled = false;
         $('coop-create-btn').textContent = 'Create Room';
@@ -3314,7 +3442,7 @@ const Q = (function() {
         setTimeout(function() { coopJoin(hostId); }, 2000);
         return;
       }
-      $('coop-status').textContent = 'Error: ' + err.type + ' — ' + (err.message || 'Try refreshing.');
+      $('coop-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
     });
     coopPeer.on('disconnected', function() {
       if (!coopActive) {
@@ -3729,7 +3857,7 @@ const Q = (function() {
     if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
     if (currentTab === 'duel') duelCleanup();
     if (currentTab === 'coop') coopCleanup();
-    if (currentTab === 'daily') { dailyState.active = false; dailyStopCountdown(); $('daily-result-overlay').classList.remove('active'); $('daily-sticky').style.display = 'none'; }
+    if (currentTab === 'daily') { dailyState.active = false; dailyState.finished = false; dailyStopCountdown(); $('daily-result-overlay').classList.remove('active'); $('daily-sticky').style.display = 'none'; dailySetDoneBar(false); }
     if (_preserveSession) saveRoomSession(_preserveSession.mode, _preserveSession.roomId, _preserveSession.role);
     $input.style.display = '';
     $input.disabled = false;
@@ -4006,10 +4134,12 @@ const Q = (function() {
   $('duel-decided-call').addEventListener('click', duelDecidedCallIt);
 
   // ── Daily result modal wiring ──
-  $('daily-result-close').addEventListener('click', function() { dailyExitToLobby(); });
+  $('daily-result-close').addEventListener('click', dailyCloseResult);
+  $('daily-result-lobby').addEventListener('click', dailyExitToLobby);
+  $('daily-back-btn').addEventListener('click', dailyExitToLobby);
+  $('daily-view-result-btn').addEventListener('click', function() { dailyShowResult(dailyCurrentResult(), false); });
   $('daily-copy-btn').addEventListener('click', function() {
-    var existing = dailyLoadResults()[dailyState.dateStr];
-    var result = existing || { score: foundSet.size, total: items.length, time: elapsedMs, dailyNum: dailyState.dailyNum, order: displayOrder.slice(), foundOrder: Array.from(foundSet) };
+    var result = dailyCurrentResult();
     var text = dailyShareText(result);
     var btn = this;
     var done = function() {
@@ -4026,12 +4156,11 @@ const Q = (function() {
     }
   });
   $('daily-share-btn').addEventListener('click', function() {
-    var existing = dailyLoadResults()[dailyState.dateStr];
-    var result = existing || { score: foundSet.size, total: items.length, time: elapsedMs, dailyNum: dailyState.dailyNum, order: displayOrder.slice(), foundOrder: Array.from(foundSet) };
+    var result = dailyCurrentResult();
     var text = dailyShareText(result);
     if (navigator.share) {
       navigator.share({
-        title: 'NameEmAll Daily #' + (result.dailyNum || dailyState.dailyNum),
+        title: 'NameEmAll Daily ' + dailyModeCfg(result.mode).label + ' #' + (result.dailyNum || dailyState.dailyNum),
         text: text
       }).catch(function() {});
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
