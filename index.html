@@ -445,6 +445,30 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-hist-row .dl-h-scores { display: flex; gap: 10px; }
 .daily-lobby .dl-hist-row .dl-h-none { color: var(--text-dim); font-weight: 400; }
 .daily-lobby .dl-hist-row .dl-h-perfect-score { color: #22c55e; }
+.daily-lobby .dl-challenge { position: relative; background: linear-gradient(135deg, rgba(233,69,96,0.16), rgba(233,69,96,0.04)); border: 1px solid rgba(233,69,96,0.45); border-radius: 14px; padding: 14px 16px 12px; margin: 0 auto 18px; }
+.daily-lobby .dl-ch-title { font-size: 1rem; font-weight: 800; margin-bottom: 2px; }
+.daily-lobby .dl-ch-stat { font-size: 0.82rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-ch-note { font-size: 0.76rem; color: var(--text-dim); margin: 6px 0 2px; white-space: pre-line; }
+.daily-lobby .dl-ch-vs { color: var(--text); font-weight: 700; font-size: 0.82rem; }
+.daily-lobby .dl-ch-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+.daily-lobby .dl-ch-btns .btn { padding: 8px 16px; font-size: 0.82rem; }
+.daily-lobby .dl-ch-x { position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--text-dim); font-size: 0.85rem; cursor: pointer; padding: 4px; }
+.daily-lobby .btn.dl-replay { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+.daily-lobby .dl-archive { margin-top: 22px; }
+.daily-lobby .dl-archive h3 { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; }
+.daily-lobby .dl-arch-nav { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.daily-lobby .dl-arch-arrow { padding: 6px 12px; min-width: 0; }
+.daily-lobby .dl-arch-arrow:disabled { opacity: 0.35; cursor: default; }
+.daily-lobby .dl-arch-day { min-width: 150px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; }
+.daily-lobby .dl-arch-num { font-weight: 800; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.daily-lobby .dl-arch-date { font-size: 0.7rem; color: var(--text-dim); }
+.daily-lobby .dl-arch-btns { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
+.daily-lobby .dl-arch-play { min-width: 120px; padding: 8px 14px; font-size: 0.82rem; }
+.daily-lobby .dl-arch-best { color: #22c55e; font-weight: 800; margin-left: 4px; }
+.daily-lobby .dl-arch-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 6px; }
+.daily-result-vs { white-space: pre-line; font-size: 0.85rem; font-weight: 700; background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+.daily-challenge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.daily-challenge-row input { flex: 1 1 140px; max-width: 200px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; }
 .daily-done-bar { display: flex; justify-content: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .daily-sticky { padding: 6px 0 4px; border-top: 1px solid var(--border); margin-top: 6px; }
 /* Daily board: centered grid matching the share layout (Mini 5 across, Midi 6 across) */
@@ -708,10 +732,15 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="big" id="daily-result-score">0 / 0</div>
     <p id="daily-result-time"></p>
     <p id="daily-result-streak"></p>
+    <div class="daily-result-vs" id="daily-result-vs" style="display:none;"></div>
     <div class="daily-result-grid" id="daily-result-grid"></div>
     <div class="daily-share-row">
       <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
       <button class="btn danger" id="daily-share-btn">🔗 Share</button>
+    </div>
+    <div class="daily-challenge-row">
+      <input type="text" id="daily-name-input" maxlength="16" placeholder="Your name (optional)" autocomplete="nickname">
+      <button class="btn" id="daily-challenge-btn">⚔️ Challenge a Friend</button>
     </div>
     <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
     <div class="daily-share-row" style="margin-top:14px;">
@@ -2736,7 +2765,11 @@ const Q = (function() {
   var DAILY_STORAGE_KEY = 'daily_results_v2';   // { 'YYYY-MM-DD': { mini: result, midi: result } }
   var DAILY_LEGACY_KEY = 'daily_results';       // pre-v1.4 single 100-Pokémon daily (kept for streaks)
 
-  var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, lastResult: null };
+  var DAILY_ARCHIVE_KEY = 'daily_archive_v1';  // { 'YYYY-MM-DD': { mini: best, midi: best } } for past days (never counts toward streaks)
+  var DAILY_NAME_KEY = 'daily_player_name';
+  var DAILY_SITE_URL = 'https://rnd247.github.io/pokequiz/';
+
+  var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, archive: false, lastResult: null, archivePick: null, challenge: null };
   var dailyCountdownTimer = null;
 
   function dailyModeCfg(mode) { return DAILY_MODES[mode] || DAILY_MODES.mini; }
@@ -2803,6 +2836,77 @@ const Q = (function() {
   }
 
   function dailyLoadResults() { return dailyLoadJSON(DAILY_STORAGE_KEY); }
+  function dailyLoadArchive() { return dailyLoadJSON(DAILY_ARCHIVE_KEY); }
+
+  function dailyBetter(a, b) {
+    // true if result a beats result b: more found wins, then faster time
+    if (!b) return true;
+    if (a.score !== b.score) return a.score > b.score;
+    return a.time < b.time;
+  }
+
+  function dailySaveArchiveResult(dateStr, mode, result) {
+    var all = dailyLoadArchive();
+    all[dateStr] = all[dateStr] || {};
+    if (!dailyBetter(result, all[dateStr][mode])) return;
+    all[dateStr][mode] = { score: result.score, total: result.total, time: result.time, gaveUp: result.gaveUp };
+    try { localStorage.setItem(DAILY_ARCHIVE_KEY, JSON.stringify(all)); } catch(e) {}
+  }
+
+  // Daily #n → "YYYY-MM-DD" (local calendar date)
+  function dailyDateForNumber(n) {
+    var a = DAILY_EPOCH.split('-');
+    return dailyTodayStr(new Date(+a[0], +a[1] - 1, +a[2] + (n - 1)));
+  }
+
+  // ── Challenge links: ?challenge=<day>.<mode>.<score>.<total>.<seconds>.<name> ──
+  function dailyCleanName(n) {
+    return String(n || '').replace(/[^\p{L}\p{N} _'-]/gu, '').trim().slice(0, 16);
+  }
+
+  function dailyGetPlayerName() {
+    try { return dailyCleanName(localStorage.getItem(DAILY_NAME_KEY)); } catch(e) { return ''; }
+  }
+
+  function dailySetPlayerName(n) {
+    try { localStorage.setItem(DAILY_NAME_KEY, dailyCleanName(n)); } catch(e) {}
+  }
+
+  function dailyBuildChallengeUrl(result, name) {
+    var base = /^https?:$/.test(location.protocol) ? location.origin + location.pathname : DAILY_SITE_URL;
+    var code = [result.dailyNum || dailyState.dailyNum, result.mode || dailyState.mode, result.score, result.total,
+                Math.floor((result.time || 0) / 1000), dailyCleanName(name)].join('.');
+    return base + '?challenge=' + encodeURIComponent(code) + '#daily';
+  }
+
+  function dailyParseChallenge(code) {
+    if (!code) return null;
+    var parts = String(code).split('.');
+    if (parts.length < 5) return null;
+    var day = parseInt(parts[0], 10), mode = parts[1];
+    var score = parseInt(parts[2], 10), total = parseInt(parts[3], 10), secs = parseInt(parts[4], 10);
+    if (!DAILY_MODES[mode] || !(day >= 1) || !(total === DAILY_MODES[mode].size)) return null;
+    if (!(score >= 0 && score <= total) || !(secs >= 0)) return null;
+    return { day: day, mode: mode, score: score, total: total, time: secs * 1000,
+             name: dailyCleanName(parts.slice(5).join('.')) || 'A friend' };
+  }
+
+  function dailyChallengeApplies(result) {
+    var c = dailyState.challenge;
+    return !!(c && result && c.mode === (result.mode || dailyState.mode) && c.day === (result.dailyNum || dailyState.dailyNum));
+  }
+
+  function dailyCompareText(result, c) {
+    // Challenge links carry whole seconds, so compare at that precision
+    result = { score: result.score, total: result.total, time: Math.floor((result.time || 0) / 1000) * 1000 };
+    var you = result.score + '/' + result.total + ' in ' + fmtTime(result.time);
+    var them = c.score + '/' + c.total + ' in ' + fmtTime(c.time);
+    var verdict;
+    if (result.score === c.score && result.time === c.time) verdict = '🤝 Dead even with ' + c.name + '!';
+    else if (dailyBetter(result, c)) verdict = '🏆 You beat ' + c.name + '!';
+    else verdict = '😅 ' + c.name + ' wins this one';
+    return verdict + '\nYou: ' + you + ' · ' + c.name + ': ' + them;
+  }
   function dailyLoadLegacy() { return dailyLoadJSON(DAILY_LEGACY_KEY); }
 
   function dailyGetResult(dateStr, mode) {
@@ -2889,6 +2993,8 @@ const Q = (function() {
     dailySetDoneBar(false);
     dailyState.active = false;
     dailyState.finished = false;
+    dailyState.archive = false;
+    dailyState.unranked = false;
 
     var todayStr = dailyTodayStr();
     var dailyNum = dailyNumberFor(todayStr);
@@ -2925,6 +3031,7 @@ const Q = (function() {
     var lobby = document.createElement('div');
     lobby.className = 'daily-lobby';
     lobby.innerHTML =
+      '<div id="dl-challenge"></div>' +
       '<div class="dl-eyebrow">Today\'s Challenges</div>' +
       '<h2>🗓️ Daily #' + dailyNum + '</h2>' +
       '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · silhouettes 🔍</div>' +
@@ -2937,19 +3044,93 @@ const Q = (function() {
       '</div>' +
       '<div class="dl-modes">' + cards + '</div>' +
       '<div class="dl-countdown">Next daily in <span class="dl-cd-val" id="dl-countdown">--:--:--</span></div>' +
+      '<div class="dl-archive" id="dl-archive"></div>' +
       '<div class="dl-history" id="dl-history"></div>';
     wrap.appendChild(lobby);
 
+    dailyRenderChallengeBanner();
+    dailyRenderArchive();
     dailyRenderHistory(all, legacy, todayStr);
     dailyStartCountdown('dl-countdown');
 
     lobby.addEventListener('click', function(e) {
       var b = e.target.closest('button');
       if (!b) return;
-      if (b.dataset.dlPlay) dailyStart(b.dataset.dlPlay, false);
-      else if (b.dataset.dlReplay) dailyStart(b.dataset.dlReplay, true);
-      else if (b.dataset.dlView) dailyStart(b.dataset.dlView, false, today[b.dataset.dlView]);
+      var d = b.dataset;
+      if (d.dlPlay) dailyStart(d.dlPlay);
+      else if (d.dlReplay) dailyStart(d.dlReplay, { unranked: true });
+      else if (d.dlView) dailyStart(d.dlView, { review: dailyGetResult(todayStr, d.dlView) });
+      else if (d.dlArchPlay) dailyStart(d.dlArchPlay, { dateStr: dailyDateForNumber(dailyState.archivePick) });
+      else if (d.dlArchNav) {
+        var maxN = dailyNum - 1, cur = dailyState.archivePick;
+        if (d.dlArchNav === 'random') { var r; do { r = 1 + Math.floor(Math.random() * maxN); } while (maxN > 1 && r === cur); cur = r; }
+        else cur += parseInt(d.dlArchNav, 10);
+        dailyState.archivePick = Math.min(maxN, Math.max(1, cur));
+        dailyRenderArchive();
+      }
+      else if (d.dlChAccept) {
+        var c = dailyState.challenge, cDate = dailyDateForNumber(c.day);
+        dailyStart(c.mode, cDate === todayStr ? {} : { dateStr: cDate });
+      }
+      else if (d.dlChView) dailyStart(dailyState.challenge.mode, { review: dailyGetResult(todayStr, dailyState.challenge.mode) });
+      else if (d.dlChReplay) dailyStart(dailyState.challenge.mode, { unranked: true });
+      else if (d.dlChDismiss) { dailyState.challenge = null; dailyRenderChallengeBanner(); }
     });
+  }
+
+  function dailyRenderChallengeBanner() {
+    var el = $('dl-challenge');
+    if (!el) return;
+    var c = dailyState.challenge;
+    if (!c) { el.innerHTML = ''; return; }
+    var cfg = DAILY_MODES[c.mode];
+    var todayStr = dailyTodayStr(), todayNum = dailyNumberFor(todayStr);
+    var head = '<div class="dl-ch-title">⚔️ <span id="dl-ch-name"></span> challenged you!</div>' +
+               '<div class="dl-ch-stat">Daily ' + cfg.label + ' #' + c.day + ' · ' + c.score + '/' + c.total + ' in ' + fmtTime(c.time) + '</div>';
+    var body;
+    if (c.day > todayNum) {
+      body = '<div class="dl-ch-note">That Daily hasn\'t started in your time zone yet. Come back after midnight!</div>';
+    } else if (c.day === todayNum && dailyGetResult(todayStr, c.mode)) {
+      var mine = dailyGetResult(todayStr, c.mode);
+      body = '<div class="dl-ch-note dl-ch-vs"></div>' +
+             '<div class="dl-ch-btns"><button class="btn" data-dl-ch-view="1">View My Result</button>' +
+             '<button class="btn dl-replay" data-dl-ch-replay="1">Replay (unranked)</button></div>';
+      el.innerHTML = '<div class="dl-challenge">' + head + body + '<button class="dl-ch-x" data-dl-ch-dismiss="1" title="Dismiss">✕</button></div>';
+      el.querySelector('.dl-ch-vs').textContent = dailyCompareText(mine, c);
+      $('dl-ch-name').textContent = c.name;
+      return;
+    } else {
+      body = '<div class="dl-ch-note">' + (c.day === todayNum ? 'Same ' + c.total + ' silhouettes, can you beat it?' : 'From the archive, plays unranked.') + '</div>' +
+             '<div class="dl-ch-btns"><button class="btn danger" data-dl-ch-accept="1">Accept Challenge</button></div>';
+    }
+    el.innerHTML = '<div class="dl-challenge">' + head + body + '<button class="dl-ch-x" data-dl-ch-dismiss="1" title="Dismiss">✕</button></div>';
+    $('dl-ch-name').textContent = c.name;
+  }
+
+  function dailyRenderArchive() {
+    var el = $('dl-archive');
+    if (!el) return;
+    var maxN = dailyNumberFor(dailyTodayStr()) - 1;
+    if (maxN < 1) { el.innerHTML = ''; return; }
+    var n = dailyState.archivePick;
+    if (!(n >= 1 && n <= maxN)) n = dailyState.archivePick = maxN;
+    var dateStr = dailyDateForNumber(n);
+    var best = dailyLoadArchive()[dateStr] || {};
+    var btns = DAILY_MODE_ORDER.map(function(mode) {
+      var cfg = DAILY_MODES[mode], r = best[mode];
+      var tag = r ? ' <span class="dl-arch-best">' + (r.score === r.total ? '🏆' : r.score + '/' + r.total) + '</span>' : '';
+      return '<button class="btn dl-arch-play" data-dl-arch-play="' + mode + '">' + cfg.icon + ' ' + cfg.label + tag + '</button>';
+    }).join('');
+    el.innerHTML =
+      '<h3>📚 Archive</h3>' +
+      '<div class="dl-arch-nav">' +
+        '<button class="btn dl-arch-arrow" data-dl-arch-nav="-1"' + (n <= 1 ? ' disabled' : '') + ' title="Previous day">◀</button>' +
+        '<div class="dl-arch-day"><div class="dl-arch-num">Daily #' + n + '</div><div class="dl-arch-date">' + dailyDateLabel(dateStr) + '</div></div>' +
+        '<button class="btn dl-arch-arrow" data-dl-arch-nav="1"' + (n >= maxN ? ' disabled' : '') + ' title="Next day">▶</button>' +
+        '<button class="btn dl-arch-arrow" data-dl-arch-nav="random" title="Random day">🎲</button>' +
+      '</div>' +
+      '<div class="dl-arch-btns">' + btns + '</div>' +
+      '<div class="dl-arch-note">Unranked, doesn\'t affect streaks</div>';
   }
 
   function dailyRenderHistory(all, legacy, todayStr) {
@@ -2992,16 +3173,24 @@ const Q = (function() {
     displayOrder = dailyShuffle(items.map(function(_, i) { return i; }), mulberry32(seed ^ 0x9E3779B9));
   }
 
-  // Start a daily. If `review` (a saved result) is passed, rebuild the finished board instead.
-  function dailyStart(mode, unranked, review) {
+  // Start a daily.
+  //   opts.unranked: replay that doesn't save or count toward streaks
+  //   opts.dateStr:  play a past day from the archive (always unranked)
+  //   opts.review:   a saved result; rebuild the finished board instead of playing
+  function dailyStart(mode, opts) {
+    opts = opts || {};
+    var review = opts.review || null;
     dailyStopCountdown();
-    var todayStr = dailyTodayStr();
+    var realToday = dailyTodayStr();
+    var todayStr = opts.dateStr || realToday;
+    var isArchive = todayStr !== realToday;
     dailyState.mode = mode;
     dailyState.dateStr = todayStr;
     dailyState.dailyNum = dailyNumberFor(todayStr);
     dailyState.active = !review;
     dailyState.finished = !!review;
-    dailyState.unranked = !!unranked;
+    dailyState.archive = isArchive;
+    dailyState.unranked = !!opts.unranked || isArchive;
     dailyState.lastResult = review || null;
     var cfg = dailyModeCfg(mode);
 
@@ -3029,7 +3218,7 @@ const Q = (function() {
       $('daily-sticky').style.display = '';
 
       $('db-num').textContent = cfg.label + ' #' + dailyState.dailyNum;
-      $('db-date').textContent = dailyDateLabel(todayStr) + (dailyState.unranked ? ' · Unranked' : '');
+      $('db-date').textContent = dailyDateLabel(todayStr) + (isArchive ? ' · Archive' : (dailyState.unranked ? ' · Unranked' : ''));
       dailyUpdateStreakBadge();
 
       renderGrid();
@@ -3083,7 +3272,9 @@ const Q = (function() {
     };
     dailyState.lastResult = result;
 
-    if (!dailyState.unranked) {
+    if (dailyState.archive) {
+      dailySaveArchiveResult(todayStr, mode, result);
+    } else if (!dailyState.unranked) {
       var existing = dailyGetResult(todayStr, mode);
       // Only save if no prior result, or this one did better
       if (!existing || (existing.gaveUp && !result.gaveUp) || (existing.score < result.score)) {
@@ -3107,7 +3298,8 @@ const Q = (function() {
       titleEl.textContent = perfect ? '🏆 Perfect Run!' : (justWon ? 'Daily Complete!' : 'Daily Result');
       titleEl.className = perfect || justWon ? 'win' : 'lose';
     }
-    $('daily-result-sub').textContent = '🗓️ Daily ' + cfg.label + ' #' + dailyNum + ' · ' + dailyDateLabel(todayStr) + (dailyState.unranked ? ' · Unranked' : '');
+    $('daily-result-sub').textContent = '🗓️ Daily ' + cfg.label + ' #' + dailyNum + ' · ' + dailyDateLabel(todayStr) +
+      (dailyState.archive ? ' · Archive' : (dailyState.unranked ? ' · Unranked' : ''));
     $('daily-result-score').textContent = result.score + ' / ' + result.total;
     $('daily-result-time').textContent = 'in ' + fmtTime(result.time);
     var streak = dailyComputeStreak(todayStr, cfg.key);
@@ -3117,6 +3309,11 @@ const Q = (function() {
       else if (!dailyIsSuccess(result)) streakMsg = '💔 ' + cfg.label + ' streak reset, name them all to keep it going';
     }
     $('daily-result-streak').textContent = streakMsg;
+
+    var vs = $('daily-result-vs');
+    if (dailyChallengeApplies(result)) { vs.textContent = dailyCompareText(result, dailyState.challenge); vs.style.display = ''; }
+    else { vs.textContent = ''; vs.style.display = 'none'; }
+    $('daily-name-input').value = dailyGetPlayerName();
 
     $('daily-result-grid').textContent = dailyBuildShareGrid(result);
 
@@ -3146,10 +3343,10 @@ const Q = (function() {
     var cfg = dailyModeCfg(result.mode || dailyState.mode);
     var dailyNum = result.dailyNum || dailyState.dailyNum;
     var pct = Math.round((result.score / result.total) * 100);
-    var header = 'NameEmAll · Daily ' + cfg.label + ' #' + dailyNum;
+    var header = 'NameEmAll · Daily ' + cfg.label + ' #' + dailyNum + (dailyState.archive ? ' (archive)' : '');
     var stats = result.score + '/' + result.total + ' (' + pct + '%) in ' + fmtTime(result.time);
     var grid = dailyBuildShareGrid(result);
-    var url = 'https://rnd247.github.io/pokequiz/';
+    var url = DAILY_SITE_URL;
     return header + '\n' + stats + '\n\n' + grid + '\n\n' + url;
   }
 
@@ -4138,6 +4335,29 @@ const Q = (function() {
   $('daily-result-lobby').addEventListener('click', dailyExitToLobby);
   $('daily-back-btn').addEventListener('click', dailyExitToLobby);
   $('daily-view-result-btn').addEventListener('click', function() { dailyShowResult(dailyCurrentResult(), false); });
+  $('daily-name-input').addEventListener('change', function() { dailySetPlayerName(this.value); this.value = dailyGetPlayerName(); });
+  $('daily-challenge-btn').addEventListener('click', function() {
+    var name = dailyCleanName($('daily-name-input').value);
+    dailySetPlayerName(name);
+    var result = dailyCurrentResult();
+    var cfg = dailyModeCfg(result.mode);
+    var link = dailyBuildChallengeUrl(result, name);
+    var text = 'I named ' + result.score + '/' + result.total + ' in ' + fmtTime(result.time) +
+               ' on NameEmAll Daily ' + cfg.label + ' #' + (result.dailyNum || dailyState.dailyNum) + '. Can you beat me? ⚔️';
+    var btn = this;
+    var flash = function() {
+      var orig = btn.textContent;
+      btn.textContent = '✓ Link copied!';
+      setTimeout(function() { btn.textContent = orig; }, 1600);
+    };
+    if (navigator.share) {
+      navigator.share({ title: 'NameEmAll challenge', text: text, url: link }).catch(function() {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text + '\n' + link).then(flash).catch(function() { prompt('Copy your challenge link:', link); });
+    } else {
+      prompt('Copy your challenge link:', link);
+    }
+  });
   $('daily-copy-btn').addEventListener('click', function() {
     var result = dailyCurrentResult();
     var text = dailyShareText(result);
@@ -4494,6 +4714,16 @@ const Q = (function() {
       switchTab('coop');
     } else {
       var _hash = window.location.hash.replace('#', '');
+      var _challenge = dailyParseChallenge(urlParams.get('challenge'));
+      var _archMatch = /^daily-(\d+)$/.exec(_hash);
+      if (_challenge) {
+        dailyState.challenge = _challenge;
+        if (window.history.replaceState) window.history.replaceState({}, '', window.location.pathname + '#daily');
+        _hash = 'daily';
+      } else if (_archMatch) {
+        dailyState.archivePick = parseInt(_archMatch[1], 10);
+        _hash = 'daily';
+      }
       switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily') ? _hash : 'pokemon');
     }
   }
