@@ -775,6 +775,27 @@ const Q = (function() {
   'use strict';
 
   let currentTab = 'mandarin';
+
+  // ── Analytics (GA4 custom events) ──
+  // Never sends personal data (no names, no typed guesses). Add ?ga_debug=1 to the URL once
+  // to log events to the console and show them in GA4 DebugView on this browser.
+  var GA_DEBUG = (function() {
+    try {
+      var q = new URLSearchParams(location.search).get('ga_debug');
+      if (q === '1') localStorage.setItem('ga_debug', '1');
+      if (q === '0') localStorage.removeItem('ga_debug');
+      return localStorage.getItem('ga_debug') === '1';
+    } catch(e) { return false; }
+  })();
+  function track(name, params) {
+    params = params || {};
+    if (GA_DEBUG) { params.debug_mode = true; console.log('[GA]', name, params); }
+    try { if (typeof gtag === 'function') gtag('event', name, params); } catch(e) {}
+  }
+  function trackUserProps(props) {
+    try { if (typeof gtag === 'function') gtag('set', 'user_properties', props); } catch(e) {}
+  }
+  function pctOf(found, total) { return total ? Math.round(found / total * 100) : 0; }
   let items = [];
   let foundSet = new Set();
   let displayOrder = [];
@@ -1552,6 +1573,12 @@ const Q = (function() {
 
   function showModal(won) {
     const count = foundSet.size;
+    track('game_end', {
+      game_mode: currentTab, order_mode: orderMode,
+      result: won ? 'completed' : (givenUp ? 'gave_up' : 'ended'),
+      found: count, total: items.length, pct: pctOf(count, items.length),
+      time_sec: Math.floor(elapsedMs / 1000), gens: selectedGens ? selectedGens.size : undefined
+    });
     $('modal-title').textContent = won ? 'Incredible!' : 'Results';
     $('modal-title').className = won ? 'win' : 'lose';
     {
@@ -1729,13 +1756,18 @@ const Q = (function() {
       if (!dailyState.active) return;
       if (!confirm('Give up the daily challenge? Remaining Pokémon will be revealed.')) return;
       stopTimer(); $input.disabled = true;
+      track('give_up', { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(),
+                         found: foundSet.size, total: items.length, pct: pctOf(foundSet.size, items.length),
+                         time_sec: Math.floor(elapsedMs / 1000) });
       for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
-      dailyComplete(false);
+      dailyComplete(false, 'gave_up');
       return;
     }
     if (givenUp) return;
     if (!confirm('Give up? All remaining Pokémon will be revealed.')) return;
     givenUp = true; stopTimer(); $input.disabled = true;
+    track('give_up', { game_mode: currentTab, found: foundSet.size, total: items.length,
+                       pct: pctOf(foundSet.size, items.length), time_sec: Math.floor(elapsedMs / 1000) });
     for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
     save();
     showModal(false);
@@ -2213,6 +2245,7 @@ const Q = (function() {
   var duelConnTimeout = null;
 
   function duelCreate() {
+    track('room_create', { game_mode: 'duel' });
     const roomId = duelGenId();
     duelRoomId = roomId;
     duelRole = 'blue';
@@ -2287,6 +2320,7 @@ const Q = (function() {
   }
 
   function duelJoin(hostId) {
+    track('room_join', { game_mode: 'duel' });
     duelRole = 'red';
     duelRoomId = hostId;
     $('duel-status').textContent = 'Connecting to signaling server…';
@@ -2661,6 +2695,9 @@ const Q = (function() {
     var winner = bc > rc ? 'Blue' : rc > bc ? 'Red' : 'Tie';
     var myColor = duelRole === 'blue' ? 'Blue' : 'Red';
     var result = winner === 'Tie' ? "It's a tie!" : (winner === myColor ? 'You win!' : 'You lose!');
+    track('room_end', { game_mode: 'duel', outcome: winner === 'Tie' ? 'tie' : (winner === myColor ? 'win' : 'lose'),
+                        my_score: myColor === 'Blue' ? bc : rc, opp_score: myColor === 'Blue' ? rc : bc,
+                        total: items.length, time_sec: Math.floor(elapsedMs / 1000) });
     $('duel-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">' + result +
       ' - 🔵 ' + bc + ' vs ' + rc + ' 🔴</div>';
   }
@@ -3050,6 +3087,7 @@ const Q = (function() {
 
     dailyRenderChallengeBanner();
     dailyRenderArchive();
+    dailySyncStreakProps();
     dailyRenderHistory(all, legacy, todayStr);
     dailyStartCountdown('dl-countdown');
 
@@ -3059,7 +3097,7 @@ const Q = (function() {
       var d = b.dataset;
       if (d.dlPlay) dailyStart(d.dlPlay);
       else if (d.dlReplay) dailyStart(d.dlReplay, { unranked: true });
-      else if (d.dlView) dailyStart(d.dlView, { review: dailyGetResult(todayStr, d.dlView) });
+      else if (d.dlView) { track('daily_view_result', { daily_mode: d.dlView, daily_num: dailyNum }); dailyStart(d.dlView, { review: dailyGetResult(todayStr, d.dlView) }); }
       else if (d.dlArchPlay) dailyStart(d.dlArchPlay, { dateStr: dailyDateForNumber(dailyState.archivePick) });
       else if (d.dlArchNav) {
         var maxN = dailyNum - 1, cur = dailyState.archivePick;
@@ -3070,6 +3108,7 @@ const Q = (function() {
       }
       else if (d.dlChAccept) {
         var c = dailyState.challenge, cDate = dailyDateForNumber(c.day);
+        track('challenge_accept', { daily_mode: c.mode, daily_num: c.day, play_type: cDate === todayStr ? 'ranked' : 'archive' });
         dailyStart(c.mode, cDate === todayStr ? {} : { dateStr: cDate });
       }
       else if (d.dlChView) dailyStart(dailyState.challenge.mode, { review: dailyGetResult(todayStr, dailyState.challenge.mode) });
@@ -3232,6 +3271,9 @@ const Q = (function() {
       } else {
         dailySetDoneBar(false);
         $input.focus();
+        var ch = dailyState.challenge;
+        track('daily_start', { daily_mode: mode, daily_num: dailyState.dailyNum, play_type: dailyPlayType(),
+                               from_challenge: !!(ch && ch.mode === mode && ch.day === dailyState.dailyNum) });
       }
     };
 
@@ -3243,6 +3285,15 @@ const Q = (function() {
     }
   }
 
+  function dailyPlayType() {
+    return dailyState.archive ? 'archive' : (dailyState.unranked ? 'replay' : 'ranked');
+  }
+
+  function dailySyncStreakProps() {
+    var t = dailyTodayStr();
+    trackUserProps({ mini_streak: dailyComputeStreak(t, 'mini'), midi_streak: dailyComputeStreak(t, 'midi') });
+  }
+
   function dailyUpdateStreakBadge() {
     var streak = dailyComputeStreak(dailyState.dateStr, dailyState.mode);
     var show = streak > 0 && !dailyState.unranked;
@@ -3250,7 +3301,7 @@ const Q = (function() {
     if (show) $('db-streak').textContent = streak;
   }
 
-  function dailyComplete(won) {
+  function dailyComplete(won, reason) {
     if (!dailyState.active) return;
     dailyState.active = false;
     dailyState.finished = true;
@@ -3281,6 +3332,22 @@ const Q = (function() {
         dailySaveResult(todayStr, mode, result);
       }
     }
+
+    var streakNow = dailyComputeStreak(dailyState.dateStr, mode);
+    track('daily_end', {
+      daily_mode: mode, daily_num: dailyState.dailyNum, play_type: dailyPlayType(),
+      result: won ? 'perfect' : (reason || 'gave_up'),
+      found: result.score, total: result.total, pct: pctOf(result.score, result.total),
+      time_sec: Math.floor(result.time / 1000),
+      streak: dailyState.unranked ? undefined : streakNow
+    });
+    if (dailyChallengeApplies(result)) {
+      var c = dailyState.challenge;
+      var mine = { score: result.score, time: Math.floor(result.time / 1000) * 1000 };
+      var outcome = (mine.score === c.score && mine.time === c.time) ? 'tie' : (dailyBetter(mine, c) ? 'win' : 'lose');
+      track('challenge_result', { daily_mode: mode, daily_num: c.day, outcome: outcome, found: result.score, total: result.total });
+    }
+    if (!dailyState.unranked) dailySyncStreakProps();
 
     // Keep the finished board on screen so players can study what they missed
     dailyUpdateStreakBadge();
@@ -3531,6 +3598,7 @@ const Q = (function() {
   }
 
   function coopCreate() {
+    track('room_create', { game_mode: 'coop' });
     const roomId = coopGenId();
     coopRoomId = roomId;
     coopRole = 'host';
@@ -3606,6 +3674,7 @@ const Q = (function() {
   }
 
   function coopJoin(hostId) {
+    track('room_join', { game_mode: 'coop' });
     coopRole = 'guest';
     coopRoomId = hostId;
     $('coop-status').textContent = 'Connecting to signaling server…';
@@ -3943,6 +4012,7 @@ const Q = (function() {
     var count = coopRevealed.size;
     var total = items.length;
     var pct = Math.round(count / total * 100);
+    track('room_end', { game_mode: 'coop', found: count, total: total, pct: pct, time_sec: Math.floor(elapsedMs / 1000) });
     saveToHistory(count, total, elapsedMs);
     $('coop-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">🤝 Team Result: ' +
       count + '/' + total + ' (' + pct + '%) in ' + fmtTime(elapsedMs) + '</div>';
@@ -4043,7 +4113,7 @@ const Q = (function() {
     }
     if (currentTab === 'daily' && dailyState.active && foundSet.size > 0) {
       if (!confirm('Leaving will end your daily challenge. Continue?')) return;
-      dailyComplete(false);
+      dailyComplete(false, 'left');
     }
     var _preserveSession = null;
     if ((currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)) {
@@ -4060,6 +4130,7 @@ const Q = (function() {
     $input.disabled = false;
     document.querySelector('.stats').style.display = '';
     currentTab = tab;
+    track('tab_view', { tab: tab });
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     if (window.history.replaceState) {
       var qs = window.location.search;
@@ -4203,6 +4274,9 @@ const Q = (function() {
     const matches = findAllMatches(val);
     if (matches.length > 0) {
       for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
+      if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
+        track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
+      }
       if ((currentTab === 'pokemon' || isDailyTab) && soundEnabled) playCry(items[matches[0]].id);
       if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
       flashInput(); updateUI(); this.value = '';
@@ -4342,6 +4416,8 @@ const Q = (function() {
     var result = dailyCurrentResult();
     var cfg = dailyModeCfg(result.mode);
     var link = dailyBuildChallengeUrl(result, name);
+    track('share', { method: navigator.share ? 'share_sheet' : 'clipboard', content_type: 'daily_challenge',
+                     item_id: result.mode + '-' + (result.dailyNum || dailyState.dailyNum) });
     var text = 'I named ' + result.score + '/' + result.total + ' in ' + fmtTime(result.time) +
                ' on NameEmAll Daily ' + cfg.label + ' #' + (result.dailyNum || dailyState.dailyNum) + '. Can you beat me? ⚔️';
     var btn = this;
@@ -4359,6 +4435,7 @@ const Q = (function() {
     }
   });
   $('daily-copy-btn').addEventListener('click', function() {
+    track('share', { method: 'copy', content_type: 'daily_result', item_id: dailyState.mode + '-' + dailyState.dailyNum });
     var result = dailyCurrentResult();
     var text = dailyShareText(result);
     var btn = this;
@@ -4376,6 +4453,7 @@ const Q = (function() {
     }
   });
   $('daily-share-btn').addEventListener('click', function() {
+    track('share', { method: navigator.share ? 'share_sheet' : 'clipboard', content_type: 'daily_result', item_id: dailyState.mode + '-' + dailyState.dailyNum });
     var result = dailyCurrentResult();
     var text = dailyShareText(result);
     if (navigator.share) {
@@ -4718,6 +4796,9 @@ const Q = (function() {
       var _archMatch = /^daily-(\d+)$/.exec(_hash);
       if (_challenge) {
         dailyState.challenge = _challenge;
+        var _todayN = dailyNumberFor(dailyTodayStr());
+        track('challenge_open', { daily_mode: _challenge.mode, daily_num: _challenge.day,
+          status: _challenge.day > _todayN ? 'future' : (_challenge.day === _todayN ? 'today' : 'archive') });
         if (window.history.replaceState) window.history.replaceState({}, '', window.location.pathname + '#daily');
         _hash = 'daily';
       } else if (_archMatch) {
