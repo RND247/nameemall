@@ -10,7 +10,7 @@
 <meta property="og:title" content="NameEmAll">
 <meta property="og:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://rnd247.github.io/pokequiz/">
+<meta property="og:url" content="https://rnd247.github.io/nameemall/">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NameEmAll">
 <meta name="twitter:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
@@ -796,6 +796,16 @@ const Q = (function() {
     try { if (typeof gtag === 'function') gtag('set', 'user_properties', props); } catch(e) {}
   }
   function pctOf(found, total) { return total ? Math.round(found / total * 100) : 0; }
+
+  // Per-Pokémon stats. guess_number = how many this player had named so far in the game (1 = first to mind).
+  function trackPokemon(eventName, idx, params) {
+    var w = items[idx];
+    if (!w || !w.n) return;
+    params = params || {};
+    params.pokemon_name = w.n;
+    if (w.id != null) params.pokemon_id = w.id;
+    track(eventName, params);
+  }
   let items = [];
   let foundSet = new Set();
   let displayOrder = [];
@@ -2553,6 +2563,9 @@ const Q = (function() {
         newReveals.push(idx);
       }
       if (newReveals.length > 0) {
+        for (var ti = 0; ti < newReveals.length; ti++) {
+          trackPokemon('pokemon_named', newReveals[ti], { game_mode: 'duel', guess_number: duelMyRevealed.size - newReveals.length + ti + 1 });
+        }
         duelConn.send({ type: 'reveal', indices: newReveals, player: duelRole });
         duelUpdateScore();
         flashInput();
@@ -2804,7 +2817,7 @@ const Q = (function() {
 
   var DAILY_ARCHIVE_KEY = 'daily_archive_v1';  // { 'YYYY-MM-DD': { mini: best, midi: best } } for past days (never counts toward streaks)
   var DAILY_NAME_KEY = 'daily_player_name';
-  var DAILY_SITE_URL = 'https://rnd247.github.io/pokequiz/';
+  var DAILY_SITE_URL = 'https://rnd247.github.io/nameemall/';
 
   var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, archive: false, lastResult: null, archivePick: null, challenge: null };
   var dailyCountdownTimer = null;
@@ -3347,6 +3360,9 @@ const Q = (function() {
       var outcome = (mine.score === c.score && mine.time === c.time) ? 'tie' : (dailyBetter(mine, c) ? 'win' : 'lose');
       track('challenge_result', { daily_mode: mode, daily_num: c.day, outcome: outcome, found: result.score, total: result.total });
     }
+    for (var mi = 0; mi < items.length; mi++) {
+      if (!foundSet.has(mi)) trackPokemon('pokemon_missed', mi, { game_mode: 'daily', daily_mode: mode, play_type: dailyPlayType(), daily_num: dailyState.dailyNum });
+    }
     if (!dailyState.unranked) dailySyncStreakProps();
 
     // Keep the finished board on screen so players can study what they missed
@@ -3864,6 +3880,9 @@ const Q = (function() {
         if (prevMine) prevMine.classList.remove('coop-last-mine');
         var lastCard = $('c' + newReveals[newReveals.length - 1]);
         if (lastCard) lastCard.classList.add('coop-last-mine');
+        for (var ti = 0; ti < newReveals.length; ti++) {
+          trackPokemon('pokemon_named', newReveals[ti], { game_mode: 'coop', guess_number: coopRevealed.size - newReveals.length + ti + 1 });
+        }
         coopConn.send({ type: 'reveal', indices: newReveals });
         for (var ri = 0; ri < newReveals.length; ri++) toast(items[newReveals[ri]]);
         if (soundEnabled) playCry(items[newReveals[0]].id);
@@ -4274,6 +4293,13 @@ const Q = (function() {
     const matches = findAllMatches(val);
     if (matches.length > 0) {
       for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
+      if (currentTab === 'pokemon' || isDailyTab) {
+        for (var mi = 0; mi < matches.length; mi++) {
+          trackPokemon('pokemon_named', matches[mi], isDailyTab
+            ? { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(), guess_number: foundSet.size - matches.length + mi + 1 }
+            : { game_mode: 'pokemon', guess_number: foundSet.size - matches.length + mi + 1 });
+        }
+      }
       if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
         track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
       }
