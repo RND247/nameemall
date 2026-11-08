@@ -50,6 +50,10 @@ body.light {
 body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
 .tab-bar { display: flex; justify-content: center; gap: 0; background: var(--bg2); border-bottom: 2px solid var(--border); }
+.lang-switch { position: fixed; top: 4px; left: 8px; z-index: 150; display: flex; align-items: center; gap: 4px; }
+.lang-switch .lang-label { font-size: 0.8rem; opacity: 0.8; }
+.lang-switch select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; padding: 2px 4px; cursor: pointer; }
+@media (max-width: 600px) { .tab-bar { padding-top: 26px; } .lang-switch { top: 3px; } }
 .app-version { position: fixed; top: 6px; right: 10px; z-index: 150; font-size: 0.68rem; font-weight: 500; color: var(--text-dim); opacity: 0.7; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; letter-spacing: 0.3px; }
 .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
 .tab-btn:hover { color: var(--text); }
@@ -511,6 +515,68 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 </style>
 </head>
 <body>
+<script src="i18n-ja.js"></script>
+<script>
+// ── Language (i18n) ──
+// English is the source language. Japanese (Beta) comes from i18n-ja.js.
+// Exact UI strings are translated automatically as they appear on the page;
+// strings built with numbers or names go through t() with {placeholders}.
+(function() {
+  var SUPPORTED = { en: 'English', ja: '日本語 (Beta)' };
+  var lang = 'en';
+  try { lang = localStorage.getItem('nea_lang') || 'en'; } catch(e) {}
+  if (!SUPPORTED[lang]) lang = 'en';
+  var dict = lang === 'ja' ? (window.NEA_JA || {}) : {};
+
+  window.NEA_LANG = lang;
+  window.NEA_LOCALE = lang === 'ja' ? 'ja-JP' : undefined;
+  window.NEA_LANGS = SUPPORTED;
+  document.documentElement.lang = lang;
+
+  window.t = function(key, vars) {
+    var s = Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : key;
+    if (vars) s = s.replace(/\{(\w+)\}/g, function(m, k) { return vars[k] != null ? vars[k] : m; });
+    return s;
+  };
+
+  if (lang === 'en') return;
+
+  var ATTRS = ['placeholder', 'title', 'aria-label'];
+  function trText(node) {
+    var raw = node.nodeValue, key = raw.trim();
+    if (key && Object.prototype.hasOwnProperty.call(dict, key)) node.nodeValue = raw.replace(key, dict[key]);
+  }
+  function trAttrs(el) {
+    for (var i = 0; i < ATTRS.length; i++) {
+      var v = el.getAttribute(ATTRS[i]);
+      if (v && Object.prototype.hasOwnProperty.call(dict, v.trim())) el.setAttribute(ATTRS[i], dict[v.trim()]);
+    }
+  }
+  function skip(el) { return el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.hasAttribute('data-no-i18n'); }
+  function walk(root) {
+    if (root.nodeType === 3) { if (!root.parentElement || !skip(root.parentElement)) trText(root); return; }
+    if (root.nodeType !== 1 || skip(root)) return;
+    trAttrs(root);
+    var tw = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+      acceptNode: function(n) { return n.nodeType === 1 && skip(n) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }
+    });
+    var n;
+    while ((n = tw.nextNode())) { if (n.nodeType === 3) trText(n); else trAttrs(n); }
+  }
+  new MutationObserver(function(muts) {
+    for (var i = 0; i < muts.length; i++) {
+      var m = muts[i];
+      if (m.type === 'childList') { for (var j = 0; j < m.addedNodes.length; j++) walk(m.addedNodes[j]); }
+      else if (m.type === 'characterData') { if (!m.target.parentElement || !skip(m.target.parentElement)) trText(m.target); }
+      else if (m.type === 'attributes') trAttrs(m.target);
+    }
+  }).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+})();
+</script>
+<div class="lang-switch">
+  <label for="lang-select" class="lang-label">🌐</label>
+  <select id="lang-select" aria-label="Language"></select>
+</div>
 
 <!-- App version: sourced from version.txt; bump via ./bump.sh -->
 <div class="app-version" id="app-version"></div>
@@ -789,6 +855,7 @@ const Q = (function() {
   })();
   function track(name, params) {
     params = params || {};
+    params.language = NEA_LANG;
     if (GA_DEBUG) { params.debug_mode = true; console.log('[GA]', name, params); }
     try { if (typeof gtag === 'function') gtag('event', name, params); } catch(e) {}
   }
@@ -796,6 +863,31 @@ const Q = (function() {
     try { if (typeof gtag === 'function') gtag('set', 'user_properties', props); } catch(e) {}
   }
   function pctOf(found, total) { return total ? Math.round(found / total * 100) : 0; }
+
+  // ── Language selector ──
+  (function() {
+    var sel = document.getElementById('lang-select');
+    if (!sel) return;
+    Object.keys(NEA_LANGS).forEach(function(code) {
+      var o = document.createElement('option');
+      o.value = code; o.textContent = NEA_LANGS[code];
+      o.setAttribute('data-no-i18n', '');
+      if (code === NEA_LANG) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function() {
+      var next = sel.value;
+      // Regular/Co-Op progress is saved; an active Daily is not, so confirm first
+      if (typeof dailyState !== 'undefined' && dailyState.active && foundSet.size > 0 &&
+          !confirm(t('Switching language reloads the page and ends your current daily challenge. Continue?'))) {
+        sel.value = NEA_LANG;
+        return;
+      }
+      track('language_change', { from: NEA_LANG, to: next });
+      try { localStorage.setItem('nea_lang', next); } catch(e) {}
+      location.reload();
+    });
+  })();
 
   // Per-Pokémon stats. guess_number = how many this player had named so far in the game (1 = first to mind).
   function trackPokemon(eventName, idx, params) {
@@ -870,7 +962,20 @@ const Q = (function() {
   function stripTones(s) { let o = ''; for (const c of s) o += TONE_MAP[c] || c; return o.toLowerCase(); }
 
   function buildMandarinKeys(w) { const a = stripTones(w.p); return [a, a.replace(/\s+/g, '')]; }
-  function buildPokemonKeys(w) { return w.k; }
+  // Normalize typed answers so Japanese input matches however it was typed:
+  // NFKC folds full-width letters/digits/colons (ポリゴンＺ -> ポリゴンZ), then lowercase,
+  // then hiragana -> katakana (みゅう -> ミュウ). Must stay in sync with build_japanese_names.py.
+  function normalizeAnswer(s) {
+    s = String(s || '');
+    if (s.normalize) s = s.normalize('NFKC');
+    s = s.toLowerCase().trim();
+    return s.replace(/[\u3041-\u3096]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); });
+  }
+  // Every accepted answer for a Pokémon: English keys plus Japanese keys (accepted in any UI language)
+  function pokemonKeys(w) { return w.kj ? w.k.concat(w.kj) : w.k; }
+  function buildPokemonKeys(w) { return pokemonKeys(w); }
+  // Name shown on screen (Japanese in ja). Analytics keeps using w.n so GA stays in English.
+  function displayName(w) { return (NEA_LANG === 'ja' && w && w.j) ? w.j : (w ? w.n : ''); }
 
   function buildIndex() {
     keyToIndices = {};
@@ -880,7 +985,7 @@ const Q = (function() {
   }
 
   function findAllMatches(input) {
-    const q = input.toLowerCase().trim();
+    const q = normalizeAnswer(input);
     if (!q) return [];
     return (keyToIndices[q] || []).filter(i => !foundSet.has(i));
   }
@@ -907,7 +1012,7 @@ const Q = (function() {
   function toastDupe(w) {
     var el = document.createElement('div');
     el.className = 'toast toast-dupe';
-    el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n + ' - already found!';
+    el.innerHTML = '<img src="' + w.s + '" alt=""> ' + t('{name} - already found!', { name: displayName(w) });
     $toasts.appendChild(el);
     setTimeout(function() { el.remove(); }, 2000);
   }
@@ -917,8 +1022,9 @@ const Q = (function() {
     if (!full) return null;
     for (var i = 0; i < full.length; i++) {
       var p = full[i];
-      for (var ki = 0; ki < p.k.length; ki++) {
-        if (p.k[ki] === q) return p;
+      var pk = pokemonKeys(p);
+      for (var ki = 0; ki < pk.length; ki++) {
+        if (pk[ki] === q) return p;
       }
     }
     return null;
@@ -936,7 +1042,7 @@ const Q = (function() {
   function toastOutsideGen(p) {
     var el = document.createElement('div');
     el.className = 'toast toast-dupe';
-    el.innerHTML = '<img src="' + p.s + '" alt=""> ' + p.n + ' is not in the selected generations';
+    el.innerHTML = '<img src="' + p.s + '" alt=""> ' + t('{name} is not in the selected generations', { name: displayName(p) });
     $toasts.appendChild(el);
     setTimeout(function() { el.remove(); }, 2500);
   }
@@ -1041,7 +1147,7 @@ const Q = (function() {
     let html = '';
     list.forEach(function(r) {
       const d = new Date(r.date);
-      const dateStr = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+      const dateStr = d.toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(NEA_LOCALE, { hour: '2-digit', minute: '2-digit' });
       const pct = (r.count / r.total * 100).toFixed(1);
       const cls = r.count === r.total ? 'complete' : 'partial';
       html += '<div class="sb-row"><span class="sb-date">' + dateStr + '</span><span class="sb-result ' + cls + '">' + r.count + '/' + r.total + ' (' + pct + '%)</span><span class="sb-time">' + fmtTime(r.time) + '</span></div>';
@@ -1101,13 +1207,13 @@ const Q = (function() {
     html += '</div><div class="gen-selector-actions">' +
       '<button data-action="all" id="' + prefix + '-gen-all">All</button>' +
       '<button data-action="none" id="' + prefix + '-gen-none">None</button>' +
-      '</div><div class="gen-total" id="' + prefix + '-gen-total">' + genTotal(activeGens) + ' Pokémon</div></div>';
+      '</div><div class="gen-total" id="' + prefix + '-gen-total">' + t('{count} Pokémon', { count: genTotal(activeGens) }) + '</div></div>';
     return html;
   }
 
   function updateGenTotal(prefix, gensSet) {
     var el = $(prefix + '-gen-total');
-    if (el) el.textContent = genTotal(gensSet) + ' Pokémon';
+    if (el) el.textContent = t('{count} Pokémon', { count: genTotal(gensSet) });
   }
 
   function wireGenSelector(prefix, gensSet, onChange) {
@@ -1214,7 +1320,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         const hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = region + ' (Gen ' + REGION_GEN[region] + ') <span class="region-count" id="rc-' + region + '">' + found + '/' + list.length + '</span>';
+        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">' + found + '/' + list.length + '</span>';
         sec.appendChild(hdr);
         const grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -1382,7 +1488,7 @@ const Q = (function() {
       c.title = w.t + ' (' + w.p + ') - ' + fullMeaning(w);
     } else {
       c.querySelector('.poke-sprite').src = w.s;
-      c.querySelector('.poke-name').textContent = w.n;
+      c.querySelector('.poke-name').textContent = displayName(w);
       c.querySelector('.poke-gen').textContent = w.g;
       addFormToggle(c, w);
       applyTypeBg(c, w);
@@ -1400,7 +1506,7 @@ const Q = (function() {
       c.title = w.t + ' (' + w.p + ') - ' + fullMeaning(w);
     } else {
       c.querySelector('.poke-sprite').src = w.s;
-      c.querySelector('.poke-name').textContent = w.n;
+      c.querySelector('.poke-name').textContent = displayName(w);
       c.querySelector('.poke-gen').textContent = w.g;
       addFormToggle(c, w);
       applyTypeBg(c, w);
@@ -1413,7 +1519,7 @@ const Q = (function() {
     if (currentTab === 'mandarin') {
       el.innerHTML = '<span class="tc">' + w.t + '</span> ' + w.p + ' - ' + displayMeaning(w);
     } else {
-      el.innerHTML = '<img src="' + w.s + '" alt=""> ' + w.n;
+      el.innerHTML = '<img src="' + w.s + '" alt=""> ' + displayName(w);
     }
     $toasts.appendChild(el);
     setTimeout(() => el.remove(), 2700);
@@ -1459,10 +1565,10 @@ const Q = (function() {
       node.className = 'evo-node';
       if (w) {
         var img = document.createElement('img');
-        img.src = w.s; img.alt = w.n;
+        img.src = w.s; img.alt = displayName(w);
         node.appendChild(img);
         var nm = document.createElement('div');
-        nm.className = 'fm-name'; nm.textContent = w.n;
+        nm.className = 'fm-name'; nm.textContent = displayName(w);
         node.appendChild(nm);
       }
       return node;
@@ -1560,7 +1666,7 @@ const Q = (function() {
     el.className = 'toast family-toast';
     const label = document.createElement('div');
     label.className = 'family-label';
-    label.textContent = region + ' (Gen ' + REGION_GEN[region] + ') Complete!';
+    label.textContent = t('{region} (Gen {gen}) Complete!', { region: t(region), gen: REGION_GEN[region] });
     label.style.fontSize = '0.85rem';
     el.appendChild(label);
     $toasts.appendChild(el);
@@ -1594,13 +1700,13 @@ const Q = (function() {
     {
       $('modal-score').textContent = count + ' / ' + items.length;
     }
-    $('modal-time').textContent = 'in ' + fmtTime(elapsedMs);
+    $('modal-time').textContent = t('in {time}', { time: fmtTime(elapsedMs) });
     $('modal-pct').textContent = (count / items.length * 100).toFixed(1) + '%';
     saveToHistory(count, items.length, elapsedMs);
     const hs = saveHighscore(count, elapsedMs);
     const hsParts = [];
-    if (hs.bestCount) hsParts.push('Best: ' + hs.bestCount + '/' + items.length);
-    if (hs.bestTime) hsParts.push('Record: ' + fmtTime(hs.bestTime));
+    if (hs.bestCount) hsParts.push(t('Best: {count}/{total}', { count: hs.bestCount, total: items.length }));
+    if (hs.bestTime) hsParts.push(t('Record: {time}', { time: fmtTime(hs.bestTime) }));
     $('modal-best').textContent = hsParts.join(' · ');
     displayHighscore();
     $overlay.classList.add('active');
@@ -1657,7 +1763,7 @@ const Q = (function() {
     const formTypes = form && form.t && form.t.length ? form.t : null;
 
     $('pp-sprite').src = formSprite;
-    $('pp-name').textContent = formLabel ? w.n + ' (' + formLabel + ')' : w.n;
+    $('pp-name').textContent = formLabel ? displayName(w) + ' (' + t(formLabel) + ')' : displayName(w);
     $('pp-id').textContent = '#' + String(id).padStart(4, '0');
     $('pp-region').textContent = w.g;
     $('pp-types').innerHTML = '';
@@ -1764,7 +1870,7 @@ const Q = (function() {
   function giveUp() {
     if (currentTab === 'daily') {
       if (!dailyState.active) return;
-      if (!confirm('Give up the daily challenge? Remaining Pokémon will be revealed.')) return;
+      if (!confirm(t('Give up the daily challenge? Remaining Pokémon will be revealed.'))) return;
       stopTimer(); $input.disabled = true;
       track('give_up', { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(),
                          found: foundSet.size, total: items.length, pct: pctOf(foundSet.size, items.length),
@@ -1774,7 +1880,7 @@ const Q = (function() {
       return;
     }
     if (givenUp) return;
-    if (!confirm('Give up? All remaining Pokémon will be revealed.')) return;
+    if (!confirm(t('Give up? All remaining Pokémon will be revealed.'))) return;
     givenUp = true; stopTimer(); $input.disabled = true;
     track('give_up', { game_mode: currentTab, found: foundSet.size, total: items.length,
                        pct: pctOf(foundSet.size, items.length), time_sec: Math.floor(elapsedMs / 1000) });
@@ -1785,13 +1891,13 @@ const Q = (function() {
 
   function reset() {
     if (currentTab === 'daily') {
-      if (dailyState.active && foundSet.size > 0 && !confirm('Exit the daily challenge? Your progress will be lost.')) return;
+      if (dailyState.active && foundSet.size > 0 && !confirm(t('Exit the daily challenge? Your progress will be lost.'))) return;
       dailyState.active = false;
       stopTimer(); timerRunning = false;
       dailyExitToLobby();
       return;
     }
-    if (foundSet.size > 0 && !confirm('Reset? All progress will be lost.')) return;
+    if (foundSet.size > 0 && !confirm(t('Reset? All progress will be lost.'))) return;
     givenUp = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
@@ -1895,11 +2001,11 @@ const Q = (function() {
       wtpCorrect++;
       foundSet.add(wtpOrder[wtpIdx]);
       if (card) card.classList.add('correct');
-      if (info) info.innerHTML = '<div class="wtp-name">' + w.n + '</div><div class="wtp-dex">#' + w.id + '</div>';
+      if (info) info.innerHTML = '<div class="wtp-name">' + displayName(w) + '</div><div class="wtp-dex">#' + w.id + '</div>';
       if (soundEnabled) playCry(w.id);
     } else {
       if (card) card.classList.add('wrong');
-      if (info) info.innerHTML = '<div class="wtp-name missed">' + w.n + '</div><div class="wtp-dex">#' + w.id + '</div>';
+      if (info) info.innerHTML = '<div class="wtp-name missed">' + displayName(w) + '</div><div class="wtp-dex">#' + w.id + '</div>';
     }
     $foundCount.textContent = wtpCorrect;
     wtpShowGenButtons();
@@ -1910,7 +2016,7 @@ const Q = (function() {
     const genGrid = $('wtp-gen-grid');
     if (!genSection || !genGrid) return;
     genGrid.innerHTML = WTP_REGIONS.map(function(r, i) {
-      return '<button class="wtp-gen-btn" data-region="' + r + '">' + r + ' (Gen ' + (i + 1) + ')</button>';
+      return '<button class="wtp-gen-btn" data-region="' + r + '">' + t('{region} (Gen {gen})', { region: t(r), gen: i + 1 }) + '</button>';
     }).join('');
     genSection.style.display = '';
     genGrid.querySelectorAll('.wtp-gen-btn').forEach(function(btn) {
@@ -1971,8 +2077,8 @@ const Q = (function() {
     if (wtpRevealed || !val) return;
     const w = wtpCurrent();
     if (!w) return;
-    const q = val.toLowerCase().replace(/[-\s]/g, '');
-    for (const k of w.k) {
+    const q = normalizeAnswer(val).replace(/[-\s]/g, '');
+    for (const k of pokemonKeys(w)) {
       if (q === k) { wtpReveal(true); return; }
     }
   }
@@ -2244,7 +2350,7 @@ const Q = (function() {
     if (orDiv) orDiv.style.display = 'none';
     var settings = document.querySelector('.duel-settings');
     if (settings) settings.style.display = 'none';
-    $('duel-status').textContent = 'Joining room ' + code + '…';
+    $('duel-status').textContent = t('Joining room {code}…', { code: code });
     duelJoin(hostId);
   }
 
@@ -2315,7 +2421,7 @@ const Q = (function() {
       clearTimeout(duelConnTimeout);
       if (err.type === 'peer-unavailable') return;
       if (!duelActive) {
-        $('duel-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
+        $('duel-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
         $('duel-create-btn').style.display = '';
         $('duel-create-btn').disabled = false;
         $('duel-create-btn').textContent = 'Create Duel';
@@ -2364,7 +2470,7 @@ const Q = (function() {
         setTimeout(function() { duelJoin(hostId); }, 2000);
         return;
       }
-      $('duel-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
+      $('duel-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
     });
     duelPeer.on('disconnected', function() {
       if (!duelActive) {
@@ -2461,7 +2567,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         var hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = region + ' (Gen ' + REGION_GEN[region] + ') <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
+        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
         sec.appendChild(hdr);
         var grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -2536,7 +2642,7 @@ const Q = (function() {
     if (isMe) {
       c.className = 'card duel-mine ' + colorClass;
       c.querySelector('.poke-sprite').src = w.s;
-      c.querySelector('.poke-name').textContent = w.n;
+      c.querySelector('.poke-name').textContent = displayName(w);
       c.querySelector('.poke-gen').textContent = w.g;
       applyTypeBg(c, w);
       addFormToggle(c, w);
@@ -2575,7 +2681,7 @@ const Q = (function() {
           if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 50);
       } else {
-        var q = val.toLowerCase().trim();
+        var q = normalizeAnswer(val);
         if (!hasAnyExtension(q)) {
           toastDupe(items[matches[0]]);
           flashInputDupe();
@@ -2583,7 +2689,7 @@ const Q = (function() {
         }
       }
     } else if (val.length > 0) {
-      var q = val.toLowerCase().trim();
+      var q = normalizeAnswer(val);
       var outsidePoke = isOutsideSelectedGens(q);
       if (outsidePoke) {
         toastOutsideGen(outsidePoke);
@@ -2690,7 +2796,7 @@ const Q = (function() {
         var sp = c.querySelector('.poke-sprite');
         if (sp) sp.src = w.s;
         var nm = c.querySelector('.poke-name');
-        if (nm) nm.textContent = w.n;
+        if (nm) nm.textContent = displayName(w);
         var gn = c.querySelector('.poke-gen');
         if (gn) gn.textContent = w.g;
         if (duelOwner[i]) {
@@ -2711,7 +2817,7 @@ const Q = (function() {
     track('room_end', { game_mode: 'duel', outcome: winner === 'Tie' ? 'tie' : (winner === myColor ? 'win' : 'lose'),
                         my_score: myColor === 'Blue' ? bc : rc, opp_score: myColor === 'Blue' ? rc : bc,
                         total: items.length, time_sec: Math.floor(elapsedMs / 1000) });
-    $('duel-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">' + result +
+    $('duel-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">' + t(result) +
       ' - 🔵 ' + bc + ' vs ' + rc + ' 🔴</div>';
   }
 
@@ -2808,8 +2914,8 @@ const Q = (function() {
 
   var DAILY_EPOCH = '2026-04-30'; // Daily #1 = this date
   var DAILY_MODES = {
-    mini: { key: 'mini', label: 'Mini', size: 5,  icon: '⚡', blurb: 'Quick 5, perfect for a coffee break' },
-    midi: { key: 'midi', label: 'Midi', size: 30, icon: '🎯', blurb: '30 silhouettes for a real test' }
+    mini: { key: 'mini', label: t('Mini'), size: 5,  icon: '⚡', blurb: t('Quick 5, perfect for a coffee break') },
+    midi: { key: 'midi', label: t('Midi'), size: 30, icon: '🎯', blurb: t('30 silhouettes for a real test') }
   };
   var DAILY_MODE_ORDER = ['mini', 'midi'];
   var DAILY_STORAGE_KEY = 'daily_results_v2';   // { 'YYYY-MM-DD': { mini: result, midi: result } }
@@ -2836,7 +2942,7 @@ const Q = (function() {
     // s = "YYYY-MM-DD"
     var parts = s.split('-');
     var d = new Date(parts[0], parseInt(parts[1], 10) - 1, parts[2]);
-    return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString(NEA_LOCALE, { weekday: 'long', month: 'short', day: 'numeric' });
   }
 
   function dailyDaysSinceEpoch(yyyymmdd) {
@@ -2949,13 +3055,13 @@ const Q = (function() {
   function dailyCompareText(result, c) {
     // Challenge links carry whole seconds, so compare at that precision
     result = { score: result.score, total: result.total, time: Math.floor((result.time || 0) / 1000) * 1000 };
-    var you = result.score + '/' + result.total + ' in ' + fmtTime(result.time);
-    var them = c.score + '/' + c.total + ' in ' + fmtTime(c.time);
+    var you = t('{score}/{total} in {time}', { score: result.score, total: result.total, time: fmtTime(result.time) });
+    var them = t('{score}/{total} in {time}', { score: c.score, total: c.total, time: fmtTime(c.time) });
     var verdict;
-    if (result.score === c.score && result.time === c.time) verdict = '🤝 Dead even with ' + c.name + '!';
-    else if (dailyBetter(result, c)) verdict = '🏆 You beat ' + c.name + '!';
-    else verdict = '😅 ' + c.name + ' wins this one';
-    return verdict + '\nYou: ' + you + ' · ' + c.name + ': ' + them;
+    if (result.score === c.score && result.time === c.time) verdict = t('🤝 Dead even with {name}!', { name: c.name });
+    else if (dailyBetter(result, c)) verdict = t('🏆 You beat {name}!', { name: c.name });
+    else verdict = t('😅 {name} wins this one', { name: c.name });
+    return verdict + '\n' + t('You: {you} · {name}: {them}', { you: you, name: c.name, them: them });
   }
   function dailyLoadLegacy() { return dailyLoadJSON(DAILY_LEGACY_KEY); }
 
@@ -3068,13 +3174,13 @@ const Q = (function() {
       cards +=
         '<div class="dl-mode-card' + (r ? ' dl-mode-done' : '') + (perfect ? ' dl-mode-perfect' : '') + '">' +
           '<div class="dl-mode-head"><span class="dl-mode-name">' + cfg.icon + ' ' + cfg.label + '</span>' +
-            '<span class="dl-mode-size">' + cfg.size + ' Pokémon</span></div>' +
+            '<span class="dl-mode-size">' + t('{count} Pokémon', { count: cfg.size }) + '</span></div>' +
           (r
             ? '<div class="dl-mode-result">' + (perfect ? '🏆 ' : (r.gaveUp ? '🏳️ ' : '✓ ')) + r.score + ' / ' + r.total + ' · ' + fmtTime(r.time) + '</div>' +
               '<button class="btn dl-play" data-dl-view="' + mode + '">View Result</button>' +
               '<button class="btn dl-play dl-replay" data-dl-replay="' + mode + '">Replay (unranked)</button>'
             : '<div class="dl-mode-blurb">' + cfg.blurb + '</div>' +
-              '<button class="btn danger dl-play" data-dl-play="' + mode + '">Play ' + cfg.label + '</button>') +
+              '<button class="btn danger dl-play" data-dl-play="' + mode + '">' + t('Play {label}', { label: cfg.label }) + '</button>') +
         '</div>';
     });
 
@@ -3083,12 +3189,12 @@ const Q = (function() {
     lobby.innerHTML =
       '<div id="dl-challenge"></div>' +
       '<div class="dl-eyebrow">Today\'s Challenges</div>' +
-      '<h2>🗓️ Daily #' + dailyNum + '</h2>' +
-      '<div class="dl-date">' + dailyDateLabel(todayStr) + ' · silhouettes 🔍</div>' +
+      '<h2>' + t('🗓️ Daily #{num}', { num: dailyNum }) + '</h2>' +
+      '<div class="dl-date">' + t('{date} · silhouettes 🔍', { date: dailyDateLabel(todayStr) }) + '</div>' +
       '<div class="dl-streak-row">' +
         DAILY_MODE_ORDER.map(function(m) {
           return '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + dailyComputeStreak(todayStr, m) + '🔥</div>' +
-                 '<div class="dl-stat-label">' + DAILY_MODES[m].label + ' Streak</div></div>';
+                 '<div class="dl-stat-label">' + t('{label} Streak', { label: DAILY_MODES[m].label }) + '</div></div>';
         }).join('') +
         '<div class="dl-stat"><div class="dl-stat-num">' + dailyPlayedDays(all, legacy) + '</div><div class="dl-stat-label">Days Played</div></div>' +
       '</div>' +
@@ -3137,8 +3243,8 @@ const Q = (function() {
     if (!c) { el.innerHTML = ''; return; }
     var cfg = DAILY_MODES[c.mode];
     var todayStr = dailyTodayStr(), todayNum = dailyNumberFor(todayStr);
-    var head = '<div class="dl-ch-title">⚔️ <span id="dl-ch-name"></span> challenged you!</div>' +
-               '<div class="dl-ch-stat">Daily ' + cfg.label + ' #' + c.day + ' · ' + c.score + '/' + c.total + ' in ' + fmtTime(c.time) + '</div>';
+    var head = '<div class="dl-ch-title" id="dl-ch-title" data-no-i18n></div>' +
+               '<div class="dl-ch-stat">' + t('Daily {label} #{num} · {score}/{total} in {time}', { label: cfg.label, num: c.day, score: c.score, total: c.total, time: fmtTime(c.time) }) + '</div>';
     var body;
     if (c.day > todayNum) {
       body = '<div class="dl-ch-note">That Daily hasn\'t started in your time zone yet. Come back after midnight!</div>';
@@ -3149,14 +3255,14 @@ const Q = (function() {
              '<button class="btn dl-replay" data-dl-ch-replay="1">Replay (unranked)</button></div>';
       el.innerHTML = '<div class="dl-challenge">' + head + body + '<button class="dl-ch-x" data-dl-ch-dismiss="1" title="Dismiss">✕</button></div>';
       el.querySelector('.dl-ch-vs').textContent = dailyCompareText(mine, c);
-      $('dl-ch-name').textContent = c.name;
+      $('dl-ch-title').textContent = '⚔️ ' + t('{name} challenged you!', { name: c.name });
       return;
     } else {
-      body = '<div class="dl-ch-note">' + (c.day === todayNum ? 'Same ' + c.total + ' silhouettes, can you beat it?' : 'From the archive, plays unranked.') + '</div>' +
+      body = '<div class="dl-ch-note">' + (c.day === todayNum ? t('Same {count} silhouettes, can you beat it?', { count: c.total }) : t('From the archive, plays unranked.')) + '</div>' +
              '<div class="dl-ch-btns"><button class="btn danger" data-dl-ch-accept="1">Accept Challenge</button></div>';
     }
     el.innerHTML = '<div class="dl-challenge">' + head + body + '<button class="dl-ch-x" data-dl-ch-dismiss="1" title="Dismiss">✕</button></div>';
-    $('dl-ch-name').textContent = c.name;
+    $('dl-ch-title').textContent = '⚔️ ' + t('{name} challenged you!', { name: c.name });
   }
 
   function dailyRenderArchive() {
@@ -3177,7 +3283,7 @@ const Q = (function() {
       '<h3>📚 Archive</h3>' +
       '<div class="dl-arch-nav">' +
         '<button class="btn dl-arch-arrow" data-dl-arch-nav="-1"' + (n <= 1 ? ' disabled' : '') + ' title="Previous day">◀</button>' +
-        '<div class="dl-arch-day"><div class="dl-arch-num">Daily #' + n + '</div><div class="dl-arch-date">' + dailyDateLabel(dateStr) + '</div></div>' +
+        '<div class="dl-arch-day"><div class="dl-arch-num">' + t('Daily #{num}', { num: n }) + '</div><div class="dl-arch-date">' + dailyDateLabel(dateStr) + '</div></div>' +
         '<button class="btn dl-arch-arrow" data-dl-arch-nav="1"' + (n >= maxN ? ' disabled' : '') + ' title="Next day">▶</button>' +
         '<button class="btn dl-arch-arrow" data-dl-arch-nav="random" title="Random day">🎲</button>' +
       '</div>' +
@@ -3202,8 +3308,8 @@ const Q = (function() {
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i], day = all[k];
       var scores;
-      if (day) scores = fmt('Mini', day.mini) + fmt('Midi', day.midi);
-      else scores = fmt('Classic', legacy[k]);
+      if (day) scores = fmt(t('Mini'), day.mini) + fmt(t('Midi'), day.midi);
+      else scores = fmt(t('Classic'), legacy[k]);
       rows += '<div class="dl-hist-row">' +
               '<span class="dl-h-day">#' + dailyNumberFor(k) + ' · ' + dailyDateLabel(k) + '</span>' +
               '<span class="dl-h-scores">' + scores + '</span>' +
@@ -3270,7 +3376,7 @@ const Q = (function() {
       $('daily-sticky').style.display = '';
 
       $('db-num').textContent = cfg.label + ' #' + dailyState.dailyNum;
-      $('db-date').textContent = dailyDateLabel(todayStr) + (isArchive ? ' · Archive' : (dailyState.unranked ? ' · Unranked' : ''));
+      $('db-date').textContent = dailyDateLabel(todayStr) + (isArchive ? ' · ' + t('Archive') : (dailyState.unranked ? ' · ' + t('Unranked') : ''));
       dailyUpdateStreakBadge();
 
       renderGrid();
@@ -3381,15 +3487,15 @@ const Q = (function() {
       titleEl.textContent = perfect ? '🏆 Perfect Run!' : (justWon ? 'Daily Complete!' : 'Daily Result');
       titleEl.className = perfect || justWon ? 'win' : 'lose';
     }
-    $('daily-result-sub').textContent = '🗓️ Daily ' + cfg.label + ' #' + dailyNum + ' · ' + dailyDateLabel(todayStr) +
-      (dailyState.archive ? ' · Archive' : (dailyState.unranked ? ' · Unranked' : ''));
+    $('daily-result-sub').textContent = t('🗓️ Daily {label} #{num} · {date}', { label: cfg.label, num: dailyNum, date: dailyDateLabel(todayStr) }) +
+      (dailyState.archive ? ' · ' + t('Archive') : (dailyState.unranked ? ' · ' + t('Unranked') : ''));
     $('daily-result-score').textContent = result.score + ' / ' + result.total;
-    $('daily-result-time').textContent = 'in ' + fmtTime(result.time);
+    $('daily-result-time').textContent = t('in {time}', { time: fmtTime(result.time) });
     var streak = dailyComputeStreak(todayStr, cfg.key);
     var streakMsg = '';
     if (!dailyState.unranked) {
-      if (streak > 0) streakMsg = '🔥 ' + streak + '-day ' + cfg.label + ' streak';
-      else if (!dailyIsSuccess(result)) streakMsg = '💔 ' + cfg.label + ' streak reset, name them all to keep it going';
+      if (streak > 0) streakMsg = t('🔥 {count}-day {label} streak', { count: streak, label: cfg.label });
+      else if (!dailyIsSuccess(result)) streakMsg = t('💔 {label} streak reset, name them all to keep it going', { label: cfg.label });
     }
     $('daily-result-streak').textContent = streakMsg;
 
@@ -3426,8 +3532,8 @@ const Q = (function() {
     var cfg = dailyModeCfg(result.mode || dailyState.mode);
     var dailyNum = result.dailyNum || dailyState.dailyNum;
     var pct = Math.round((result.score / result.total) * 100);
-    var header = 'NameEmAll · Daily ' + cfg.label + ' #' + dailyNum + (dailyState.archive ? ' (archive)' : '');
-    var stats = result.score + '/' + result.total + ' (' + pct + '%) in ' + fmtTime(result.time);
+    var header = t('NameEmAll · Daily {label} #{num}', { label: cfg.label, num: dailyNum }) + (dailyState.archive ? t(' (archive)') : '');
+    var stats = t('{score}/{total} ({pct}%) in {time}', { score: result.score, total: result.total, pct: pct, time: fmtTime(result.time) });
     var grid = dailyBuildShareGrid(result);
     var url = DAILY_SITE_URL;
     return header + '\n' + stats + '\n\n' + grid + '\n\n' + url;
@@ -3609,7 +3715,7 @@ const Q = (function() {
     if (orDiv) orDiv.style.display = 'none';
     var settings = document.querySelector('.duel-lobby .duel-settings');
     if (settings) settings.style.display = 'none';
-    $('coop-status').textContent = 'Joining room ' + code + '…';
+    $('coop-status').textContent = t('Joining room {code}…', { code: code });
     coopJoin(hostId);
   }
 
@@ -3675,7 +3781,7 @@ const Q = (function() {
       clearTimeout(coopConnTimeout);
       if (err.type === 'peer-unavailable') return;
       if (!coopActive) {
-        $('coop-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
+        $('coop-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
         $('coop-create-btn').style.display = '';
         $('coop-create-btn').disabled = false;
         $('coop-create-btn').textContent = 'Create Room';
@@ -3724,7 +3830,7 @@ const Q = (function() {
         setTimeout(function() { coopJoin(hostId); }, 2000);
         return;
       }
-      $('coop-status').textContent = 'Error: ' + err.type + ' - ' + (err.message || 'Try refreshing.');
+      $('coop-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
     });
     coopPeer.on('disconnected', function() {
       if (!coopActive) {
@@ -3816,7 +3922,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         var hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = region + ' (Gen ' + REGION_GEN[region] + ') <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
+        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
         sec.appendChild(hdr);
         var grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -3858,7 +3964,7 @@ const Q = (function() {
     const w = items[idx];
     c.className = 'card coop-found';
     c.querySelector('.poke-sprite').src = w.s;
-    c.querySelector('.poke-name').textContent = w.n;
+    c.querySelector('.poke-name').textContent = displayName(w);
     c.querySelector('.poke-gen').textContent = w.g;
     applyTypeBg(c, w);
     addFormToggle(c, w);
@@ -3897,7 +4003,7 @@ const Q = (function() {
         }, 50);
         if (coopRevealed.size === items.length) { stopTimer(); coopEnd(); }
       } else {
-        var q = val.toLowerCase().trim();
+        var q = normalizeAnswer(val);
         if (!hasAnyExtension(q)) {
           toastDupe(items[matches[0]]);
           flashInputDupe();
@@ -3905,7 +4011,7 @@ const Q = (function() {
         }
       }
     } else if (val.length > 0) {
-      var q = val.toLowerCase().trim();
+      var q = normalizeAnswer(val);
       var outsidePoke = isOutsideSelectedGens(q);
       if (outsidePoke) {
         toastOutsideGen(outsidePoke);
@@ -4020,7 +4126,7 @@ const Q = (function() {
         var sp = c.querySelector('.poke-sprite');
         if (sp) sp.src = w.s;
         var nm = c.querySelector('.poke-name');
-        if (nm) nm.textContent = w.n;
+        if (nm) nm.textContent = displayName(w);
         var gn = c.querySelector('.poke-gen');
         if (gn) gn.textContent = w.g;
         c.className = 'card missed';
@@ -4033,8 +4139,8 @@ const Q = (function() {
     var pct = Math.round(count / total * 100);
     track('room_end', { game_mode: 'coop', found: count, total: total, pct: pct, time_sec: Math.floor(elapsedMs / 1000) });
     saveToHistory(count, total, elapsedMs);
-    $('coop-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">🤝 Team Result: ' +
-      count + '/' + total + ' (' + pct + '%) in ' + fmtTime(elapsedMs) + '</div>';
+    $('coop-finish-bar').innerHTML = '<div style="font-size:1rem;font-weight:800;color:var(--text);">' +
+      t('🤝 Team Result: {count}/{total} ({pct}%) in {time}', { count: count, total: total, pct: pct, time: fmtTime(elapsedMs) }) + '</div>';
   }
 
   function coopShowStatus(msg) {
@@ -4124,19 +4230,19 @@ const Q = (function() {
   function switchTab(tab) {
     if (tab === currentTab && items.length) return;
     if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
-      if (!confirm('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?')) return;
+      if (!confirm(t('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?'))) return;
       givenUp = true; stopTimer(); $input.disabled = true;
       for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
       save();
       showModal(false);
     }
     if (currentTab === 'daily' && dailyState.active && foundSet.size > 0) {
-      if (!confirm('Leaving will end your daily challenge. Continue?')) return;
+      if (!confirm(t('Leaving will end your daily challenge. Continue?'))) return;
       dailyComplete(false, 'left');
     }
     var _preserveSession = null;
     if ((currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)) {
-      if (!confirm('You\'ll disconnect from the room. The other player can wait for you to reconnect.')) return;
+      if (!confirm(t('You\'ll disconnect from the room. The other player can wait for you to reconnect.'))) return;
       _preserveSession = getRoomSession();
     }
     stopTimer(); timerRunning = false; givenUp = false;
@@ -4275,7 +4381,19 @@ const Q = (function() {
 
   // ── Input handler ──
 
-  $input.addEventListener('input', function() {
+  // Japanese (and other IME) typing: the box holds unconfirmed text while composing,
+  // so wait for the commit. Chrome fires no input event after compositionend, Safari does;
+  // imeHandled stops Safari from processing the same commit twice.
+  var imeHandled = true;
+  $input.addEventListener('compositionend', function() {
+    imeHandled = false;
+    var self = this;
+    setTimeout(function() { if (!imeHandled) self.dispatchEvent(new Event('input')); }, 0);
+  });
+
+  $input.addEventListener('input', function(e) {
+    if (e && e.isComposing) return;
+    imeHandled = true;
     const val = this.value.trim();
     if (!timerRunning && !givenUp && val.length > 0) startTimer();
 
@@ -4317,7 +4435,7 @@ const Q = (function() {
         else showModal(true);
       }
     } else if (val.length > 0) {
-      var q = val.toLowerCase().trim();
+      var q = normalizeAnswer(val);
       var dupeIndices = keyToIndices[q];
       if (dupeIndices && dupeIndices.length > 0 && dupeIndices.every(function(i) { return foundSet.has(i); })) {
         if (!hasAnyExtension(q)) {
@@ -4444,8 +4562,8 @@ const Q = (function() {
     var link = dailyBuildChallengeUrl(result, name);
     track('share', { method: navigator.share ? 'share_sheet' : 'clipboard', content_type: 'daily_challenge',
                      item_id: result.mode + '-' + (result.dailyNum || dailyState.dailyNum) });
-    var text = 'I named ' + result.score + '/' + result.total + ' in ' + fmtTime(result.time) +
-               ' on NameEmAll Daily ' + cfg.label + ' #' + (result.dailyNum || dailyState.dailyNum) + '. Can you beat me? ⚔️';
+    var text = t('I named {score}/{total} in {time} on NameEmAll Daily {label} #{num}. Can you beat me? ⚔️', {
+      score: result.score, total: result.total, time: fmtTime(result.time), label: cfg.label, num: result.dailyNum || dailyState.dailyNum });
     var btn = this;
     var flash = function() {
       var orig = btn.textContent;
@@ -4453,11 +4571,11 @@ const Q = (function() {
       setTimeout(function() { btn.textContent = orig; }, 1600);
     };
     if (navigator.share) {
-      navigator.share({ title: 'NameEmAll challenge', text: text, url: link }).catch(function() {});
+      navigator.share({ title: t('NameEmAll challenge'), text: text, url: link }).catch(function() {});
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text + '\n' + link).then(flash).catch(function() { prompt('Copy your challenge link:', link); });
+      navigator.clipboard.writeText(text + '\n' + link).then(flash).catch(function() { prompt(t('Copy your challenge link:'), link); });
     } else {
-      prompt('Copy your challenge link:', link);
+      prompt(t('Copy your challenge link:'), link);
     }
   });
   $('daily-copy-btn').addEventListener('click', function() {
@@ -4472,10 +4590,10 @@ const Q = (function() {
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(done).catch(function() {
-        prompt('Copy your result:', text);
+        prompt(t('Copy your result:'), text);
       });
     } else {
-      prompt('Copy your result:', text);
+      prompt(t('Copy your result:'), text);
     }
   });
   $('daily-share-btn').addEventListener('click', function() {
@@ -4484,7 +4602,7 @@ const Q = (function() {
     var text = dailyShareText(result);
     if (navigator.share) {
       navigator.share({
-        title: 'NameEmAll Daily ' + dailyModeCfg(result.mode).label + ' #' + (result.dailyNum || dailyState.dailyNum),
+        title: t('NameEmAll · Daily {label} #{num}', { label: dailyModeCfg(result.mode).label, num: result.dailyNum || dailyState.dailyNum }),
         text: text
       }).catch(function() {});
     } else if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4495,7 +4613,7 @@ const Q = (function() {
         setTimeout(function() { btn.textContent = orig; }, 1500);
       });
     } else {
-      prompt('Copy your result:', text);
+      prompt(t('Copy your result:'), text);
     }
   });
   $('mode-slider').addEventListener('click', function(e) {
@@ -4538,7 +4656,7 @@ const Q = (function() {
     saveSettings();
     if (currentTab === 'pokemon' && dataSources['pokemon']) {
       var hadProgress = foundSet.size > 0 && !givenUp;
-      if (hadProgress && !confirm('Changing generations will reset your current game. Continue?')) {
+      if (hadProgress && !confirm(t('Changing generations will reset your current game. Continue?'))) {
         try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
         initRegGenSelector();
         return;
@@ -4676,7 +4794,7 @@ const Q = (function() {
   $('btn-history').addEventListener('click', openScoreboard);
   $('sb-close-btn').addEventListener('click', function() { $('sb-overlay').classList.remove('active'); });
   $('sb-clear-btn').addEventListener('click', function() {
-    if (confirm('Clear all history for this tab?')) {
+    if (confirm(t('Clear all history for this tab?'))) {
       localStorage.removeItem(histKey(sbCurrentTab));
       renderScoreboard(sbCurrentTab);
     }
@@ -4792,7 +4910,7 @@ const Q = (function() {
     peer.on('error', function(err) {
       if (cancelled) return;
       if (err.type === 'peer-unavailable') return;
-      $(statusId).textContent = 'Error: ' + err.type + '. ' + (err.message || '');
+      $(statusId).textContent = t('Error: {msg}', { msg: err.type + '. ' + (err.message || '') });
     });
 
     peer.on('disconnected', function() {
