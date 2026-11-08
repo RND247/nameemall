@@ -515,22 +515,38 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 </style>
 </head>
 <body>
-<script src="i18n-ja.js"></script>
 <script>
 // ── Language (i18n) ──
-// English is the source language. Japanese (Beta) comes from i18n-ja.js.
-// Exact UI strings are translated automatically as they appear on the page;
-// strings built with numbers or names go through t() with {placeholders}.
+// English is the source language; other languages are Beta. Only the chosen language's
+// two files are loaded: i18n/<lang>.js (UI text) and names/<lang>.js (Pokémon, regions, types).
 (function() {
-  var SUPPORTED = { en: 'English', ja: '日本語 (Beta)' };
+  var SUPPORTED = {
+    en: 'English', ja: '日本語 (Beta)', 'zh-Hant': '繁體中文 (Beta)', ko: '한국어 (Beta)',
+    fr: 'Français (Beta)', de: 'Deutsch (Beta)', es: 'Español (Beta)', it: 'Italiano (Beta)'
+  };
   var lang = 'en';
   try { lang = localStorage.getItem('nea_lang') || 'en'; } catch(e) {}
   if (!SUPPORTED[lang]) lang = 'en';
-  var dict = lang === 'ja' ? (window.NEA_JA || {}) : {};
-
-  window.NEA_LANG = lang;
-  window.NEA_LOCALE = lang === 'ja' ? 'ja-JP' : undefined;
   window.NEA_LANGS = SUPPORTED;
+  window.NEA_LANG = lang;
+  if (lang !== 'en') document.write('<script src="i18n/' + lang + '.js"><\/script><script src="names/' + lang + '.js"><\/script>');
+})();
+</script>
+<script>
+// Exact UI strings are translated automatically as they appear on the page;
+// strings built with numbers or names go through t() with {placeholders}.
+(function() {
+  var lang = window.NEA_LANG;
+  var LOCALES = { ja: 'ja-JP', 'zh-Hant': 'zh-TW', ko: 'ko-KR', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT' };
+  var dict = {};
+  if (lang !== 'en') {
+    var names = window.NEA_NAMES || {};
+    var add = function(src) { for (var k in src) if (Object.prototype.hasOwnProperty.call(src, k)) dict[k] = src[k]; };
+    add(names.regions || {});
+    add(names.types || {});
+    add(window.NEA_UI || {});
+  }
+  window.NEA_LOCALE = LOCALES[lang];
   document.documentElement.lang = lang;
 
   window.t = function(key, vars) {
@@ -542,14 +558,16 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   if (lang === 'en') return;
 
   var ATTRS = ['placeholder', 'title', 'aria-label'];
+  // Only write when the text actually changes: rewriting identical text (French "Score",
+  // German "Pause") would fire another mutation and loop forever.
   function trText(node) {
     var raw = node.nodeValue, key = raw.trim();
-    if (key && Object.prototype.hasOwnProperty.call(dict, key)) node.nodeValue = raw.replace(key, dict[key]);
+    if (key && Object.prototype.hasOwnProperty.call(dict, key) && dict[key] !== key) node.nodeValue = raw.replace(key, dict[key]);
   }
   function trAttrs(el) {
     for (var i = 0; i < ATTRS.length; i++) {
-      var v = el.getAttribute(ATTRS[i]);
-      if (v && Object.prototype.hasOwnProperty.call(dict, v.trim())) el.setAttribute(ATTRS[i], dict[v.trim()]);
+      var v = el.getAttribute(ATTRS[i]), key = v && v.trim();
+      if (key && Object.prototype.hasOwnProperty.call(dict, key) && dict[key] !== key) el.setAttribute(ATTRS[i], dict[key]);
     }
   }
   function skip(el) { return el.tagName === 'SCRIPT' || el.tagName === 'STYLE' || el.hasAttribute('data-no-i18n'); }
@@ -965,23 +983,62 @@ const Q = (function() {
   // Normalize typed answers so Japanese input matches however it was typed:
   // NFKC folds full-width letters/digits/colons (ポリゴンＺ -> ポリゴンZ), then lowercase,
   // then hiragana -> katakana (みゅう -> ミュウ). Must stay in sync with build_japanese_names.py.
+  // Accents are optional too (Évoli = Evoli). Only Latin combining marks are stripped, so
+  // Japanese dakuten and Korean syllables survive. Must match build_language_names.py.
   function normalizeAnswer(s) {
     s = String(s || '');
     if (s.normalize) s = s.normalize('NFKC');
     s = s.toLowerCase().trim();
-    return s.replace(/[\u3041-\u3096]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); });
+    s = s.replace(/[\u3041-\u3096]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); });
+    if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC');
+    return s;
   }
-  // Every accepted answer for a Pokémon: English keys plus Japanese keys (accepted in any UI language)
-  function pokemonKeys(w) { return w.kj ? w.k.concat(w.kj) : w.k; }
+  var LANG_NAMES = (window.NEA_NAMES && window.NEA_NAMES.pokemon) || {};
+  // Answers in the selected language (names/<lang>.js); English answers are always accepted too
+  function localKeys(w) { var e = LANG_NAMES[w.id]; return e ? e.slice(1) : []; }
+  function pokemonKeys(w) { var l = localKeys(w); return l.length ? w.k.concat(l) : w.k; }
   function buildPokemonKeys(w) { return pokemonKeys(w); }
-  // Name shown on screen (Japanese in ja). Analytics keeps using w.n so GA stays in English.
-  function displayName(w) { return (NEA_LANG === 'ja' && w && w.j) ? w.j : (w ? w.n : ''); }
+  // Name shown on screen. Analytics keeps using w.n so GA stays in English.
+  function displayName(w) { if (!w) return ''; var e = LANG_NAMES[w.id]; return e ? e[0] : w.n; }
+
+  // Answers that are a full name in one language but only the start of a different Pokémon's
+  // name in the other accepted language (French "Abo" = Ekans vs English "Abomasnow").
+  // Those wait a moment before matching so the longer name can still be typed.
+  var ambiguousKeys = new Set();
 
   function buildIndex() {
     keyToIndices = {};
-    const fn = currentTab === 'mandarin' ? buildMandarinKeys : buildPokemonKeys;
-    items.forEach((w, i) => { for (const k of fn(w)) { (keyToIndices[k] ||= []).push(i); } });
+    ambiguousKeys = new Set();
+    if (currentTab === 'mandarin') {
+      items.forEach((w, i) => { for (const k of buildMandarinKeys(w)) { (keyToIndices[k] ||= []).push(i); } });
+      allKeys = Object.keys(keyToIndices);
+      return;
+    }
+    var keyLangs = {};
+    var addKey = function(raw, i, lang) {
+      var k = normalizeAnswer(raw);
+      if (!k) return;
+      var list = (keyToIndices[k] ||= []);
+      if (list.indexOf(i) === -1) list.push(i);
+      (keyLangs[k] ||= {})[lang] = true;
+    };
+    items.forEach((w, i) => {
+      for (const k of w.k) addKey(k, i, 'en');
+      for (const k of localKeys(w)) addKey(k, i, NEA_LANG);
+    });
     allKeys = Object.keys(keyToIndices);
+    if (NEA_LANG !== 'en') {
+      var sorted = allKeys.slice().sort();
+      for (var a = 0; a < sorted.length; a++) {
+        var k = sorted[a];
+        for (var b = a + 1; b < sorted.length && sorted[b].startsWith(k); b++) {
+          var k2 = sorted[b];
+          var sameMon = keyToIndices[k].some(function(i) { return keyToIndices[k2].indexOf(i) !== -1; });
+          var sharedLang = Object.keys(keyLangs[k]).some(function(l) { return keyLangs[k2][l]; });
+          if (!sameMon && !sharedLang) { ambiguousKeys.add(k); break; }
+        }
+      }
+    }
   }
 
   function findAllMatches(input) {
@@ -1024,7 +1081,7 @@ const Q = (function() {
       var p = full[i];
       var pk = pokemonKeys(p);
       for (var ki = 0; ki < pk.length; ki++) {
-        if (pk[ki] === q) return p;
+        if (normalizeAnswer(pk[ki]) === q) return p;
       }
     }
     return null;
@@ -2079,7 +2136,7 @@ const Q = (function() {
     if (!w) return;
     const q = normalizeAnswer(val).replace(/[-\s]/g, '');
     for (const k of pokemonKeys(w)) {
-      if (q === k) { wtpReveal(true); return; }
+      if (q === normalizeAnswer(k).replace(/[-\s]/g, '')) { wtpReveal(true); return; }
     }
   }
 
@@ -4391,9 +4448,28 @@ const Q = (function() {
     setTimeout(function() { if (!imeHandled) self.dispatchEvent(new Event('input')); }, 0);
   });
 
+  var deferTimer = null, deferredQuery = null;
   $input.addEventListener('input', function(e) {
-    if (e && e.isComposing) return;
+    if (e && e.isComposing) {
+      // Japanese/Korean keyboards keep the last word "composing" until it's confirmed.
+      // If that kana/hangul already names an unfound Pokémon, confirm it for the player.
+      var cv = this.value, cq = normalizeAnswer(cv);
+      var hits = keyToIndices[cq];
+      if (/[\u3040-\u30ff\uac00-\ud7af]/.test(cv) && hits && !ambiguousKeys.has(cq) &&
+          hits.some(function(i) { return !getRelevantFoundSet().has(i); })) {
+        this.blur(); this.focus();
+      }
+      return;
+    }
     imeHandled = true;
+    var nq = normalizeAnswer(this.value);
+    clearTimeout(deferTimer);
+    if (ambiguousKeys.has(nq) && deferredQuery !== nq) {
+      var self = this;
+      deferTimer = setTimeout(function() { deferredQuery = nq; self.dispatchEvent(new Event('input')); }, 800);
+      return;
+    }
+    deferredQuery = null;
     const val = this.value.trim();
     if (!timerRunning && !givenUp && val.length > 0) startTimer();
 

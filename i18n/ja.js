@@ -1,7 +1,7 @@
 // Japanese UI strings (Beta). Keys are the exact English text shown in the UI;
-// {placeholders} are filled in by t(). Pokémon names come from pokemon.json ("j").
+// {placeholders} are filled in by t(). Pokémon, region and type names come from names/ja.js.
 // Analytics never uses these strings, so GA data stays in English.
-window.NEA_JA = {
+window.NEA_UI = {
   // ── Tabs, header, action bar ──
   'Regular Mode': '通常モード',
   '🗓️ Daily': '🗓️ デイリー',
@@ -42,14 +42,6 @@ window.NEA_JA = {
   'Hours': '時間',
   'Minutes': '分',
   'Toggle forms': 'フォルムを切り替え',
-
-  // ── Regions and types ──
-  'Kanto': 'カントー', 'Johto': 'ジョウト', 'Hoenn': 'ホウエン', 'Sinnoh': 'シンオウ',
-  'Unova': 'イッシュ', 'Kalos': 'カロス', 'Alola': 'アローラ', 'Galar': 'ガラル', 'Paldea': 'パルデア',
-  'normal': 'ノーマル', 'fire': 'ほのお', 'water': 'みず', 'electric': 'でんき', 'grass': 'くさ',
-  'ice': 'こおり', 'fighting': 'かくとう', 'poison': 'どく', 'ground': 'じめん', 'flying': 'ひこう',
-  'psychic': 'エスパー', 'bug': 'むし', 'rock': 'いわ', 'ghost': 'ゴースト', 'dragon': 'ドラゴン',
-  'dark': 'あく', 'steel': 'はがね', 'fairy': 'フェアリー',
 
   // ── Pokémon details popup ──
   'Loading…': '読み込み中…',
