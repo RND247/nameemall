@@ -280,5 +280,9 @@ window.NEA_UI = {
   "Show Pokémon silhouettes as a hint (marked on your score)": "ポケモンのシルエットをヒントとして表示（スコアに記録されます）",
   "Show silhouettes as a hint? This game will be marked as played with hints.": "シルエットをヒントとして表示しますか？このゲームはヒント使用として記録されます。",
   "💡 Played with silhouette hints": "💡 シルエットのヒントを使用",
-  "Silhouette hints used": "シルエットのヒントを使用"
+  "Silhouette hints used": "シルエットのヒントを使用",
+  "More quizzes": "その他のクイズ",
+  "Silhouettes": "シルエット",
+  "For kids": "子ども向け",
+  "All quizzes": "すべてのクイズ"
 };

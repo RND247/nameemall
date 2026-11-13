@@ -3,9 +3,8 @@
   <url>
     <loc>https://nameemall.com/</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -13,14 +12,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=ja</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -28,14 +27,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=zh-Hant</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -43,14 +42,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=ko</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -58,14 +57,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=fr</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -73,14 +72,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=de</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -88,14 +87,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=es</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -103,14 +102,14 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
   </url>
   <url>
     <loc>https://nameemall.com/?lang=it</loc>
     <lastmod>2026-11-13</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh-Hant" href="https://nameemall.com/?lang=zh-Hant"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://nameemall.com/?lang=ko"/>
@@ -118,6 +117,91 @@
     <xhtml:link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nameemall.com/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://nameemall.com/"/>
+  </url>
+  <url>
+    <loc>https://nameemall.com/pokemon-quizzes/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-1-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-2-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-3-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-4-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-5-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-6-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-7-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-8-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/gen-9-pokemon-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/pokemon-silhouette-quiz/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/daily-pokemon-game/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/pokemon-quiz-for-kids/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://nameemall.com/pokemon-quiz-with-friends/</loc>
+    <lastmod>2026-11-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>

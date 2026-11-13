@@ -254,5 +254,9 @@ window.NEA_UI = {
   "Show Pokémon silhouettes as a hint (marked on your score)": "Afficher les silhouettes des Pokémon comme indice (indiqué sur ton score)",
   "Show silhouettes as a hint? This game will be marked as played with hints.": "Afficher les silhouettes comme indice ? Cette partie sera marquée comme jouée avec indices.",
   "💡 Played with silhouette hints": "💡 Partie jouée avec les silhouettes",
-  "Silhouette hints used": "Silhouettes utilisées comme indice"
+  "Silhouette hints used": "Silhouettes utilisées comme indice",
+  "More quizzes": "Plus de quiz",
+  "Silhouettes": "Silhouettes",
+  "For kids": "Pour les enfants",
+  "All quizzes": "Tous les quiz"
 };

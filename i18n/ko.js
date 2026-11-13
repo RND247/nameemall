@@ -254,5 +254,9 @@ window.NEA_UI = {
   "Show Pokémon silhouettes as a hint (marked on your score)": "포켓몬 실루엣을 힌트로 보여 줘요 (점수에 표시돼요)",
   "Show silhouettes as a hint? This game will be marked as played with hints.": "실루엣을 힌트로 볼까요? 이 게임은 힌트 사용으로 기록돼요.",
   "💡 Played with silhouette hints": "💡 실루엣 힌트 사용",
-  "Silhouette hints used": "실루엣 힌트 사용"
+  "Silhouette hints used": "실루엣 힌트 사용",
+  "More quizzes": "더 많은 퀴즈",
+  "Silhouettes": "실루엣",
+  "For kids": "어린이용",
+  "All quizzes": "모든 퀴즈"
 };

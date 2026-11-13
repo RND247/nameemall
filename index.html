@@ -71,6 +71,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-switch .lang-label { font-size: 0.8rem; opacity: 0.8; }
 .lang-switch select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; padding: 2px 4px; cursor: pointer; }
 .lang-row { margin-bottom: 10px; }
+.quiz-links { margin-bottom: 10px; line-height: 1.8; }
 .lang-select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.75rem; padding: 3px 6px; cursor: pointer; }
 .app-version { position: fixed; top: 6px; right: 10px; z-index: 150; font-size: 0.68rem; font-weight: 500; color: var(--text-dim); opacity: 0.7; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; letter-spacing: 0.3px; }
 .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
@@ -940,6 +941,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 </details>
 <footer>
   <div class="lang-row"><label for="lang-select">🌐 <span>Language</span></label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
+  <div class="quiz-links"><span>More quizzes</span>: <a href="/gen-1-pokemon-quiz/" data-no-i18n>Gen 1</a> · <a href="/gen-2-pokemon-quiz/" data-no-i18n>Gen 2</a> · <a href="/gen-3-pokemon-quiz/" data-no-i18n>Gen 3</a> · <a href="/gen-4-pokemon-quiz/" data-no-i18n>Gen 4</a> · <a href="/gen-5-pokemon-quiz/" data-no-i18n>Gen 5</a> · <a href="/gen-6-pokemon-quiz/" data-no-i18n>Gen 6</a> · <a href="/gen-7-pokemon-quiz/" data-no-i18n>Gen 7</a> · <a href="/gen-8-pokemon-quiz/" data-no-i18n>Gen 8</a> · <a href="/gen-9-pokemon-quiz/" data-no-i18n>Gen 9</a> · <a href="/pokemon-silhouette-quiz/">Silhouettes</a> · <a href="/pokemon-quiz-for-kids/">For kids</a> · <a href="/pokemon-quizzes/">All quizzes</a></div>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
   <br>
@@ -1035,8 +1037,21 @@ const Q = (function() {
   let hoverEnabled = _savedSettings.hover !== undefined ? _savedSettings.hover : true;
   let orderMode = _savedSettings.order || 'dex-gens';
   let selectedGens = new Set(_savedSettings.gens && _savedSettings.gens.length ? _savedSettings.gens : [1,2,3,4,5,6,7,8,9]);
+  // Landing-page presets (?gens=1,2 and ?hint=1) apply to this visit only: they don't change
+  // saved settings, and a gens preset plays in its own save slot so full-Pokédex progress is kept
+  var _savedGensArr = Array.from(selectedGens), _savedHints = pokedexHints;
+  var gensPreset = null, hintPreset = false;
+  function gensSlot(set) { return Array.from(set).sort(function(a, b) { return a - b; }).join('-'); }
+  (function() {
+    try {
+      var p = new URLSearchParams(location.search);
+      var g = (p.get('gens') || '').split(',').map(Number).filter(function(n) { return Number.isInteger(n) && n >= 1 && n <= 9; });
+      if (g.length) { selectedGens = new Set(g); gensPreset = gensSlot(selectedGens); }
+      if (p.get('hint') === '1') { pokedexHints = true; hintPreset = true; }
+    } catch(e) {}
+  })();
   function saveSettings() {
-    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, order: orderMode, gens: Array.from(selectedGens) }));
+    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
   }
 
   let keyToIndices = {};
@@ -2015,7 +2030,7 @@ const Q = (function() {
 
   // ── Save / Load ──
 
-  function saveKey() { return 'langquiz_' + currentTab; }
+  function saveKey() { return 'langquiz_' + currentTab + (currentTab === 'pokemon' && gensPreset ? '_g' + gensPreset : ''); }
   function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined, h: hintsUsed || undefined })); }
   function load() {
     try {
@@ -4999,9 +5014,14 @@ const Q = (function() {
     if (currentTab === 'pokemon' && dataSources['pokemon']) {
       var hadProgress = foundSet.size > 0 && !givenUp;
       if (hadProgress && !confirm(t('Changing generations will reset your current game. Continue?'))) {
-        try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
+        if (gensPreset) selectedGens = new Set(gensPreset.split('-').map(Number));
+        else try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
         initRegGenSelector();
         return;
+      }
+      if (gensPreset) {
+        gensPreset = gensSlot(selectedGens);
+        try { var u = new URL(location.href); u.searchParams.set('gens', Array.from(selectedGens).sort(function(a, b) { return a - b; }).join(',')); history.replaceState({}, '', u.pathname + u.search + u.hash); } catch(e) {}
       }
       stopTimer(); timerRunning = false; givenUp = false;
       localStorage.removeItem(saveKey());
@@ -5038,6 +5058,7 @@ const Q = (function() {
       if (inProgress && !hintsUsed && !confirm(t('Show silhouettes as a hint? This game will be marked as played with hints.'))) return;
     }
     pokedexHints = !pokedexHints;
+    hintPreset = false;
     if (pokedexHints && foundSet.size > 0 && !givenUp) { hintsUsed = true; save(); }
     $('grid-wrap').classList.toggle('shadows-on', pokedexHints);
     updateHintBtn();

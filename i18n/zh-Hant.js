@@ -254,5 +254,9 @@ window.NEA_UI = {
   "Show Pokémon silhouettes as a hint (marked on your score)": "顯示寶可夢剪影作為提示（會標記在成績上）",
   "Show silhouettes as a hint? This game will be marked as played with hints.": "要顯示剪影作為提示嗎？這局會被標記為使用了提示。",
   "💡 Played with silhouette hints": "💡 使用了剪影提示",
-  "Silhouette hints used": "使用了剪影提示"
+  "Silhouette hints used": "使用了剪影提示",
+  "More quizzes": "更多測驗",
+  "Silhouettes": "剪影",
+  "For kids": "兒童版",
+  "All quizzes": "所有測驗"
 };

@@ -254,5 +254,9 @@ window.NEA_UI = {
   "Show Pokémon silhouettes as a hint (marked on your score)": "Mostra le sagome dei Pokémon come indizio (segnalato nel punteggio)",
   "Show silhouettes as a hint? This game will be marked as played with hints.": "Mostrare le sagome come indizio? Questa partita verrà segnata come giocata con indizi.",
   "💡 Played with silhouette hints": "💡 Giocata con le sagome come indizio",
-  "Silhouette hints used": "Sagome usate come indizio"
+  "Silhouette hints used": "Sagome usate come indizio",
+  "More quizzes": "Altri quiz",
+  "Silhouettes": "Sagome",
+  "For kids": "Per bambini",
+  "All quizzes": "Tutti i quiz"
 };
