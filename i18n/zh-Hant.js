@@ -258,5 +258,9 @@ window.NEA_UI = {
   "More quizzes": "更多測驗",
   "Silhouettes": "剪影",
   "For kids": "兒童版",
-  "All quizzes": "所有測驗"
+  "All quizzes": "所有測驗",
+  "🖼️ Share Image": "🖼️ 分享圖片",
+  "✓ Image saved!": "✓ 圖片已儲存",
+  "Can you beat my score?": "你能超越我的成績嗎?",
+  "Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.": "粉絲自製遊戲,與任天堂、Game Freak 及寶可夢公司無關。"
 };

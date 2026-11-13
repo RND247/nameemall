@@ -258,5 +258,9 @@ window.NEA_UI = {
   "More quizzes": "Altri quiz",
   "Silhouettes": "Sagome",
   "For kids": "Per bambini",
-  "All quizzes": "Tutti i quiz"
+  "All quizzes": "Tutti i quiz",
+  "🖼️ Share Image": "🖼️ Condividi immagine",
+  "✓ Image saved!": "✓ Immagine salvata",
+  "Can you beat my score?": "Riesci a battere il mio punteggio?",
+  "Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.": "Gioco creato da un fan, non affiliato a Nintendo, Game Freak o The Pokémon Company."
 };

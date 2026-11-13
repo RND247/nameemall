@@ -72,6 +72,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-switch select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; padding: 2px 4px; cursor: pointer; }
 .lang-row { margin-bottom: 10px; }
 .quiz-links { margin-bottom: 10px; line-height: 1.8; }
+.fan-note { margin-bottom: 8px; font-size: 0.68rem; opacity: 0.75; }
 .lang-select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.75rem; padding: 3px 6px; cursor: pointer; }
 .app-version { position: fixed; top: 6px; right: 10px; z-index: 150; font-size: 0.68rem; font-weight: 500; color: var(--text-dim); opacity: 0.7; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; letter-spacing: 0.3px; }
 .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
@@ -891,6 +892,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="modal-pct"></p>
     <p id="modal-hint" class="modal-hint" hidden></p>
     <p id="modal-best"></p>
+    <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
   </div>
@@ -909,6 +911,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="daily-share-row">
       <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
       <button class="btn danger" id="daily-share-btn">🔗 Share</button>
+      <button class="btn" id="daily-image-btn">🖼️ Share Image</button>
     </div>
     <div class="daily-challenge-row">
       <input type="text" id="daily-name-input" maxlength="16" placeholder="Your name (optional)" autocomplete="nickname">
@@ -942,6 +945,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 <footer>
   <div class="lang-row"><label for="lang-select">🌐 <span>Language</span></label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
   <div class="quiz-links"><span>More quizzes</span>: <a href="/gen-1-pokemon-quiz/" data-no-i18n>Gen 1</a> · <a href="/gen-2-pokemon-quiz/" data-no-i18n>Gen 2</a> · <a href="/gen-3-pokemon-quiz/" data-no-i18n>Gen 3</a> · <a href="/gen-4-pokemon-quiz/" data-no-i18n>Gen 4</a> · <a href="/gen-5-pokemon-quiz/" data-no-i18n>Gen 5</a> · <a href="/gen-6-pokemon-quiz/" data-no-i18n>Gen 6</a> · <a href="/gen-7-pokemon-quiz/" data-no-i18n>Gen 7</a> · <a href="/gen-8-pokemon-quiz/" data-no-i18n>Gen 8</a> · <a href="/gen-9-pokemon-quiz/" data-no-i18n>Gen 9</a> · <a href="/pokemon-silhouette-quiz/">Silhouettes</a> · <a href="/pokemon-quiz-for-kids/">For kids</a> · <a href="/pokemon-quizzes/">All quizzes</a></div>
+  <div class="fan-note"><span>Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.</span></div>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
   <br>
@@ -1887,6 +1891,8 @@ const Q = (function() {
     if (hs.bestTime) hsParts.push(t('Record: {time}', { time: fmtTime(hs.bestTime) }));
     $('modal-best').textContent = hsParts.join(' · ');
     displayHighscore();
+    $('modal-image-btn').hidden = currentTab !== 'pokemon';
+    if (currentTab === 'pokemon') sharePrepare(sharePokedexKey(), sharePokedexCard);
     $overlay.classList.add('active');
   }
 
@@ -3690,6 +3696,7 @@ const Q = (function() {
       if (dailyState.lastResult !== result) return; // the player moved on to another game
       dailyGlobal = stats;
       dailyRenderGlobal(result, stats);
+      sharePrepare(shareDailyKey(result), function() { return shareDailyCard(result); });
     });
   }
 
@@ -3795,6 +3802,7 @@ const Q = (function() {
     dailyStartCountdown('daily-result-countdown');
     $('daily-result-overlay').classList.add('active');
     dailyLoadGlobal(result);
+    sharePrepare(shareDailyKey(result), function() { return shareDailyCard(result); });
   }
 
   function dailyBuildShareGrid(result) {
@@ -4972,6 +4980,185 @@ const Q = (function() {
     } else {
       prompt(t('Copy your result:'), text);
     }
+  });
+  // ── Share as image: a 1080x1350 card that fits Instagram, X, Discord and chats ──
+  // The image is drawn ahead of time (when results open) so the share sheet can open straight
+  // from the tap; Safari blocks sharing that starts after a long async step.
+  var SHARE_W = 1080, SHARE_H = 1350;
+  var SHARE_FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Apple SD Gothic Neo', 'Microsoft JhengHei', 'Noto Sans', sans-serif";
+  var SHARE_URL = 'https://nameemall.com/?utm_source=share_image&utm_medium=social';
+  var shareCache = { key: null, blob: null };
+
+  function shareLoadImg(src) {
+    return new Promise(function(resolve) {
+      var img = new Image(), done = false;
+      var fin = function(ok) { if (!done) { done = true; resolve(ok ? img : null); } };
+      img.crossOrigin = 'anonymous';
+      img.onload = function() { fin(true); };
+      img.onerror = function() { fin(false); };
+      setTimeout(function() { fin(false); }, 4000);
+      img.src = src;
+    });
+  }
+  function shareRoundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  }
+  function shareLine(ctx, text, y, size, weight, color) {
+    ctx.font = weight + ' ' + size + 'px ' + SHARE_FONT;
+    ctx.fillStyle = color; ctx.textAlign = 'center';
+    ctx.fillText(text, SHARE_W / 2, y, SHARE_W - 120);
+  }
+  function shareBase(subtitle) {
+    var c = document.createElement('canvas'); c.width = SHARE_W; c.height = SHARE_H;
+    var ctx = c.getContext('2d');
+    var g = ctx.createLinearGradient(0, 0, 0, SHARE_H);
+    g.addColorStop(0, '#1d1d38'); g.addColorStop(1, '#0b0b16');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, SHARE_W, SHARE_H);
+    ctx.font = '800 72px ' + SHARE_FONT;
+    var a = 'Name', b = "'Em All", wa = ctx.measureText(a).width, wb = ctx.measureText(b).width;
+    var x0 = (SHARE_W - wa - wb) / 2;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#e8e8f0'; ctx.fillText(a, x0, 140);
+    ctx.fillStyle = '#e94560'; ctx.fillText(b, x0 + wa, 140);
+    shareLine(ctx, subtitle, 215, 40, '600', '#9aa0ad');
+    shareLine(ctx, 'nameemall.com', SHARE_H - 70, 50, '800', '#e94560');
+    return { c: c, ctx: ctx };
+  }
+
+  function shareDailyKey(result) {
+    var g = dailyGlobal && dailyGlobal.you ? dailyGlobal.you.beat_pct + '/' + dailyGlobal.players : '';
+    return ['daily', result.mode, result.dailyNum || dailyState.dailyNum, result.score, result.time, g].join('|');
+  }
+  function shareDailyCard(result) {
+    var cfg = dailyModeCfg(result.mode || dailyState.mode);
+    var num = result.dailyNum || dailyState.dailyNum;
+    var sub = t('🗓️ Daily {label} #{num} · {date}', { label: cfg.label, num: num, date: dailyDateLabel(dailyState.dateStr) }) +
+      (dailyState.archive ? ' · ' + t('Archive') : '');
+    var base = shareBase(sub), ctx = base.ctx;
+    var perfect = result.score === result.total;
+    shareLine(ctx, result.score + ' / ' + result.total, 420, 180, '800', perfect ? '#22c55e' : '#e8e8f0');
+    shareLine(ctx, t('in {time}', { time: fmtTime(result.time) }), 500, 46, '600', '#9aa0ad');
+
+    // Found / missed tiles in the daily's order (no sprites, so nobody gets spoiled)
+    var total = result.total;
+    var cols = total <= 10 ? total : (total % 5 === 0 && total / 5 <= 10 ? total / 5 : 10);
+    var rows = Math.ceil(total / cols), gap = 18;
+    var size = Math.min(150, Math.floor((SHARE_W - 240 - gap * (cols - 1)) / cols));
+    var gridW = cols * size + (cols - 1) * gap, x0 = (SHARE_W - gridW) / 2;
+    var streak = dailyState.unranked ? 0 : dailyComputeStreak(dailyState.dateStr, cfg.key);
+    var showGlobal = !dailyState.archive && !dailyState.unranked && dailyGlobal && dailyGlobal.players > 1 && dailyGlobal.you && dailyGlobal.you.beat_pct != null;
+    // Center the tiles and stat lines in the space between the score and the footer
+    var blockH = rows * size + (rows - 1) * gap + (streak > 0 ? 70 : 0) + (showGlobal ? 70 : 0) + 40;
+    var y0 = Math.max(560, Math.round((560 + 1140 - blockH) / 2));
+    var foundIdx = new Set(result.foundOrder || []);
+    var order = result.order && result.order.length === total ? result.order : null;
+    for (var i = 0; i < total; i++) {
+      var x = x0 + (i % cols) * (size + gap), y = y0 + Math.floor(i / cols) * (size + gap);
+      var hit = foundIdx.has(order ? order[i] : i);
+      shareRoundRect(ctx, x, y, size, size, size * 0.18);
+      ctx.fillStyle = hit ? '#22c55e' : '#2a2a40'; ctx.fill();
+      if (hit) {
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = size * 0.1; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath(); ctx.moveTo(x + size * 0.28, y + size * 0.52); ctx.lineTo(x + size * 0.44, y + size * 0.68); ctx.lineTo(x + size * 0.73, y + size * 0.35); ctx.stroke();
+      }
+    }
+    var y = y0 + rows * size + (rows - 1) * gap + 90;
+    if (streak > 0) { shareLine(ctx, t('🔥 {count}-day {label} streak', { count: streak, label: cfg.label }), y, 46, '700', '#f59e0b'); y += 70; }
+    if (showGlobal) {
+      shareLine(ctx, t('🌍 Beat {pct}% of {count} players', { pct: dailyGlobal.you.beat_pct, count: dailyGlobal.players }), y, 46, '700', '#38bdf8'); y += 70;
+    }
+    shareLine(ctx, t('Can you beat my score?'), Math.max(y + 10, SHARE_H - 170), 48, '700', '#e8e8f0');
+    return base.c;
+  }
+
+  function sharePokedexKey() { return ['pokedex', foundSet.size, items.length, elapsedMs, hintsUsed ? 1 : 0].join('|'); }
+  function sharePokedexCard() {
+    var gens = Array.from(selectedGens).sort(function(a, b) { return a - b; });
+    var regions = REGION_ORDER.filter(function(r) { return gens.indexOf(REGION_GEN[r]) >= 0; });
+    var sub = regions.length === REGION_ORDER.length ? t('Full Pokédex') : regions.map(function(r) { return t(r); }).join(' · ');
+    var base = shareBase(sub), ctx = base.ctx;
+    var count = foundSet.size, total = items.length;
+    shareLine(ctx, count + ' / ' + total, 400, 170, '800', count === total ? '#22c55e' : '#e8e8f0');
+    shareLine(ctx, (count / total * 100).toFixed(1) + '% · ' + t('in {time}', { time: fmtTime(elapsedMs) }), 480, 46, '600', '#9aa0ad');
+
+    var top = 525;
+    if (hintsUsed) { shareLine(ctx, t('💡 Played with silhouette hints'), 545, 36, '600', '#f59e0b'); top = 580; }
+
+    // A row of Pokémon the player named
+    var found = Array.from(foundSet), picks = [];
+    while (found.length && picks.length < 6) picks.push(found.splice(Math.floor(Math.random() * found.length), 1)[0]);
+    var urls = picks.map(function(i) { return items[i] && items[i].s; }).filter(Boolean);
+    return Promise.all(urls.map(shareLoadImg)).then(function(imgs) {
+      var size = 124, gap = 16, n = imgs.length;
+      var x0 = (SHARE_W - (n * size + (n - 1) * gap)) / 2;
+      imgs.forEach(function(img, k) {
+        var x = x0 + k * (size + gap);
+        shareRoundRect(ctx, x, top, size, size, 20); ctx.fillStyle = '#1c1c30'; ctx.fill();
+        if (img) { ctx.imageSmoothingEnabled = false; ctx.drawImage(img, x, top, size, size); }
+      });
+      // Progress per generation, centered in the space left above "Can you beat my score?"
+      var rowH = regions.length > 6 ? 44 : 60, barsTop = n ? top + size + 50 : top + 20;
+      var y = Math.max(barsTop, Math.round((barsTop + 1120 - regions.length * rowH) / 2));
+      regions.forEach(function(r) {
+        var tot = 0, got = 0;
+        items.forEach(function(it, i) { if (it.g === r) { tot++; if (foundSet.has(i)) got++; } });
+        ctx.font = '700 32px ' + SHARE_FONT; ctx.textAlign = 'left'; ctx.fillStyle = '#e8e8f0';
+        ctx.fillText(t(r), 100, y + 25, 220);
+        shareRoundRect(ctx, 340, y, 480, 24, 12); ctx.fillStyle = '#2a2a40'; ctx.fill();
+        if (got) { shareRoundRect(ctx, 340, y, Math.max(24, 480 * got / tot), 24, 12); ctx.fillStyle = got === tot ? '#22c55e' : '#e94560'; ctx.fill(); }
+        ctx.font = '600 28px ' + SHARE_FONT; ctx.textAlign = 'right'; ctx.fillStyle = '#9aa0ad';
+        ctx.fillText(got + '/' + tot, 980, y + 23);
+        y += rowH;
+      });
+      shareLine(ctx, t('Can you beat my score?'), Math.max(y + 50, SHARE_H - 170), 48, '700', '#e8e8f0');
+      return base.c;
+    });
+  }
+
+  function sharePrepare(key, build) {
+    shareCache = { key: key, blob: null };
+    try {
+      Promise.resolve(build()).then(function(canvas) {
+        canvas.toBlob(function(blob) { if (shareCache.key === key) shareCache.blob = blob; }, 'image/png');
+      }).catch(function() {});
+    } catch(e) {}
+  }
+  function shareDeliver(blob, fileName, text, btn, contentType) {
+    var download = function() {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = fileName;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function() { URL.revokeObjectURL(a.href); }, 5000);
+      var orig = btn.textContent;
+      btn.textContent = t('✓ Image saved!');
+      setTimeout(function() { btn.textContent = orig; }, 1600);
+    };
+    var file = null;
+    try { file = new File([blob], fileName, { type: 'image/png' }); } catch(e) {}
+    var canShare = file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] });
+    track('share', { method: canShare ? 'share_sheet' : 'download', content_type: contentType });
+    if (canShare) {
+      navigator.share({ files: [file], text: text }).catch(function(err) { if (err && err.name === 'NotAllowedError') download(); });
+    } else {
+      download();
+    }
+  }
+  function shareImageClick(btn, key, build, fileName, contentType) {
+    var text = t('Can you beat my score?') + ' ' + SHARE_URL;
+    if (shareCache.key === key && shareCache.blob) { shareDeliver(shareCache.blob, fileName, text, btn, contentType); return; }
+    Promise.resolve(build()).then(function(canvas) {
+      canvas.toBlob(function(blob) { if (blob) shareDeliver(blob, fileName, text, btn, contentType); }, 'image/png');
+    });
+  }
+  $('daily-image-btn').addEventListener('click', function() {
+    var result = dailyCurrentResult();
+    shareImageClick(this, shareDailyKey(result), function() { return shareDailyCard(result); },
+      'nameemall-daily-' + (result.mode || dailyState.mode) + '-' + (result.dailyNum || dailyState.dailyNum) + '.png', 'daily_image');
+  });
+  $('modal-image-btn').addEventListener('click', function() {
+    shareImageClick(this, sharePokedexKey(), sharePokedexCard, 'nameemall-' + foundSet.size + '.png', 'pokedex_image');
   });
   $('mode-slider').addEventListener('click', function(e) {
     var btn = e.target.closest('button');

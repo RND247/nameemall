@@ -284,5 +284,9 @@ window.NEA_UI = {
   "More quizzes": "その他のクイズ",
   "Silhouettes": "シルエット",
   "For kids": "子ども向け",
-  "All quizzes": "すべてのクイズ"
+  "All quizzes": "すべてのクイズ",
+  "🖼️ Share Image": "🖼️ 画像でシェア",
+  "✓ Image saved!": "✓ 画像を保存しました",
+  "Can you beat my score?": "わたしの記録を超えられる?",
+  "Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.": "ファンによる非公式ゲームです。任天堂、ゲームフリーク、株式会社ポケモンとは関係ありません。"
 };
