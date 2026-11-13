@@ -326,6 +326,9 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 .about summary h2 { display: inline; }
 .about:not([open]) summary h2::after { content: " ▸"; }
 .about[open] summary h2::after { content: " ▾"; }
+.hint-btn.hint-on { border-color: #facc15; color: #facc15; background: rgba(250,204,21,0.1); }
+.modal-hint { color: #facc15; font-weight: 700; }
+.sb-hint { cursor: help; }
 .icon-btn { padding: 3px 9px; font-size: 0.85rem; line-height: 1.2; }
 .howto { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: 640px; margin: 8px auto 0; padding: 8px 12px; border: 1px solid rgba(56,189,248,0.35); background: rgba(56,189,248,0.08); border-radius: 10px; font-size: 0.8rem; color: var(--text); text-align: center; }
 .howto[hidden] { display: none; }
@@ -710,6 +713,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <button class="btn danger" id="btn-give-up">Give Up</button>
     <button class="btn" id="btn-reset">Reset</button>
     <button class="btn icon-btn" id="btn-pause" title="Pause" aria-label="Pause">⏸</button>
+    <button class="btn hint-btn" id="btn-hint" title="Show Pokémon silhouettes as a hint (marked on your score)">💡 Hint</button>
     <div class="btn-sep"></div>
     <div class="settings-wrap">
       <button class="btn" id="btn-settings" title="Settings">⚙️ Settings</button>
@@ -731,7 +735,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="settings-divider"></div>
         </div>
         <div class="setting-row" id="set-sound"><span class="setting-label">Sound (Cries)</span><div class="toggle-switch on" id="tog-sound"></div></div>
-        <div class="setting-row" id="set-shadows"><span class="setting-label">Shadows</span><div class="toggle-switch" id="tog-shadows"></div></div>
+        <div class="setting-row" id="set-shadows" hidden><span class="setting-label">Shadows</span><div class="toggle-switch" id="tog-shadows"></div></div>
         <div class="setting-row" id="set-cycle"><span class="setting-label">Cycle Forms</span><div class="toggle-switch on" id="tog-cycle"></div></div>
         <div class="setting-row" id="set-scroll"><span class="setting-label">Auto-scroll</span><div class="toggle-switch on" id="tog-scroll"></div></div>
         <div class="setting-row" id="set-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="tog-typebg"></div></div>
@@ -884,6 +888,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="big" id="modal-score">0 / 0</div>
     <p id="modal-time"></p>
     <p id="modal-pct"></p>
+    <p id="modal-hint" class="modal-hint" hidden></p>
     <p id="modal-best"></p>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
@@ -1020,6 +1025,9 @@ const Q = (function() {
   try { _savedSettings = JSON.parse(localStorage.getItem('namemall_settings')) || {}; } catch(e) {}
   let soundEnabled = _savedSettings.sound !== undefined ? _savedSettings.sound : true;
   let shadowsEnabled = _savedSettings.shadows !== undefined ? _savedSettings.shadows : false;
+  // Full Pokédex: silhouettes are an opt-in hint, and any game played with them is marked
+  let pokedexHints = !!_savedSettings.hints;
+  let hintsUsed = false;
   let cycleFormsEnabled = _savedSettings.cycle !== undefined ? _savedSettings.cycle : true;
   let cycleFormsInterval = null;
   let autoScrollEnabled = _savedSettings.scroll !== undefined ? _savedSettings.scroll : true;
@@ -1028,7 +1036,7 @@ const Q = (function() {
   let orderMode = _savedSettings.order || 'dex-gens';
   let selectedGens = new Set(_savedSettings.gens && _savedSettings.gens.length ? _savedSettings.gens : [1,2,3,4,5,6,7,8,9]);
   function saveSettings() {
-    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, order: orderMode, gens: Array.from(selectedGens) }));
+    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, order: orderMode, gens: Array.from(selectedGens) }));
   }
 
   let keyToIndices = {};
@@ -1278,9 +1286,9 @@ const Q = (function() {
     try { return JSON.parse(localStorage.getItem(histKey(tab))) || []; } catch(e) { return []; }
   }
 
-  function saveToHistory(count, total, time) {
+  function saveToHistory(count, total, time, hints) {
     const list = loadHistory(currentTab);
-    list.unshift({ date: Date.now(), count: count, total: total, time: time });
+    list.unshift({ date: Date.now(), count: count, total: total, time: time, hint: hints ? 1 : undefined });
     if (list.length > 50) list.length = 50;
     localStorage.setItem(histKey(currentTab), JSON.stringify(list));
   }
@@ -1299,7 +1307,8 @@ const Q = (function() {
       const dateStr = d.toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(NEA_LOCALE, { hour: '2-digit', minute: '2-digit' });
       const pct = (r.count / r.total * 100).toFixed(1);
       const cls = r.count === r.total ? 'complete' : 'partial';
-      html += '<div class="sb-row"><span class="sb-date">' + dateStr + '</span><span class="sb-result ' + cls + '">' + r.count + '/' + r.total + ' (' + pct + '%)</span><span class="sb-time">' + fmtTime(r.time) + '</span></div>';
+      var hintMark = r.hint ? ' <span class="sb-hint" title="' + t('Silhouette hints used') + '">💡</span>' : '';
+      html += '<div class="sb-row"><span class="sb-date">' + dateStr + '</span><span class="sb-result ' + cls + '">' + r.count + '/' + r.total + ' (' + pct + '%)' + hintMark + '</span><span class="sb-time">' + fmtTime(r.time) + '</span></div>';
     });
     $list.innerHTML = html;
   }
@@ -1445,7 +1454,7 @@ const Q = (function() {
     } else if (orderMode !== 'dex-gens') {
       wrap.innerHTML = '';
       wrap.classList.remove('daily-board');
-      wrap.classList.toggle('shadows-on', shadowsEnabled);
+      wrap.classList.toggle('shadows-on', currentTab === 'pokemon' ? pokedexHints : shadowsEnabled);
       regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (regionIndices[r] ||= []).push(idx); }
       const grid = document.createElement('div');
@@ -1455,7 +1464,7 @@ const Q = (function() {
     } else {
       wrap.innerHTML = '';
       wrap.classList.remove('daily-board');
-      wrap.classList.toggle('shadows-on', shadowsEnabled);
+      wrap.classList.toggle('shadows-on', currentTab === 'pokemon' ? pokedexHints : shadowsEnabled);
       const groups = {};
       regionIndices = {};
       for (const idx of displayOrder) { const r = items[idx].g; (groups[r] ||= []).push(idx); }
@@ -1842,7 +1851,8 @@ const Q = (function() {
       game_mode: currentTab, order_mode: orderMode,
       result: won ? 'completed' : (givenUp ? 'gave_up' : 'ended'),
       found: count, total: items.length, pct: pctOf(count, items.length),
-      time_sec: Math.floor(elapsedMs / 1000), gens: selectedGens ? selectedGens.size : undefined
+      time_sec: Math.floor(elapsedMs / 1000), gens: selectedGens ? selectedGens.size : undefined,
+      hints_used: currentTab === 'pokemon' ? hintsUsed : undefined
     });
     $('modal-title').textContent = won ? 'Incredible!' : 'Results';
     $('modal-title').className = won ? 'win' : 'lose';
@@ -1851,8 +1861,12 @@ const Q = (function() {
     }
     $('modal-time').textContent = t('in {time}', { time: fmtTime(elapsedMs) });
     $('modal-pct').textContent = (count / items.length * 100).toFixed(1) + '%';
-    saveToHistory(count, items.length, elapsedMs);
-    const hs = saveHighscore(count, elapsedMs);
+    var withHints = currentTab === 'pokemon' && hintsUsed;
+    $('modal-hint').hidden = !withHints;
+    $('modal-hint').textContent = withHints ? t('💡 Played with silhouette hints') : '';
+    saveToHistory(count, items.length, elapsedMs, withHints);
+    // Games played with hints are kept in history but don't set best scores or records
+    const hs = withHints ? loadHighscore() : saveHighscore(count, elapsedMs);
     const hsParts = [];
     if (hs.bestCount) hsParts.push(t('Best: {count}/{total}', { count: hs.bestCount, total: items.length }));
     if (hs.bestTime) hsParts.push(t('Record: {time}', { time: fmtTime(hs.bestTime) }));
@@ -2002,13 +2016,13 @@ const Q = (function() {
   // ── Save / Load ──
 
   function saveKey() { return 'langquiz_' + currentTab; }
-  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined })); }
+  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined, h: hintsUsed || undefined })); }
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(saveKey()));
       if (d && d.f && d.f.length) {
         if (d.g) { var savedGens = new Set(d.g); if (savedGens.size !== selectedGens.size || ![...savedGens].every(g => selectedGens.has(g))) return false; }
-        foundSet = new Set(d.f); elapsedMs = d.e || 0; givenUp = !!d.gu; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
+        foundSet = new Set(d.f); elapsedMs = d.e || 0; givenUp = !!d.gu; hintsUsed = !!d.h; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
       }
     } catch(e) {}
     return false;
@@ -2047,7 +2061,7 @@ const Q = (function() {
       return;
     }
     if (foundSet.size > 0 && !confirm(t('Reset? All progress will be lost.'))) return;
-    givenUp = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
+    givenUp = false; hintsUsed = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
@@ -4568,7 +4582,9 @@ const Q = (function() {
     $('set-order-section').style.display = (isMulti || isDaily) ? 'none' : '';
     $('set-gens-section').style.display = isPoke ? '' : 'none';
     $('set-sound').style.display = (isPokeLike || isCoop) ? '' : 'none';
-    $('set-shadows').style.display = isPoke ? '' : 'none';
+    $('set-shadows').style.display = 'none';
+    $('btn-hint').style.display = isPoke ? '' : 'none';
+    updateHintBtn();
     $('set-cycle').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-scroll').style.display = isMulti ? 'none' : '';
     $('set-typebg').style.display = isMulti ? 'none' : '';
@@ -4735,6 +4751,7 @@ const Q = (function() {
             : { game_mode: 'pokemon', guess_number: foundSet.size - matches.length + mi + 1 });
         }
       }
+      if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
       if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
         track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
       }
@@ -5007,6 +5024,26 @@ const Q = (function() {
   });
   $('cset-sound').addEventListener('click', function() {
     soundEnabled = !soundEnabled; syncSoundToggles(); saveSettings();
+  });
+
+  function updateHintBtn() {
+    var b = $('btn-hint');
+    if (!b) return;
+    b.textContent = pokedexHints ? t('💡 Hint on') : t('💡 Hint');
+    b.classList.toggle('hint-on', pokedexHints);
+  }
+  $('btn-hint').addEventListener('click', function() {
+    if (!pokedexHints) {
+      var inProgress = foundSet.size > 0 && !givenUp && foundSet.size < items.length;
+      if (inProgress && !hintsUsed && !confirm(t('Show silhouettes as a hint? This game will be marked as played with hints.'))) return;
+    }
+    pokedexHints = !pokedexHints;
+    if (pokedexHints && foundSet.size > 0 && !givenUp) { hintsUsed = true; save(); }
+    $('grid-wrap').classList.toggle('shadows-on', pokedexHints);
+    updateHintBtn();
+    saveSettings();
+    track('hint_toggle', { game_mode: 'pokemon', on: pokedexHints });
+    $input.focus();
   });
 
   $('set-shadows').addEventListener('click', function() {

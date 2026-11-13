@@ -246,5 +246,13 @@ window.NEA_UI = {
   "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 So geht’s: Tippe einen Pokémon-Namen in das Feld. Richtige Namen erscheinen sofort auf dem Spielfeld, Enter ist nicht nötig.",
   "Got it": "Verstanden",
   "Pause": "Pause",
-  "Resume": "Weiter"
+  "Resume": "Weiter",
+
+  // ── Full Pokédex silhouette hints ──
+  "💡 Hint": "💡 Hinweis",
+  "💡 Hint on": "💡 Hinweis an",
+  "Show Pokémon silhouettes as a hint (marked on your score)": "Pokémon-Silhouetten als Hinweis zeigen (wird beim Ergebnis vermerkt)",
+  "Show silhouettes as a hint? This game will be marked as played with hints.": "Silhouetten als Hinweis zeigen? Dieses Spiel wird als mit Hinweisen gespielt markiert.",
+  "💡 Played with silhouette hints": "💡 Mit Silhouetten-Hinweisen gespielt",
+  "Silhouette hints used": "Silhouetten-Hinweise genutzt"
 };

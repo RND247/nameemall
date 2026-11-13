@@ -246,5 +246,13 @@ window.NEA_UI = {
   "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 Comment jouer : tape le nom d’un Pokémon dans la case. Les bonnes réponses apparaissent sur la grille, pas besoin d’appuyer sur Entrée.",
   "Got it": "Compris",
   "Pause": "Pause",
-  "Resume": "Reprendre"
+  "Resume": "Reprendre",
+
+  // ── Full Pokédex silhouette hints ──
+  "💡 Hint": "💡 Indice",
+  "💡 Hint on": "💡 Indice activé",
+  "Show Pokémon silhouettes as a hint (marked on your score)": "Afficher les silhouettes des Pokémon comme indice (indiqué sur ton score)",
+  "Show silhouettes as a hint? This game will be marked as played with hints.": "Afficher les silhouettes comme indice ? Cette partie sera marquée comme jouée avec indices.",
+  "💡 Played with silhouette hints": "💡 Partie jouée avec les silhouettes",
+  "Silhouette hints used": "Silhouettes utilisées comme indice"
 };

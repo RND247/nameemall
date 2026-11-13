@@ -272,5 +272,13 @@ window.NEA_UI = {
   "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 遊び方: ボックスにポケモンの名前を入力するだけ。正解するとボードに表示されます。Enterキーは不要です。",
   "Got it": "OK",
   "Pause": "一時停止",
-  "Resume": "再開"
+  "Resume": "再開",
+
+  // ── Full Pokédex silhouette hints ──
+  "💡 Hint": "💡 ヒント",
+  "💡 Hint on": "💡 ヒントON",
+  "Show Pokémon silhouettes as a hint (marked on your score)": "ポケモンのシルエットをヒントとして表示（スコアに記録されます）",
+  "Show silhouettes as a hint? This game will be marked as played with hints.": "シルエットをヒントとして表示しますか？このゲームはヒント使用として記録されます。",
+  "💡 Played with silhouette hints": "💡 シルエットのヒントを使用",
+  "Silhouette hints used": "シルエットのヒントを使用"
 };

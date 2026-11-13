@@ -246,5 +246,13 @@ window.NEA_UI = {
   "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 플레이 방법: 입력창에 포켓몬 이름을 입력하세요. 맞히면 보드에 바로 나타나요. Enter는 누르지 않아도 돼요.",
   "Got it": "알겠어요",
   "Pause": "일시정지",
-  "Resume": "계속"
+  "Resume": "계속",
+
+  // ── Full Pokédex silhouette hints ──
+  "💡 Hint": "💡 힌트",
+  "💡 Hint on": "💡 힌트 켜짐",
+  "Show Pokémon silhouettes as a hint (marked on your score)": "포켓몬 실루엣을 힌트로 보여 줘요 (점수에 표시돼요)",
+  "Show silhouettes as a hint? This game will be marked as played with hints.": "실루엣을 힌트로 볼까요? 이 게임은 힌트 사용으로 기록돼요.",
+  "💡 Played with silhouette hints": "💡 실루엣 힌트 사용",
+  "Silhouette hints used": "실루엣 힌트 사용"
 };

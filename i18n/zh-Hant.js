@@ -246,5 +246,13 @@ window.NEA_UI = {
   "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 玩法: 在輸入框中打出任何寶可夢的名字，答對就會出現在盤面上，不用按 Enter。",
   "Got it": "知道了",
   "Pause": "暫停",
-  "Resume": "繼續"
+  "Resume": "繼續",
+
+  // ── Full Pokédex silhouette hints ──
+  "💡 Hint": "💡 提示",
+  "💡 Hint on": "💡 提示已開",
+  "Show Pokémon silhouettes as a hint (marked on your score)": "顯示寶可夢剪影作為提示（會標記在成績上）",
+  "Show silhouettes as a hint? This game will be marked as played with hints.": "要顯示剪影作為提示嗎？這局會被標記為使用了提示。",
+  "💡 Played with silhouette hints": "💡 使用了剪影提示",
+  "Silhouette hints used": "使用了剪影提示"
 };
