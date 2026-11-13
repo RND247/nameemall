@@ -209,5 +209,12 @@ window.NEA_UI = {
   'Data:': '資料來源:',
   '· Inspired by': '· 靈感來自',
   'Feature requests & bugs?': '功能建議與問題回報:',
-  '☕ Support on Ko-fi': '☕ 在 Ko-fi 支持我們'
+  '☕ Support on Ko-fi': '☕ 在 Ko-fi 支持我們',
+
+  // ── Search engines and About section ──
+  "NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel & Co-Op": "NameEmAll：說出全部1025隻寶可夢的名字｜每日挑戰、對戰與合作",
+  "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "你能說出全部1025隻寶可夢的名字嗎？免費的寶可夢猜謎遊戲，有每日挑戰、即時對戰和合作模式。從妙蛙種子到桃歹郎，把每個名字都打出來吧。",
+  "About NameEmAll": "關於 NameEmAll",
+  "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll 是免費的寶可夢猜謎遊戲：盡快說出每一隻寶可夢的名字，從妙蛙種子到桃歹郎，全部1025隻。",
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "可以玩每日挑戰（迷你5隻、中型30隻）、和朋友即時對戰，或組隊合作。不需要註冊。"
 };

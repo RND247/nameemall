@@ -209,5 +209,12 @@ window.NEA_UI = {
   'Data:': 'Dati:',
   '· Inspired by': '· Ispirato a',
   'Feature requests & bugs?': 'Suggerimenti e bug:',
-  '☕ Support on Ko-fi': '☕ Sostienici su Ko-fi'
+  '☕ Support on Ko-fi': '☕ Sostienici su Ko-fi',
+
+  // ── Search engines and About section ──
+  "NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel & Co-Op": "NameEmAll: quiz per nominare tutti i 1025 Pokémon | Sfida giornaliera, sfide e cooperativa",
+  "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "Riesci a nominare tutti i 1025 Pokémon? Quiz Pokémon gratuito con sfida giornaliera, sfide in tempo reale e modalità cooperativa. Scrivi ogni nome, da Bulbasaur a Pecharunt.",
+  "About NameEmAll": "Informazioni su NameEmAll",
+  "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll è un quiz Pokémon gratuito: nomina ogni Pokémon, tutti i 1025 da Bulbasaur a Pecharunt, il più velocemente possibile.",
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "Gioca la sfida giornaliera (Mini con 5 Pokémon, Midi con 30), sfida un amico in tempo reale o fate squadra in cooperativa. Nessuna registrazione."
 };

@@ -209,5 +209,12 @@ window.NEA_UI = {
   'Data:': '데이터:',
   '· Inspired by': '· 영감:',
   'Feature requests & bugs?': '기능 제안 및 버그 신고:',
-  '☕ Support on Ko-fi': '☕ Ko-fi로 후원하기'
+  '☕ Support on Ko-fi': '☕ Ko-fi로 후원하기',
+
+  // ── Search engines and About section ──
+  "NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel & Co-Op": "NameEmAll: 포켓몬 1025마리 이름 맞히기 퀴즈 | 데일리, 대결, 협동",
+  "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "포켓몬 1025마리의 이름을 모두 말할 수 있나요? 데일리 챌린지, 실시간 대결, 협동 모드가 있는 무료 포켓몬 퀴즈. 이상해씨부터 복숭악동까지 모든 이름을 입력해 보세요.",
+  "About NameEmAll": "NameEmAll 소개",
+  "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll은 무료 포켓몬 퀴즈입니다. 이상해씨부터 복숭악동까지 1025마리 포켓몬의 이름을 최대한 빨리 맞혀 보세요.",
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "데일리 챌린지(5마리 미니, 30마리 미디), 친구와의 실시간 대결, 협동 모드를 즐길 수 있어요. 가입은 필요 없습니다."
 };

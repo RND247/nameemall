@@ -5,15 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-1NZMHCPJ9C"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-1NZMHCPJ9C');</script>
-<title>NameEmAll</title>
-<meta name="description" content="Can you name all 1025 Pokémon? Test your knowledge!">
-<meta property="og:title" content="NameEmAll">
-<meta property="og:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
+<title>NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel &amp; Co-Op</title>
+<meta name="description" content="Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.">
+<meta name="keywords" content="NameEmAll, Name 'Em All, Name Em All, name all Pokémon, Pokémon quiz, 1025 Pokémon, Pokédex quiz, Who's that Pokémon, daily Pokémon game">
+<meta property="og:site_name" content="NameEmAll">
+<meta property="og:title" content="NameEmAll: Can you name all 1025 Pokémon?">
+<meta property="og:description" content="Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rnd247.github.io/nameemall/">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="NameEmAll">
-<meta name="twitter:description" content="Can you name all 1025 Pokémon? Test your knowledge!">
+<meta property="og:image" content="https://rnd247.github.io/nameemall/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="NameEmAll: Can you name all 1025 Pokémon?">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NameEmAll: Can you name all 1025 Pokémon?">
+<meta name="twitter:description" content="Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.">
+<meta name="twitter:image" content="https://rnd247.github.io/nameemall/og-image.png">
+<link rel="alternate" hreflang="en" href="https://rnd247.github.io/nameemall/">
+<link rel="alternate" hreflang="ja" href="https://rnd247.github.io/nameemall/?lang=ja">
+<link rel="alternate" hreflang="zh-Hant" href="https://rnd247.github.io/nameemall/?lang=zh-Hant">
+<link rel="alternate" hreflang="ko" href="https://rnd247.github.io/nameemall/?lang=ko">
+<link rel="alternate" hreflang="fr" href="https://rnd247.github.io/nameemall/?lang=fr">
+<link rel="alternate" hreflang="de" href="https://rnd247.github.io/nameemall/?lang=de">
+<link rel="alternate" hreflang="es" href="https://rnd247.github.io/nameemall/?lang=es">
+<link rel="alternate" hreflang="it" href="https://rnd247.github.io/nameemall/?lang=it">
+<link rel="alternate" hreflang="x-default" href="https://rnd247.github.io/nameemall/">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://rnd247.github.io/nameemall/", "description": "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.", "applicationCategory": "GameApplication", "genre": ["Quiz", "Trivia"], "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "inLanguage": ["en", "ja", "zh-Hant", "ko", "fr", "de", "es", "it"], "image": "https://rnd247.github.io/nameemall/og-image.png"}</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
@@ -61,7 +78,7 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 
 header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-bottom: 1px solid var(--border); padding: 10px 16px 6px; }
 .title-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 8px; }
-.title { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; }
+.title { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.5px; white-space: nowrap; margin: 0; }
 .title .accent { color: var(--accent); }
 .title .sub { color: var(--text-dim); font-weight: 500; font-size: 0.82rem; margin-left: 4px; }
 
@@ -303,6 +320,11 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 .wtp-next:hover { opacity: 0.85; }
 .wtp-score-line { font-size: 0.75rem; color: var(--text-dim); }
 
+.about { max-width: 720px; margin: 28px auto 0; padding: 0 16px; text-align: center; color: var(--text-dim); font-size: 0.78rem; line-height: 1.55; }
+.about h2 { font-size: 0.9rem; color: var(--text); margin-bottom: 6px; }
+.about p { margin: 4px 0; }
+.about a { color: var(--text-pinyin); text-decoration: none; }
+.about-langs { margin-top: 8px !important; }
 footer { text-align: center; padding: 24px 16px; font-size: 0.7rem; color: var(--text-dim); border-top: 1px solid var(--border); margin-top: 16px; }
 footer a { color: var(--text-pinyin); text-decoration: none; }
 .donate-btn { display: inline-block; margin-top: 10px; padding: 6px 18px; background: #ff5e5b; color: #fff; font-weight: 700; font-size: 0.78rem; border-radius: 6px; text-decoration: none; transition: background 0.15s, transform 0.15s; }
@@ -526,6 +548,13 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   };
   var lang = 'en';
   try { lang = localStorage.getItem('nea_lang') || 'en'; } catch(e) {}
+  // ?lang=xx links (search results, shared links) pick the language and remember it
+  var urlLang = null;
+  try { urlLang = new URLSearchParams(location.search).get('lang'); } catch(e) {}
+  if (urlLang && SUPPORTED[urlLang]) {
+    lang = urlLang;
+    try { localStorage.setItem('nea_lang', lang); } catch(e) {}
+  }
   if (!SUPPORTED[lang]) lang = 'en';
   window.NEA_LANGS = SUPPORTED;
   window.NEA_LANG = lang;
@@ -548,6 +577,24 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   }
   window.NEA_LOCALE = LOCALES[lang];
   document.documentElement.lang = lang;
+
+  // Search engines: each language has its own address (?lang=xx), title and description
+  var SITE = 'https://rnd247.github.io/nameemall/';
+  var canonical = document.createElement('link');
+  canonical.rel = 'canonical';
+  canonical.href = SITE + (lang === 'en' ? '' : '?lang=' + lang);
+  document.head.appendChild(canonical);
+  if (lang !== 'en') {
+    var seoTitle = dict['NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel & Co-Op'];
+    var seoDesc = dict['Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.'];
+    if (seoTitle) document.title = seoTitle;
+    if (seoDesc) {
+      var md = document.querySelector('meta[name="description"]');
+      if (md) md.setAttribute('content', seoDesc);
+    }
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute('content', canonical.href);
+  }
 
   window.t = function(key, vars) {
     var s = Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : key;
@@ -618,7 +665,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
 <header>
   <div class="title-row">
-    <div class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Regular Mode</span></div>
+    <h1 class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Regular Mode</span></h1>
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
@@ -845,6 +892,12 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </div>
 
+<section class="about" aria-labelledby="about-title">
+  <h2 id="about-title">About NameEmAll</h2>
+  <p>NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.</p>
+  <p>Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.</p>
+  <p class="about-langs"><a href="https://rnd247.github.io/nameemall/" hreflang="en" data-no-i18n>English</a> · <a href="https://rnd247.github.io/nameemall/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://rnd247.github.io/nameemall/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://rnd247.github.io/nameemall/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://rnd247.github.io/nameemall/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://rnd247.github.io/nameemall/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://rnd247.github.io/nameemall/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://rnd247.github.io/nameemall/?lang=it" hreflang="it" data-no-i18n>Italiano</a></p>
+</section>
 <footer>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
@@ -903,7 +956,10 @@ const Q = (function() {
       }
       track('language_change', { from: NEA_LANG, to: next });
       try { localStorage.setItem('nea_lang', next); } catch(e) {}
-      location.reload();
+      // Keep the address in sync so it can be shared and indexed per language
+      var u = new URL(location.href);
+      if (next === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', next);
+      location.href = u.toString();
     });
   })();
 
@@ -3356,7 +3412,7 @@ const Q = (function() {
     var keys = Array.from(keySet).sort().reverse().slice(0, 7);
     if (keys.length === 0) { hist.innerHTML = ''; return; }
     var fmt = function(label, r) {
-      if (!r) return '<span class="dl-h-score dl-h-none">' + label + ' –</span>';
+      if (!r) return '<span class="dl-h-score dl-h-none">' + label + ' -</span>';
       var perfect = r.score === r.total;
       return '<span class="dl-h-score' + (perfect ? ' dl-h-perfect-score' : '') + '" title="' + fmtTime(r.time) + '">' +
              label + ' ' + r.score + '/' + r.total + (perfect ? ' 🏆' : '') + '</span>';
