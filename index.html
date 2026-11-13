@@ -321,6 +321,15 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 .wtp-next:hover { opacity: 0.85; }
 .wtp-score-line { font-size: 0.75rem; color: var(--text-dim); }
 
+.about summary { cursor: pointer; list-style: none; }
+.about summary::-webkit-details-marker { display: none; }
+.about summary h2 { display: inline; }
+.about:not([open]) summary h2::after { content: " ▸"; }
+.about[open] summary h2::after { content: " ▾"; }
+.icon-btn { padding: 3px 9px; font-size: 0.85rem; line-height: 1.2; }
+.howto { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; max-width: 640px; margin: 8px auto 0; padding: 8px 12px; border: 1px solid rgba(56,189,248,0.35); background: rgba(56,189,248,0.08); border-radius: 10px; font-size: 0.8rem; color: var(--text); text-align: center; }
+.howto[hidden] { display: none; }
+.howto .btn { padding: 4px 12px; font-size: 0.75rem; }
 .about { max-width: 720px; margin: 28px auto 0; padding: 0 16px; text-align: center; color: var(--text-dim); font-size: 0.78rem; line-height: 1.55; }
 .about h2 { font-size: 0.9rem; color: var(--text); margin-bottom: 6px; }
 .about p { margin: 4px 0; }
@@ -687,16 +696,20 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
-      <button class="btn" id="btn-history" style="padding:3px 10px;font-size:0.65rem;">Scoreboard</button>
+      <button class="btn icon-btn" id="btn-history" title="Scoreboard" aria-label="Scoreboard">🏆</button>
     </div>
   </div>
   <div class="input-row">
     <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
   </div>
+  <div class="howto" id="howto" hidden>
+    <span>👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.</span>
+    <button class="btn" id="howto-ok">Got it</button>
+  </div>
   <div class="btn-row" id="action-bar">
     <button class="btn danger" id="btn-give-up">Give Up</button>
     <button class="btn" id="btn-reset">Reset</button>
-    <button class="btn" id="btn-pause">⏸ Pause</button>
+    <button class="btn icon-btn" id="btn-pause" title="Pause" aria-label="Pause">⏸</button>
     <div class="btn-sep"></div>
     <div class="settings-wrap">
       <button class="btn" id="btn-settings" title="Settings">⚙️ Settings</button>
@@ -914,14 +927,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </div>
 
-<section class="about" aria-labelledby="about-title">
-  <h2 id="about-title">About NameEmAll</h2>
+<details class="about" id="about-section">
+  <summary><h2 id="about-title">About NameEmAll</h2></summary>
   <p>NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.</p>
   <p>Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.</p>
   <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a></p>
-</section>
+</details>
 <footer>
-  <div class="lang-row"><label for="lang-select">🌐 Language</label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
+  <div class="lang-row"><label for="lang-select">🌐 <span>Language</span></label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
   <br>
@@ -2038,7 +2051,7 @@ const Q = (function() {
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
-    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
+    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); setPauseBtn(false); }
     $input.value = ''; $input.disabled = false;
     updateUI(); displayOrder = items.map((_, i) => i);
     renderGrid(); $input.focus(); localStorage.removeItem(saveKey());
@@ -4495,6 +4508,15 @@ const Q = (function() {
       '</div>';
   }
 
+  // First-visit hint, shown wherever the name box is visible until dismissed or a first name is found
+  function howtoSeen() { try { return localStorage.getItem('nea_howto_seen') === '1'; } catch(e) { return true; } }
+  function dismissHowto() { try { localStorage.setItem('nea_howto_seen', '1'); } catch(e) {} updateHowto(); }
+  function updateHowto() {
+    var el = $('howto');
+    if (el) el.hidden = howtoSeen() || $input.style.display === 'none' || $input.disabled ||
+      !(currentTab === 'pokemon' || currentTab === 'daily');
+  }
+
   function switchTab(tab) {
     if (tab === currentTab && items.length) return;
     if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
@@ -4514,7 +4536,7 @@ const Q = (function() {
       _preserveSession = getRoomSession();
     }
     stopTimer(); timerRunning = false; givenUp = false;
-    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); $('btn-pause').textContent = '⏸ Pause'; }
+    if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); setPauseBtn(false); }
     if (currentTab === 'duel') duelCleanup();
     if (currentTab === 'coop') coopCleanup();
     if (currentTab === 'daily') { dailyState.active = false; dailyState.finished = false; dailyStopCountdown(); $('daily-result-overlay').classList.remove('active'); $('daily-sticky').style.display = 'none'; dailySetDoneBar(false); }
@@ -4524,6 +4546,7 @@ const Q = (function() {
     document.querySelector('.stats').style.display = '';
     currentTab = tab;
     track('tab_view', { tab: tab });
+    var about = $('about-section'); if (about) about.open = (tab === 'daily');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === navTabFor(tab)));
     if (window.history.replaceState) {
       var qs = window.location.search;
@@ -4704,6 +4727,7 @@ const Q = (function() {
     const matches = findAllMatches(val);
     if (matches.length > 0) {
       for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
+      if (!howtoSeen()) dismissHowto();
       if (currentTab === 'pokemon' || isDailyTab) {
         for (var mi = 0; mi < matches.length; mi++) {
           trackPokemon('pokemon_named', matches[mi], isDailyTab
@@ -4762,6 +4786,13 @@ const Q = (function() {
   $('btn-reset').addEventListener('click', reset);
 
   var paused = false;
+  function setPauseBtn(isPaused) {
+    var b = $('btn-pause');
+    if (!b) return;
+    b.textContent = isPaused ? '▶' : '⏸';
+    b.title = t(isPaused ? 'Resume' : 'Pause');
+    b.setAttribute('aria-label', b.title);
+  }
   function togglePause() {
     if (givenUp || !timerRunning && !paused) return;
     paused = !paused;
@@ -4769,12 +4800,12 @@ const Q = (function() {
       stopTimer();
       $input.disabled = true;
       $('pause-overlay').classList.add('active');
-      $('btn-pause').textContent = '▶ Resume';
+      setPauseBtn(true);
     } else {
       startTimer();
       $input.disabled = false;
       $('pause-overlay').classList.remove('active');
-      $('btn-pause').textContent = '⏸ Pause';
+      setPauseBtn(false);
       $input.focus();
     }
   }
@@ -4807,6 +4838,7 @@ const Q = (function() {
   }
 
   $('btn-pause').addEventListener('click', togglePause);
+  $('howto-ok').addEventListener('click', function() { dismissHowto(); $input.focus(); });
   $('pause-overlay').addEventListener('click', function() {
     if (!paused || disconnectWaiting) return;
     if (currentTab === 'duel' || currentTab === 'coop') {
@@ -5097,6 +5129,8 @@ const Q = (function() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
+  // Re-check the "How to play" hint whenever the name box appears, disappears or is locked
+  new MutationObserver(updateHowto).observe($input, { attributes: true, attributeFilter: ['style', 'disabled'] });
   $('grid-wrap').addEventListener('click', function(e) {
     var pick = e.target.closest('[data-multi-mode]');
     if (pick) { switchTab(pick.getAttribute('data-multi-mode')); return; }
@@ -5252,6 +5286,7 @@ const Q = (function() {
     }
   }
   if (cycleFormsEnabled) startCycleForms();
+  updateHowto();
 
   return { closeModal: () => $overlay.classList.remove('active'), reset };
 })();

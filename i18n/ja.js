@@ -266,5 +266,11 @@ window.NEA_UI = {
   "📚 Play previous dailies": "📚 過去のデイリーをプレイ",
   "Days played: {count}": "プレイ日数: {count}",
   "🔥 Start your streak today": "🔥 今日から連続記録を始めよう",
-  "Language": "言語"
+  "Language": "言語",
+
+  // ── How to play hint, icon buttons ──
+  "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 遊び方: ボックスにポケモンの名前を入力するだけ。正解するとボードに表示されます。Enterキーは不要です。",
+  "Got it": "OK",
+  "Pause": "一時停止",
+  "Resume": "再開"
 };

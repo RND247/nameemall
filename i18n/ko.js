@@ -240,5 +240,11 @@ window.NEA_UI = {
   "📚 Play previous dailies": "📚 지난 데일리 플레이",
   "Days played: {count}": "플레이한 날: {count}",
   "🔥 Start your streak today": "🔥 오늘부터 연속 기록을 시작하세요",
-  "Language": "언어"
+  "Language": "언어",
+
+  // ── How to play hint, icon buttons ──
+  "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 플레이 방법: 입력창에 포켓몬 이름을 입력하세요. 맞히면 보드에 바로 나타나요. Enter는 누르지 않아도 돼요.",
+  "Got it": "알겠어요",
+  "Pause": "일시정지",
+  "Resume": "계속"
 };

@@ -240,5 +240,11 @@ window.NEA_UI = {
   "📚 Play previous dailies": "📚 Gioca le sfide precedenti",
   "Days played: {count}": "Giorni giocati: {count}",
   "🔥 Start your streak today": "🔥 Inizia oggi la tua serie",
-  "Language": "Lingua"
+  "Language": "Lingua",
+
+  // ── How to play hint, icon buttons ──
+  "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 Come si gioca: scrivi il nome di un Pokémon nella casella. I nomi giusti compaiono sulla griglia, non serve premere Invio.",
+  "Got it": "Ho capito",
+  "Pause": "Pausa",
+  "Resume": "Riprendi"
 };

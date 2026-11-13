@@ -240,5 +240,11 @@ window.NEA_UI = {
   "📚 Play previous dailies": "📚 玩過去的每日挑戰",
   "Days played: {count}": "遊玩天數: {count}",
   "🔥 Start your streak today": "🔥 從今天開始連勝吧",
-  "Language": "語言"
+  "Language": "語言",
+
+  // ── How to play hint, icon buttons ──
+  "👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.": "👋 玩法: 在輸入框中打出任何寶可夢的名字，答對就會出現在盤面上，不用按 Enter。",
+  "Got it": "知道了",
+  "Pause": "暫停",
+  "Resume": "繼續"
 };
