@@ -1,0 +1,21 @@
+# NameEmAll Daily stats API. Deploy from this folder:
+#   npx wrangler d1 create nameemall              (once; paste the database_id below)
+#   npx wrangler d1 execute nameemall --remote --file=schema.sql
+#   npx wrangler secret put IP_SALT               (once; any long random string)
+#   npx wrangler deploy
+# Local test: npx wrangler d1 execute nameemall --local --file=schema.sql && npx wrangler dev
+name = "nameemall-api"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+routes = [
+  { pattern = "api.nameemall.com", custom_domain = true }
+]
+
+[vars]
+ALLOWED_ORIGINS = "https://nameemall.com,https://www.nameemall.com,http://localhost:8765"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nameemall"
+database_id = "f8682667-a8e4-46fd-8e1a-559b9123558c"

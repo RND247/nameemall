@@ -216,5 +216,13 @@ window.NEA_UI = {
   "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "Riesci a nominare tutti i 1025 Pokémon? Quiz Pokémon gratuito con sfida giornaliera, sfide in tempo reale e modalità cooperativa. Scrivi ogni nome, da Bulbasaur a Pecharunt.",
   "About NameEmAll": "Informazioni su NameEmAll",
   "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll è un quiz Pokémon gratuito: nomina ogni Pokémon, tutti i 1025 da Bulbasaur a Pecharunt, il più velocemente possibile.",
-  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "Gioca la sfida giornaliera (Mini con 5 Pokémon, Midi con 30), sfida un amico in tempo reale o fate squadra in cooperativa. Nessuna registrazione."
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "Gioca la sfida giornaliera (Mini con 5 Pokémon, Midi con 30), sfida un amico in tempo reale o fate squadra in cooperativa. Nessuna registrazione.",
+
+  // ── Global Daily stats ──
+  "🌍 You beat {pct}% of today's {count} players": "🌍 Hai battuto il {pct}% dei {count} giocatori di oggi",
+  "🌍 You're the first to finish today's {label}!": "🌍 Sei il primo a completare la sfida {label} di oggi!",
+  "🔍 Hardest today: {name}, only {pct}% named it": "🔍 Il più difficile di oggi: {name}, indovinato solo dal {pct}%",
+  "📊 Average {avg}/{total} · {perfect} perfect": "📊 Media {avg}/{total} · {perfect} perfette",
+  "🌍 {count} players today": "🌍 {count} giocatori oggi",
+  "🌍 Beat {pct}% of {count} players": "🌍 Meglio del {pct}% di {count} giocatori"
 };

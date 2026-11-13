@@ -216,5 +216,13 @@ window.NEA_UI = {
   "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "你能說出全部1025隻寶可夢的名字嗎？免費的寶可夢猜謎遊戲，有每日挑戰、即時對戰和合作模式。從妙蛙種子到桃歹郎，把每個名字都打出來吧。",
   "About NameEmAll": "關於 NameEmAll",
   "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll 是免費的寶可夢猜謎遊戲：盡快說出每一隻寶可夢的名字，從妙蛙種子到桃歹郎，全部1025隻。",
-  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "可以玩每日挑戰（迷你5隻、中型30隻）、和朋友即時對戰，或組隊合作。不需要註冊。"
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "可以玩每日挑戰（迷你5隻、中型30隻）、和朋友即時對戰，或組隊合作。不需要註冊。",
+
+  // ── Global Daily stats ──
+  "🌍 You beat {pct}% of today's {count} players": "🌍 你贏過了今天{count}位玩家中的{pct}%",
+  "🌍 You're the first to finish today's {label}!": "🌍 你是今天第一個完成{label}的人！",
+  "🔍 Hardest today: {name}, only {pct}% named it": "🔍 今日最難: {name}，只有{pct}%的人答出",
+  "📊 Average {avg}/{total} · {perfect} perfect": "📊 平均 {avg}/{total} · {perfect}人完美通關",
+  "🌍 {count} players today": "🌍 今天有{count}位玩家",
+  "🌍 Beat {pct}% of {count} players": "🌍 贏過{count}位玩家中的{pct}%"
 };

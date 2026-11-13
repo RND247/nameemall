@@ -492,6 +492,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-arch-play { min-width: 120px; padding: 8px 14px; font-size: 0.82rem; }
 .daily-lobby .dl-arch-best { color: #22c55e; font-weight: 800; margin-left: 4px; }
 .daily-lobby .dl-arch-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 6px; }
+.daily-result-global { white-space: pre-line; font-size: 0.82rem; line-height: 1.5; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
+.daily-result-global b { color: var(--text); }
+.daily-lobby .dl-mode-players { font-size: 0.72rem; color: var(--text-pinyin); min-height: 1.1em; }
 .daily-result-vs { white-space: pre-line; font-size: 0.85rem; font-weight: 700; background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
 .daily-challenge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 .daily-challenge-row input { flex: 1 1 140px; max-width: 200px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; }
@@ -864,6 +867,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="daily-result-time"></p>
     <p id="daily-result-streak"></p>
     <div class="daily-result-vs" id="daily-result-vs" style="display:none;"></div>
+    <div class="daily-result-global" id="daily-result-global" style="display:none;"></div>
     <div class="daily-result-grid" id="daily-result-grid"></div>
     <div class="daily-share-row">
       <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
@@ -3288,6 +3292,7 @@ const Q = (function() {
         '<div class="dl-mode-card' + (r ? ' dl-mode-done' : '') + (perfect ? ' dl-mode-perfect' : '') + '">' +
           '<div class="dl-mode-head"><span class="dl-mode-name">' + cfg.icon + ' ' + cfg.label + '</span>' +
             '<span class="dl-mode-size">' + t('{count} Pokémon', { count: cfg.size }) + '</span></div>' +
+          '<div class="dl-mode-players" data-dl-players="' + mode + '"></div>' +
           (r
             ? '<div class="dl-mode-result">' + (perfect ? '🏆 ' : (r.gaveUp ? '🏳️ ' : '✓ ')) + r.score + ' / ' + r.total + ' · ' + fmtTime(r.time) + '</div>' +
               '<button class="btn dl-play" data-dl-view="' + mode + '">View Result</button>' +
@@ -3320,6 +3325,7 @@ const Q = (function() {
     dailyRenderChallengeBanner();
     dailyRenderArchive();
     dailySyncStreakProps();
+    dailyLoadLobbyCounts(dailyNum);
     dailyRenderHistory(all, legacy, todayStr);
     dailyStartCountdown('dl-countdown');
 
@@ -3533,6 +3539,104 @@ const Q = (function() {
     if (show) $('db-streak').textContent = streak;
   }
 
+  // ── Global Daily stats (api.nameemall.com, Cloudflare Worker + D1) ──
+  // Ranked results are sent anonymously (random player ID kept in this browser) so players can
+  // see how they did against everyone else. If the API can't be reached, the game simply skips it.
+  var STATS_API = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? 'http://localhost:8787' : 'https://api.nameemall.com';
+  var dailyGlobal = null; // last stats shown, also used by the share text
+
+  function dailyPlayerId() {
+    try {
+      var id = localStorage.getItem('nea_pid');
+      if (!id || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id)) {
+        id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() :
+          'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+          });
+        localStorage.setItem('nea_pid', id);
+      }
+      return id;
+    } catch(e) { return null; }
+  }
+
+  function dailyFoundString(result) {
+    var set = new Set(result.foundOrder || []), out = '';
+    for (var i = 0; i < result.total; i++) out += set.has(i) ? '1' : '0';
+    return out;
+  }
+
+  // Sends the ranked result (the server keeps only the first one) and returns the day's stats
+  function dailyFetchGlobal(result) {
+    var player = dailyPlayerId();
+    if (!player || !window.fetch) return Promise.resolve(null);
+    var body = {
+      player: player, day: result.dailyNum || dailyState.dailyNum, mode: result.mode || dailyState.mode,
+      score: result.score, total: result.total, time_ms: Math.max(0, Math.round(result.time || 0)),
+      gave_up: !!result.gaveUp, found: dailyFoundString(result), lang: NEA_LANG
+    };
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function() { ctrl.abort(); }, 6000) : null;
+    return fetch(STATS_API + '/v1/daily/result', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(data) { if (timer) clearTimeout(timer); return data; });
+  }
+
+  function dailyRenderGlobal(result, stats) {
+    var el = $('daily-result-global');
+    if (!el) return;
+    if (!stats || !stats.players) { el.style.display = 'none'; return; }
+    var cfg = dailyModeCfg(result.mode || dailyState.mode);
+    var lines = [];
+    if (stats.players <= 1) {
+      lines.push(t("🌍 You're the first to finish today's {label}!", { label: cfg.label }));
+    } else if (stats.you && stats.you.beat_pct != null) {
+      lines.push(t("🌍 You beat {pct}% of today's {count} players", { pct: stats.you.beat_pct, count: stats.players }));
+    }
+    if (stats.players >= 3 && stats.found_rates && stats.found_rates.length === items.length) {
+      var hardest = -1;
+      for (var i = 0; i < stats.found_rates.length; i++) {
+        if (stats.found_rates[i] != null && (hardest < 0 || stats.found_rates[i] < stats.found_rates[hardest])) hardest = i;
+      }
+      if (hardest >= 0 && stats.found_rates[hardest] < 100) {
+        lines.push(t('🔍 Hardest today: {name}, only {pct}% named it', { name: displayName(items[hardest]), pct: stats.found_rates[hardest] }));
+      }
+    }
+    if (stats.players >= 2 && stats.avg_score != null) {
+      lines.push(t('📊 Average {avg}/{total} · {perfect} perfect', { avg: stats.avg_score, total: stats.total, perfect: stats.perfect }));
+    }
+    if (!lines.length) { el.style.display = 'none'; return; }
+    el.textContent = lines.join('\n');
+    el.style.display = '';
+  }
+
+  function dailyLoadGlobal(result) {
+    dailyGlobal = null;
+    var el = $('daily-result-global');
+    if (el) el.style.display = 'none';
+    if (dailyState.archive || dailyState.unranked) return; // only ranked results count
+    dailyFetchGlobal(result).then(function(stats) {
+      if (dailyState.lastResult !== result) return; // the player moved on to another game
+      dailyGlobal = stats;
+      dailyRenderGlobal(result, stats);
+    });
+  }
+
+  function dailyLoadLobbyCounts(dailyNum) {
+    if (!window.fetch) return;
+    fetch(STATS_API + '/v1/daily/counts?day=' + dailyNum).then(function(r) { return r.ok ? r.json() : null; })
+      .catch(function() { return null; })
+      .then(function(c) {
+        if (!c) return;
+        DAILY_MODE_ORDER.forEach(function(mode) {
+          var el = document.querySelector('[data-dl-players="' + mode + '"]');
+          if (el && c[mode] > 0) el.textContent = t('🌍 {count} players today', { count: c[mode] });
+        });
+      });
+  }
+
   function dailyComplete(won, reason) {
     if (!dailyState.active) return;
     dailyState.active = false;
@@ -3621,6 +3725,7 @@ const Q = (function() {
 
     dailyStartCountdown('daily-result-countdown');
     $('daily-result-overlay').classList.add('active');
+    dailyLoadGlobal(result);
   }
 
   function dailyBuildShareGrid(result) {
@@ -3649,6 +3754,10 @@ const Q = (function() {
     var stats = t('{score}/{total} ({pct}%) in {time}', { score: result.score, total: result.total, pct: pct, time: fmtTime(result.time) });
     var grid = dailyBuildShareGrid(result);
     var url = DAILY_SITE_URL;
+    // "Beat 72% of 143 players" when the global stats for this ranked result are known
+    if (!dailyState.archive && !dailyState.unranked && dailyGlobal && dailyGlobal.players > 1 && dailyGlobal.you && dailyGlobal.you.beat_pct != null) {
+      stats += '\n' + t('🌍 Beat {pct}% of {count} players', { pct: dailyGlobal.you.beat_pct, count: dailyGlobal.players });
+    }
     return header + '\n' + stats + '\n\n' + grid + '\n\n' + url;
   }
 

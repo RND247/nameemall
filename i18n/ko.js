@@ -216,5 +216,13 @@ window.NEA_UI = {
   "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.": "포켓몬 1025마리의 이름을 모두 말할 수 있나요? 데일리 챌린지, 실시간 대결, 협동 모드가 있는 무료 포켓몬 퀴즈. 이상해씨부터 복숭악동까지 모든 이름을 입력해 보세요.",
   "About NameEmAll": "NameEmAll 소개",
   "NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.": "NameEmAll은 무료 포켓몬 퀴즈입니다. 이상해씨부터 복숭악동까지 1025마리 포켓몬의 이름을 최대한 빨리 맞혀 보세요.",
-  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "데일리 챌린지(5마리 미니, 30마리 미디), 친구와의 실시간 대결, 협동 모드를 즐길 수 있어요. 가입은 필요 없습니다."
+  "Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.": "데일리 챌린지(5마리 미니, 30마리 미디), 친구와의 실시간 대결, 협동 모드를 즐길 수 있어요. 가입은 필요 없습니다.",
+
+  // ── Global Daily stats ──
+  "🌍 You beat {pct}% of today's {count} players": "🌍 오늘 플레이어 {count}명 중 {pct}%를 이겼어요",
+  "🌍 You're the first to finish today's {label}!": "🌍 오늘의 {label}를 가장 먼저 완료했어요!",
+  "🔍 Hardest today: {name}, only {pct}% named it": "🔍 오늘의 최고 난도: {name}, {pct}%만 맞혔어요",
+  "📊 Average {avg}/{total} · {perfect} perfect": "📊 평균 {avg}/{total} · 퍼펙트 {perfect}명",
+  "🌍 {count} players today": "🌍 오늘 플레이어 {count}명",
+  "🌍 Beat {pct}% of {count} players": "🌍 {count}명 중 {pct}%를 이김"
 };
