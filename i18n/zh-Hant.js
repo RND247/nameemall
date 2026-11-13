@@ -224,5 +224,21 @@ window.NEA_UI = {
   "🔍 Hardest today: {name}, only {pct}% named it": "🔍 今日最難: {name}，只有{pct}%的人答出",
   "📊 Average {avg}/{total} · {perfect} perfect": "📊 平均 {avg}/{total} · {perfect}人完美通關",
   "🌍 {count} players today": "🌍 今天有{count}位玩家",
-  "🌍 Beat {pct}% of {count} players": "🌍 贏過{count}位玩家中的{pct}%"
+  "🌍 Beat {pct}% of {count} players": "🌍 贏過{count}位玩家中的{pct}%",
+
+  // ── Tabs, Multiplayer hub, Daily page layout ──
+  "📖 Full Pokédex": "📖 全國圖鑑",
+  "Full Pokédex": "全國圖鑑",
+  "👥 Multiplayer": "👥 多人模式",
+  "Play with a friend. Share a link or room code, no sign-up needed.": "和朋友一起玩。分享連結或房間代碼即可，不需要註冊。",
+  "Duel": "對戰",
+  "Co-Op": "合作",
+  "Race a friend: whoever names a Pokémon first claims it.": "和朋友比快：先說出名字的人就能拿下那隻寶可夢。",
+  "Team up and complete the Pokédex together.": "組隊合作，一起完成圖鑑。",
+  "← Multiplayer": "← 多人模式",
+  "🔥 {count}-day streak": "🔥 連續 {count} 天",
+  "📚 Play previous dailies": "📚 玩過去的每日挑戰",
+  "Days played: {count}": "遊玩天數: {count}",
+  "🔥 Start your streak today": "🔥 從今天開始連勝吧",
+  "Language": "語言"
 };

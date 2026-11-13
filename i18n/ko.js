@@ -224,5 +224,21 @@ window.NEA_UI = {
   "🔍 Hardest today: {name}, only {pct}% named it": "🔍 오늘의 최고 난도: {name}, {pct}%만 맞혔어요",
   "📊 Average {avg}/{total} · {perfect} perfect": "📊 평균 {avg}/{total} · 퍼펙트 {perfect}명",
   "🌍 {count} players today": "🌍 오늘 플레이어 {count}명",
-  "🌍 Beat {pct}% of {count} players": "🌍 {count}명 중 {pct}%를 이김"
+  "🌍 Beat {pct}% of {count} players": "🌍 {count}명 중 {pct}%를 이김",
+
+  // ── Tabs, Multiplayer hub, Daily page layout ──
+  "📖 Full Pokédex": "📖 전국도감",
+  "Full Pokédex": "전국도감",
+  "👥 Multiplayer": "👥 멀티플레이",
+  "Play with a friend. Share a link or room code, no sign-up needed.": "친구와 함께 플레이하세요. 링크나 방 코드만 공유하면 되고, 가입은 필요 없어요.",
+  "Duel": "대결",
+  "Co-Op": "협동",
+  "Race a friend: whoever names a Pokémon first claims it.": "친구와 속도 대결: 먼저 이름을 말한 사람이 그 포켓몬을 차지해요.",
+  "Team up and complete the Pokédex together.": "함께 힘을 모아 도감을 완성하세요.",
+  "← Multiplayer": "← 멀티플레이",
+  "🔥 {count}-day streak": "🔥 {count}일 연속",
+  "📚 Play previous dailies": "📚 지난 데일리 플레이",
+  "Days played: {count}": "플레이한 날: {count}",
+  "🔥 Start your streak today": "🔥 오늘부터 연속 기록을 시작하세요",
+  "Language": "언어"
 };

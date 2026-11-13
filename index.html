@@ -70,7 +70,8 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-switch { position: fixed; top: 4px; left: 8px; z-index: 150; display: flex; align-items: center; gap: 4px; }
 .lang-switch .lang-label { font-size: 0.8rem; opacity: 0.8; }
 .lang-switch select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.7rem; padding: 2px 4px; cursor: pointer; }
-@media (max-width: 600px) { .tab-bar { padding-top: 26px; } .lang-switch { top: 3px; } }
+.lang-row { margin-bottom: 10px; }
+.lang-select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.75rem; padding: 3px 6px; cursor: pointer; }
 .app-version { position: fixed; top: 6px; right: 10px; z-index: 150; font-size: 0.68rem; font-weight: 500; color: var(--text-dim); opacity: 0.7; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; letter-spacing: 0.3px; }
 .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
 .tab-btn:hover { color: var(--text); }
@@ -494,6 +495,23 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-arch-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 6px; }
 .daily-result-global { white-space: pre-line; font-size: 0.82rem; line-height: 1.5; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
 .daily-result-global b { color: var(--text); }
+.daily-lobby .dl-mode-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.74rem; }
+.daily-lobby .dl-mode-streak { color: #f59e0b; font-weight: 700; }
+.daily-lobby .dl-prev-toggle { margin-top: 18px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 8px 18px; font-size: 0.8rem; }
+.daily-lobby .dl-prev { margin-top: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg2); }
+.daily-lobby .dl-prev .dl-archive { margin-top: 0; }
+.daily-lobby .dl-played { font-size: 0.7rem; color: var(--text-dim); margin-top: 10px; }
+.multi-hub { max-width: 560px; margin: 0 auto; padding: 32px 16px; text-align: center; }
+.multi-hub h2 { font-size: 1.4rem; margin-bottom: 6px; }
+.multi-hub .multi-sub { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 20px; }
+.multi-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.multi-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 22px 16px; background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; color: var(--text); cursor: pointer; font: inherit; transition: border-color 0.15s, transform 0.15s; }
+.multi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.multi-card .mc-icon { font-size: 2rem; }
+.multi-card .mc-title { font-size: 1.1rem; font-weight: 800; }
+.multi-card .mc-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; }
+.multi-back { display: block; margin: 0 auto 10px; background: none; border: none; color: var(--text-dim); font: inherit; font-size: 0.8rem; cursor: pointer; }
+.multi-back:hover { color: var(--text); }
 .daily-lobby .dl-mode-players { font-size: 0.72rem; color: var(--text-pinyin); min-height: 1.1em; }
 .daily-result-vs { white-space: pre-line; font-size: 0.85rem; font-weight: 700; background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
 .daily-challenge-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
@@ -641,9 +659,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   }).observe(document.documentElement, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATTRS });
 })();
 </script>
-<div class="lang-switch">
-  <label for="lang-select" class="lang-label">🌐</label>
-  <select id="lang-select" aria-label="Language"></select>
+<div class="lang-switch-removed" hidden>
 </div>
 
 <!-- App version: sourced from version.txt; bump via ./bump.sh -->
@@ -660,15 +676,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 </script>
 
 <nav class="tab-bar">
-  <button class="tab-btn active" data-tab="pokemon">Regular Mode</button>
   <button class="tab-btn" data-tab="daily">🗓️ Daily</button>
-  <button class="tab-btn" data-tab="duel">⚔️ Duel Mode</button>
-  <button class="tab-btn" data-tab="coop">🤝 Co-Op</button>
+  <button class="tab-btn active" data-tab="pokemon">📖 Full Pokédex</button>
+  <button class="tab-btn" data-tab="multi">👥 Multiplayer</button>
 </nav>
 
 <header>
   <div class="title-row">
-    <h1 class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Regular Mode</span></h1>
+    <h1 class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Full Pokédex</span></h1>
     <div class="stats">
       <span><span class="num" id="found-count">0</span> / <span class="total" id="total-count">0</span></span>
       <span>Timer: <span class="timer-val" id="timer">00:00</span></span>
@@ -716,6 +731,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
             <button id="btn-light">☀️ Light</button>
           </div>
         </div>
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">Language</div>
+        <div class="setting-row"><select class="lang-select" aria-label="Language"></select></div>
       </div>
     </div>
   </div>
@@ -903,6 +921,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a></p>
 </section>
 <footer>
+  <div class="lang-row"><label for="lang-select">🌐 Language</label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
   <br>
@@ -941,8 +960,7 @@ const Q = (function() {
 
   // ── Language selector ──
   (function() {
-    var sel = document.getElementById('lang-select');
-    if (!sel) return;
+    document.querySelectorAll('.lang-select').forEach(function(sel) {
     Object.keys(NEA_LANGS).forEach(function(code) {
       var o = document.createElement('option');
       o.value = code; o.textContent = NEA_LANGS[code];
@@ -964,6 +982,7 @@ const Q = (function() {
       var u = new URL(location.href);
       if (next === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', next);
       location.href = u.toString();
+    });
     });
   })();
 
@@ -1277,7 +1296,7 @@ const Q = (function() {
   function openScoreboard() {
     sbCurrentTab = currentTab;
     const tabs = ['pokemon', 'coop'];
-    const tabLabels = { pokemon: 'Regular Mode', coop: '🤝 Co-Op' };
+    const tabLabels = { pokemon: '📖 Full Pokédex', coop: '🤝 Co-Op' };
     $('sb-tabs').innerHTML = tabs.map(function(t) {
       return '<button class="sb-tab' + (t === sbCurrentTab ? ' active' : '') + '" data-sb="' + t + '">' + tabLabels[t] + '</button>';
     }).join('');
@@ -2352,7 +2371,7 @@ const Q = (function() {
 
     var _session = getRoomSession();
     if (_session && _session.mode === 'duel' && !joinId) {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>⚔️ Duel Mode</h2>' +
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>⚔️ Duel Mode</h2>' +
         '<p>You have an active room. Reconnect?</p>' +
         '<div class="lobby-action-row">' +
         '<button class="btn" id="duel-reconn-btn">Reconnect</button>' +
@@ -2367,10 +2386,10 @@ const Q = (function() {
     }
 
     if (joinId) {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>⚔️ Duel Mode</h2><p>Connecting to host…</p><div class="duel-status" id="duel-status">Establishing connection…</div></div>';
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>⚔️ Duel Mode</h2><p>Connecting to host…</p><div class="duel-status" id="duel-status">Establishing connection…</div></div>';
       duelJoin(joinId);
     } else {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>⚔️ Duel Mode</h2>' +
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>⚔️ Duel Mode</h2>' +
         '<p>Challenge a friend! One of you creates the duel, the other joins via link or room code.</p>' +
         '<div class="duel-settings">' +
           '<div class="ds-title">Create Room</div>' +
@@ -3292,7 +3311,8 @@ const Q = (function() {
         '<div class="dl-mode-card' + (r ? ' dl-mode-done' : '') + (perfect ? ' dl-mode-perfect' : '') + '">' +
           '<div class="dl-mode-head"><span class="dl-mode-name">' + cfg.icon + ' ' + cfg.label + '</span>' +
             '<span class="dl-mode-size">' + t('{count} Pokémon', { count: cfg.size }) + '</span></div>' +
-          '<div class="dl-mode-players" data-dl-players="' + mode + '"></div>' +
+          '<div class="dl-mode-meta"><span class="dl-mode-streak">' + (function(n) { return n > 0 ? t('🔥 {count}-day streak', { count: n }) : t('🔥 Start your streak today'); })(dailyComputeStreak(todayStr, mode)) + '</span>' +
+            '<span class="dl-mode-players" data-dl-players="' + mode + '"></span></div>' +
           (r
             ? '<div class="dl-mode-result">' + (perfect ? '🏆 ' : (r.gaveUp ? '🏳️ ' : '✓ ')) + r.score + ' / ' + r.total + ' · ' + fmtTime(r.time) + '</div>' +
               '<button class="btn dl-play" data-dl-view="' + mode + '">View Result</button>' +
@@ -3309,17 +3329,17 @@ const Q = (function() {
       '<div class="dl-eyebrow">Today\'s Challenges</div>' +
       '<h2>' + t('🗓️ Daily #{num}', { num: dailyNum }) + '</h2>' +
       '<div class="dl-date">' + t('{date} · silhouettes 🔍', { date: dailyDateLabel(todayStr) }) + '</div>' +
-      '<div class="dl-streak-row">' +
-        DAILY_MODE_ORDER.map(function(m) {
-          return '<div class="dl-stat dl-streak"><div class="dl-stat-num">' + dailyComputeStreak(todayStr, m) + '🔥</div>' +
-                 '<div class="dl-stat-label">' + t('{label} Streak', { label: DAILY_MODES[m].label }) + '</div></div>';
-        }).join('') +
-        '<div class="dl-stat"><div class="dl-stat-num">' + dailyPlayedDays(all, legacy) + '</div><div class="dl-stat-label">Days Played</div></div>' +
-      '</div>' +
       '<div class="dl-modes">' + cards + '</div>' +
       '<div class="dl-countdown">Next daily in <span class="dl-cd-val" id="dl-countdown">--:--:--</span></div>' +
-      '<div class="dl-archive" id="dl-archive"></div>' +
-      '<div class="dl-history" id="dl-history"></div>';
+      (dailyNum > 1
+        ? '<button class="btn dl-prev-toggle" data-dl-prev-toggle aria-expanded="' + (dailyState.prevOpen ? 'true' : 'false') + '">' +
+            (dailyState.prevOpen ? '▾ ' : '▸ ') + t('📚 Play previous dailies') + '</button>' +
+          '<div class="dl-prev" id="dl-prev"' + (dailyState.prevOpen ? '' : ' hidden') + '>' +
+            '<div class="dl-archive" id="dl-archive"></div>' +
+            '<div class="dl-history" id="dl-history"></div>' +
+            '<div class="dl-played">' + t('Days played: {count}', { count: dailyPlayedDays(all, legacy) }) + '</div>' +
+          '</div>'
+        : '');
     wrap.appendChild(lobby);
 
     dailyRenderChallengeBanner();
@@ -3352,6 +3372,13 @@ const Q = (function() {
       else if (d.dlChView) dailyStart(dailyState.challenge.mode, { review: dailyGetResult(todayStr, dailyState.challenge.mode) });
       else if (d.dlChReplay) dailyStart(dailyState.challenge.mode, { unranked: true });
       else if (d.dlChDismiss) { dailyState.challenge = null; dailyRenderChallengeBanner(); }
+      else if (b.hasAttribute('data-dl-prev-toggle')) {
+        dailyState.prevOpen = !dailyState.prevOpen;
+        var panel = $('dl-prev');
+        if (panel) panel.hidden = !dailyState.prevOpen;
+        b.setAttribute('aria-expanded', dailyState.prevOpen ? 'true' : 'false');
+        b.textContent = (dailyState.prevOpen ? '▾ ' : '▸ ') + t('📚 Play previous dailies');
+      }
     });
   }
 
@@ -3399,7 +3426,7 @@ const Q = (function() {
       return '<button class="btn dl-arch-play" data-dl-arch-play="' + mode + '">' + cfg.icon + ' ' + cfg.label + tag + '</button>';
     }).join('');
     el.innerHTML =
-      '<h3>📚 Archive</h3>' +
+      '' +
       '<div class="dl-arch-nav">' +
         '<button class="btn dl-arch-arrow" data-dl-arch-nav="-1"' + (n <= 1 ? ' disabled' : '') + ' title="Previous day">◀</button>' +
         '<div class="dl-arch-day"><div class="dl-arch-num">' + t('Daily #{num}', { num: n }) + '</div><div class="dl-arch-date">' + dailyDateLabel(dateStr) + '</div></div>' +
@@ -3822,7 +3849,7 @@ const Q = (function() {
 
     var _session = getRoomSession();
     if (_session && _session.mode === 'coop' && !joinId) {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>🤝 Co-Op Mode</h2>' +
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>🤝 Co-Op Mode</h2>' +
         '<p>You have an active room. Reconnect?</p>' +
         '<div class="lobby-action-row">' +
         '<button class="btn" id="coop-reconn-btn">Reconnect</button>' +
@@ -3837,10 +3864,10 @@ const Q = (function() {
     }
 
     if (joinId) {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>🤝 Co-Op Mode</h2><p>Connecting to host…</p><div class="duel-status" id="coop-status">Establishing connection…</div></div>';
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>🤝 Co-Op Mode</h2><p>Connecting to host…</p><div class="duel-status" id="coop-status">Establishing connection…</div></div>';
       coopJoin(joinId);
     } else {
-      wrap.innerHTML = '<div class="duel-lobby"><h2>🤝 Co-Op Mode</h2>' +
+      wrap.innerHTML = '<div class="duel-lobby"><button class="multi-back" data-multi-back>← Multiplayer</button><h2>🤝 Co-Op Mode</h2>' +
         '<p>Team up with a friend! Complete the Pokédex together.</p>' +
         '<div class="duel-settings">' +
           '<div class="ds-title">Create Room</div>' +
@@ -4449,6 +4476,25 @@ const Q = (function() {
 
   // ── Tab switching ──
 
+  // Duel and Co-Op are reached through the Multiplayer tab, so it stays highlighted for both
+  function navTabFor(tab) { return (tab === 'duel' || tab === 'coop') ? 'multi' : tab; }
+
+  function multiShowHub() {
+    $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
+    $('grid-wrap').innerHTML =
+      '<div class="multi-hub">' +
+        '<h2>👥 Multiplayer</h2>' +
+        '<p class="multi-sub">Play with a friend. Share a link or room code, no sign-up needed.</p>' +
+        '<div class="multi-cards">' +
+          '<button class="multi-card" data-multi-mode="duel"><span class="mc-icon">⚔️</span><span class="mc-title">Duel</span>' +
+            '<span class="mc-desc">Race a friend: whoever names a Pokémon first claims it.</span></button>' +
+          '<button class="multi-card" data-multi-mode="coop"><span class="mc-icon">🤝</span><span class="mc-title">Co-Op</span>' +
+            '<span class="mc-desc">Team up and complete the Pokédex together.</span></button>' +
+        '</div>' +
+      '</div>';
+  }
+
   function switchTab(tab) {
     if (tab === currentTab && items.length) return;
     if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
@@ -4478,7 +4524,7 @@ const Q = (function() {
     document.querySelector('.stats').style.display = '';
     currentTab = tab;
     track('tab_view', { tab: tab });
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === navTabFor(tab)));
     if (window.history.replaceState) {
       var qs = window.location.search;
       window.history.replaceState({}, '', window.location.pathname + qs + (tab === 'pokemon' ? '' : '#' + tab));
@@ -4488,9 +4534,10 @@ const Q = (function() {
     const isDuel = tab === 'duel';
     const isCoop = tab === 'coop';
     const isDaily = tab === 'daily';
-    const isMulti = isDuel || isCoop;
+    const isHub = tab === 'multi';
+    const isMulti = isDuel || isCoop || isHub;
     const isPokeLike = isPoke || isDaily;
-    const subtitles = { pokemon: 'Regular Mode', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode', daily: '🗓️ Daily Challenge' };
+    const subtitles = { pokemon: 'Full Pokédex', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode', daily: '🗓️ Daily Challenge', multi: '👥 Multiplayer' };
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = 'Type a Pokémon name…';
     if (!isPokeLike && !isMulti) stopCycleForms();
@@ -4509,7 +4556,7 @@ const Q = (function() {
     $('coop-settings-bar').style.display = 'none';
     $('coop-sticky').style.display = 'none';
     $('daily-sticky').style.display = 'none';
-    $('btn-history').style.display = (isDuel || isDaily) ? 'none' : '';
+    $('btn-history').style.display = (isDuel || isDaily || isHub) ? 'none' : '';
 
     if ((isPokeLike || isMulti) && !pokeFamilies) {
       fetch('families.json').then(r => r.json()).then(fams => {
@@ -4535,6 +4582,11 @@ const Q = (function() {
         pokeDetails = data;
         refreshTypeBgs();
       }).catch(() => {});
+    }
+
+    if (isHub) {
+      multiShowHub();
+      return;
     }
 
     if (isDuel) {
@@ -5045,6 +5097,11 @@ const Q = (function() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
+  $('grid-wrap').addEventListener('click', function(e) {
+    var pick = e.target.closest('[data-multi-mode]');
+    if (pick) { switchTab(pick.getAttribute('data-multi-mode')); return; }
+    if (e.target.closest('[data-multi-back]')) switchTab('multi');
+  });
 
   function attemptReconnect(session) {
     var mode = session.mode;
@@ -5054,7 +5111,7 @@ const Q = (function() {
     var otherPeerId = isHost ? roomId + '-2' : roomId;
 
     currentTab = mode;
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === mode); });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tab === navTabFor(mode)); });
     var subtitles = { duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode' };
     $('subtitle').textContent = subtitles[mode] || mode;
     $('action-bar').style.display = 'none';
@@ -5188,9 +5245,10 @@ const Q = (function() {
         _hash = 'daily';
       } else if (_archMatch) {
         dailyState.archivePick = parseInt(_archMatch[1], 10);
+        dailyState.prevOpen = true;
         _hash = 'daily';
       }
-      switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily') ? _hash : 'pokemon');
+      switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily' || _hash === 'multi') ? _hash : 'pokemon');
     }
   }
   if (cycleFormsEnabled) startCycleForms();

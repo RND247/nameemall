@@ -224,5 +224,21 @@ window.NEA_UI = {
   "🔍 Hardest today: {name}, only {pct}% named it": "🔍 Heute am schwersten: {name}, nur {pct} % haben es genannt",
   "📊 Average {avg}/{total} · {perfect} perfect": "📊 Durchschnitt {avg}/{total} · {perfect} perfekt",
   "🌍 {count} players today": "🌍 {count} Spieler heute",
-  "🌍 Beat {pct}% of {count} players": "🌍 Besser als {pct} % von {count} Spielern"
+  "🌍 Beat {pct}% of {count} players": "🌍 Besser als {pct} % von {count} Spielern",
+
+  // ── Tabs, Multiplayer hub, Daily page layout ──
+  "📖 Full Pokédex": "📖 Ganzer Pokédex",
+  "Full Pokédex": "Ganzer Pokédex",
+  "👥 Multiplayer": "👥 Mehrspieler",
+  "Play with a friend. Share a link or room code, no sign-up needed.": "Spiel mit einem Freund. Link oder Raumcode teilen, keine Anmeldung nötig.",
+  "Duel": "Duell",
+  "Co-Op": "Koop",
+  "Race a friend: whoever names a Pokémon first claims it.": "Wettlauf gegen einen Freund: Wer ein Pokémon zuerst nennt, bekommt es.",
+  "Team up and complete the Pokédex together.": "Spielt im Team und vervollständigt gemeinsam den Pokédex.",
+  "← Multiplayer": "← Mehrspieler",
+  "🔥 {count}-day streak": "🔥 {count}-Tage-Serie",
+  "📚 Play previous dailies": "📚 Frühere Challenges spielen",
+  "Days played: {count}": "Gespielte Tage: {count}",
+  "🔥 Start your streak today": "🔥 Starte heute deine Serie",
+  "Language": "Sprache"
 };
