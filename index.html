@@ -73,6 +73,43 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-row { margin-bottom: 10px; }
 .quiz-links { margin-bottom: 10px; line-height: 1.8; }
 .fan-note { margin-bottom: 8px; font-size: 0.68rem; opacity: 0.75; }
+/* ── Achievements ── */
+.tab-btn { position: relative; }
+.tab-btn.has-new::after { content: ''; position: absolute; top: 8px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.ach-page { max-width: 900px; margin: 0 auto; padding: 24px 12px 40px; }
+.ach-page h2 { text-align: center; font-size: 1.4rem; margin-bottom: 6px; }
+.ach-summary { text-align: center; font-weight: 800; font-size: 1rem; margin-bottom: 8px; }
+.ach-note { text-align: center; color: var(--text-dim); font-size: 0.75rem; margin: 6px 0 4px; }
+.ach-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.ach-bar span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.ach-bar-big { height: 10px; max-width: 360px; margin: 0 auto; border-radius: 5px; }
+.ach-bar-big span { background: linear-gradient(90deg, #f7d02c, #e94560); }
+.ach-cat { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; font-weight: 700; color: var(--text-pinyin); margin: 22px 4px 8px; }
+.ach-cat::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.ach-cat span { font-size: 0.7rem; color: var(--text-dim); font-weight: 600; order: 2; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.ach-card { display: flex; gap: 12px; align-items: flex-start; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.ach-card .ach-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: var(--bg-card); filter: grayscale(1); opacity: 0.5; flex-shrink: 0; overflow: hidden; }
+.ach-img { width: 52px; height: 52px; object-fit: contain; image-rendering: pixelated; }
+.ach-img.ach-badge { width: 36px; height: 36px; image-rendering: auto; }
+.ach-card.unlocked .ach-icon { background: radial-gradient(circle, rgba(247,208,44,0.25), transparent 70%); }
+.ach-card.unlocked { border-color: rgba(247,208,44,0.55); background: linear-gradient(135deg, rgba(247,208,44,0.08), var(--bg2)); }
+.ach-card.unlocked .ach-icon { filter: none; opacity: 1; }
+.ach-body { flex: 1; min-width: 0; }
+.ach-title { font-weight: 800; font-size: 0.88rem; }
+.ach-card:not(.unlocked) .ach-title { color: var(--text-dim); }
+.ach-desc { font-size: 0.75rem; color: var(--text-dim); line-height: 1.35; margin-top: 2px; }
+.ach-date { font-size: 0.7rem; color: #d4a017; font-weight: 700; margin-top: 4px; }
+body:not(.light) .ach-date { color: #f7d02c; }
+.ach-prog { font-size: 0.68rem; color: var(--text-dim); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ach-toast-row { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: var(--text); }
+.ach-toast-icon { display: flex; }
+.ach-toast-icon .ach-img { width: 40px; height: 40px; }
+.ach-toast-icon .ach-badge { width: 28px; height: 28px; }
+@media (max-width: 600px) { .tab-btn.has-new::after { top: 5px; right: 4px; } }
+.tab-bar { overflow-x: auto; scrollbar-width: none; }
+.tab-bar::-webkit-scrollbar { display: none; }
+@media (max-width: 480px) { .tab-bar .tab-btn { padding: 8px 9px; font-size: 0.74rem; letter-spacing: 0; white-space: nowrap; } .tab-bar .tab-btn .tab-label { display: none; } .app-version { display: none; } }
 /* ── Creator mode: one steady, uncluttered layout for recording and streaming ── */
 .creator-nav, .creator-spot, .creator-crop-hint { display: none; }
 body.creator { scrollbar-width: none; }
@@ -770,6 +807,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <button class="tab-btn" data-tab="daily">🗓️ Daily</button>
   <button class="tab-btn active" data-tab="pokemon">📖 Full Pokédex</button>
   <button class="tab-btn" data-tab="multi">👥 Multiplayer</button>
+  <button class="tab-btn" data-tab="achievements" title="Achievements">🏅 <span class="tab-label">Achievements</span></button>
 </nav>
 
 <div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
@@ -1082,6 +1120,7 @@ const Q = (function() {
     params.language = NEA_LANG;
     if (GA_DEBUG) { params.debug_mode = true; console.log('[GA]', name, params); }
     try { if (typeof gtag === 'function') gtag('event', name, params); } catch(e) {}
+    achOnTrack(name, params);
   }
   function trackUserProps(props) {
     try { if (typeof gtag === 'function') gtag('set', 'user_properties', props); } catch(e) {}
@@ -4706,9 +4745,10 @@ const Q = (function() {
     const isCoop = tab === 'coop';
     const isDaily = tab === 'daily';
     const isHub = tab === 'multi';
-    const isMulti = isDuel || isCoop || isHub;
+    const isAch = tab === 'achievements';
+    const isMulti = isDuel || isCoop || isHub || isAch;
     const isPokeLike = isPoke || isDaily;
-    const subtitles = { pokemon: 'Full Pokédex', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode', daily: '🗓️ Daily Challenge', multi: '👥 Multiplayer' };
+    const subtitles = { pokemon: 'Full Pokédex', duel: '⚔️ Duel Mode', coop: '🤝 Co-Op Mode', daily: '🗓️ Daily Challenge', multi: '👥 Multiplayer', achievements: '🏅 Achievements' };
     $('subtitle').textContent = subtitles[tab] || tab;
     $input.placeholder = 'Type a Pokémon name…';
     if (!isPokeLike && !isMulti) stopCycleForms();
@@ -4729,7 +4769,7 @@ const Q = (function() {
     $('coop-settings-bar').style.display = 'none';
     $('coop-sticky').style.display = 'none';
     $('daily-sticky').style.display = 'none';
-    $('btn-history').style.display = (isDuel || isDaily || isHub) ? 'none' : '';
+    $('btn-history').style.display = (isDuel || isDaily || isHub || isAch) ? 'none' : '';
 
     if ((isPokeLike || isMulti) && !pokeFamilies) {
       fetch('families.json').then(r => r.json()).then(fams => {
@@ -4759,6 +4799,11 @@ const Q = (function() {
 
     if (isHub) {
       multiShowHub();
+      return;
+    }
+
+    if (isAch) {
+      achShowPage();
       return;
     }
 
@@ -4886,7 +4931,7 @@ const Q = (function() {
         }
       }
       if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
-      if (currentTab === 'pokemon' || isDailyTab) creatorOnNamed(matches);
+      if (currentTab === 'pokemon' || isDailyTab) { creatorOnNamed(matches); achOnNamed(matches); }
       if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
         track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
       }
@@ -5094,6 +5139,236 @@ const Q = (function() {
       prompt(t('Copy your result:'), text);
     }
   });
+  // ── Achievements: saved in this browser, checked as you play ──
+  var ACH_REGION_RANGES = { Kanto: [1, 151], Johto: [152, 251], Hoenn: [252, 386], Sinnoh: [387, 493], Unova: [494, 649],
+                            Kalos: [650, 721], Alola: [722, 809], Galar: [810, 905], Paldea: [906, 1025] };
+  var ACH_SETS = {
+    starters: [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912],
+    eevee: [133, 134, 135, 136, 196, 197, 470, 471, 700],
+    birds: [144, 145, 146],
+    creation: [483, 484, 487],
+    fossils: [138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883],
+    mythical: [151, 251, 385, 386, 489, 490, 491, 492, 493, 494, 647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025],
+    ultra: [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806]
+  };
+  var achReady = false;
+  var achUnlocked = {}, achDex = new Set(), achStats = { duelWins: 0, coop: 0, comboBest: 0, night: 0, share: 0, creator: 0, polyglot: 0, runFull: 0, runNoHint: 0, runHour: 0, runKanto: 0 };
+  var achCombo = { n: 0, last: 0 };
+  try { achUnlocked = JSON.parse(localStorage.getItem('nea_ach')) || {}; } catch(e) {}
+  try { achDex = new Set(JSON.parse(localStorage.getItem('nea_ach_dex')) || []); } catch(e) {}
+  try { achStats = Object.assign(achStats, JSON.parse(localStorage.getItem('nea_ach_stats')) || {}); } catch(e) {}
+  function achSaveAll() {
+    try {
+      localStorage.setItem('nea_ach', JSON.stringify(achUnlocked));
+      localStorage.setItem('nea_ach_dex', JSON.stringify(Array.from(achDex)));
+      localStorage.setItem('nea_ach_stats', JSON.stringify(achStats));
+    } catch(e) {}
+  }
+  function achCountIds(ids) { var n = 0; ids.forEach(function(id) { if (achDex.has(id)) n++; }); return n; }
+  function achRegionIds(region) { var r = ACH_REGION_RANGES[region], out = []; for (var i = r[0]; i <= r[1]; i++) out.push(i); return out; }
+
+  // Daily numbers come straight from the saved results (ranked days for streaks, archive too for perfect runs)
+  function achDailyStats() {
+    var ranked = dailyLoadResults(), archive = dailyLoadArchive(), legacy = dailyLoadLegacy();
+    var s = { played: dailyPlayedDays(ranked, legacy), finished: 0, mini: false, midi: false, fastMini: false, best: 0 };
+    [ranked, archive].forEach(function(all) {
+      Object.keys(all).forEach(function(day) {
+        ['mini', 'midi'].forEach(function(mode) {
+          var r = all[day] && all[day][mode];
+          if (!r) return;
+          s.finished++;
+          if (dailyIsSuccess(r)) {
+            if (mode === 'mini') { s.mini = true; if (r.time && r.time < 30000) s.fastMini = true; }
+            else s.midi = true;
+          }
+        });
+      });
+    });
+    ['mini', 'midi'].forEach(function(mode) {
+      var days = Object.keys(ranked).filter(function(k) { return dailyIsSuccess(ranked[k] && ranked[k][mode]); }).sort();
+      var run = 0, prev = null;
+      days.forEach(function(k) {
+        var p = k.split('-'), d = new Date(p[0], p[1] - 1, p[2]);
+        run = prev && Math.round((d - prev) / 86400000) === 1 ? run + 1 : 1;
+        prev = d;
+        if (run > s.best) s.best = run;
+      });
+    });
+    return s;
+  }
+
+  // Each achievement: id, category, icon, title, description, and a check returning [current, goal]
+  function achList() {
+    var dex = achDex.size, d = achDailyStats();
+    var flag = function(v) { return [v ? 1 : 0, 1]; };
+    var list = [
+      { id: 'first', cat: 'Getting started', icon: '🐣', title: 'First Catch', desc: 'Name your first Pokémon', p: [Math.min(dex, 1), 1] },
+      { id: 'dex100', cat: 'Getting started', icon: '📗', title: 'Rookie Trainer', desc: 'Name {count} different Pokémon', n: 100, p: [Math.min(dex, 100), 100] },
+      { id: 'dex500', cat: 'Getting started', icon: '📘', title: 'Ace Trainer', desc: 'Name {count} different Pokémon', n: 500, p: [Math.min(dex, 500), 500] },
+      { id: 'dex1025', cat: 'Getting started', icon: '📕', title: "Gotta Name 'Em All", desc: 'Name all {count} Pokémon at least once', n: 1025, p: [Math.min(dex, 1025), 1025] }
+    ];
+    REGION_ORDER.forEach(function(region) {
+      var ids = achRegionIds(region);
+      list.push({ id: 'region_' + region.toLowerCase(), cat: 'Regions', icon: '🗺️', title: '{region} Master', region: region,
+                  desc: 'Name all {count} Pokémon from {region}', n: ids.length, p: [achCountIds(ids), ids.length] });
+    });
+    list.push(
+      { id: 'run_full', cat: 'Full Pokédex', icon: '🏆', title: 'Pokédex Complete', desc: 'Finish a Full Pokédex game with all {count} named', n: 1025, p: flag(achStats.runFull) },
+      { id: 'run_nohint', cat: 'Full Pokédex', icon: '🧠', title: 'No Hints Needed', desc: 'Name all {count} in one game without hints', n: 1025, p: flag(achStats.runNoHint) },
+      { id: 'run_hour', cat: 'Full Pokédex', icon: '⏱️', title: 'Under Two Hours', desc: 'Name all {count} in one game in under 2 hours', n: 1025, p: flag(achStats.runHour) },
+      { id: 'run_kanto', cat: 'Full Pokédex', icon: '⚡', title: 'Kanto Speedrun', desc: 'Name all 151 Gen 1 Pokémon in under 10 minutes', p: flag(achStats.runKanto) }
+    );
+    [['starters', '🌱', 'Starter Squad', 'Name all {count} starter Pokémon'],
+     ['eevee', '🦊', 'Eeveelution Expert', 'Name Eevee and all 8 of its evolutions'],
+     ['birds', '🐦', 'Legendary Birds', 'Name the three legendary birds of Kanto'],
+     ['creation', '🌌', 'Creation Trio', 'Name the Creation Trio from Sinnoh'],
+     ['fossils', '🦴', 'Fossil Hunter', 'Name all {count} fossil Pokémon'],
+     ['mythical', '✨', 'Mythical Collector', 'Name all {count} Mythical Pokémon'],
+     ['ultra', '🌀', 'Ultra Beast Spotter', 'Name all {count} Ultra Beasts']].forEach(function(c) {
+      var ids = ACH_SETS[c[0]];
+      list.push({ id: 'set_' + c[0], cat: 'Collections', icon: c[1], title: c[2], desc: c[3], n: ids.length, p: [achCountIds(ids), ids.length] });
+    });
+    list.push(
+      { id: 'd_first', cat: 'Daily', icon: '🗓️', title: 'Daily Debut', desc: 'Finish your first Daily challenge', p: flag(d.finished > 0) },
+      { id: 'd_mini', cat: 'Daily', icon: '⭐', title: 'Mini Perfect', desc: 'Name all 5 in a Daily Mini', p: flag(d.mini) },
+      { id: 'd_midi', cat: 'Daily', icon: '🌟', title: 'Midi Master', desc: 'Name all 30 in a Daily Midi', p: flag(d.midi) },
+      { id: 'd_fast', cat: 'Daily', icon: '💨', title: 'Lightning Mini', desc: 'Finish a perfect Daily Mini in under 30 seconds', p: flag(d.fastMini) },
+      { id: 'd_s3', cat: 'Daily', icon: '🔥', title: 'On a Roll', desc: 'Reach a {count}-day streak', n: 3, p: [Math.min(d.best, 3), 3] },
+      { id: 'd_s7', cat: 'Daily', icon: '🔥', title: 'Week Warrior', desc: 'Reach a {count}-day streak', n: 7, p: [Math.min(d.best, 7), 7] },
+      { id: 'd_s30', cat: 'Daily', icon: '🌋', title: 'Unstoppable', desc: 'Reach a {count}-day streak', n: 30, p: [Math.min(d.best, 30), 30] },
+      { id: 'd_10', cat: 'Daily', icon: '📅', title: 'Regular', desc: 'Play the Daily on {count} different days', n: 10, p: [Math.min(d.played, 10), 10] },
+      { id: 'duel1', cat: 'Multiplayer', icon: '⚔️', title: 'First Victory', desc: 'Win a Duel', p: [Math.min(achStats.duelWins, 1), 1] },
+      { id: 'duel5', cat: 'Multiplayer', icon: '🥇', title: 'Duel Champion', desc: 'Win {count} Duels', n: 5, p: [Math.min(achStats.duelWins, 5), 5] },
+      { id: 'coop', cat: 'Multiplayer', icon: '🤝', title: 'Better Together', desc: 'Finish a Co-Op game', p: flag(achStats.coop) },
+      { id: 'combo', cat: 'Just for fun', icon: '💥', title: 'Combo King', desc: 'Name {count} Pokémon in a row, each within 5 seconds', n: 10, p: [Math.min(achStats.comboBest, 10), 10] },
+      { id: 'night', cat: 'Just for fun', icon: '🦉', title: 'Night Owl', desc: 'Name a Pokémon between midnight and 4 AM', p: flag(achStats.night) },
+      { id: 'share', cat: 'Just for fun', icon: '📣', title: 'Show-Off', desc: 'Share a result with friends', p: flag(achStats.share) },
+      { id: 'creator', cat: 'Just for fun', icon: '🎥', title: 'On Air', desc: 'Start Creator Mode', p: flag(achStats.creator) },
+      { id: 'polyglot', cat: 'Just for fun', icon: '🌐', title: 'Polyglot', desc: 'Play in a language other than English', p: flag(achStats.polyglot) }
+    );
+    return list;
+  }
+  // Item and gym badge sprites (from PokéAPI), stored with the site in img/ach/
+  function achIconHtml(a) {
+    var badge = /^region_(kanto|johto|hoenn|sinnoh|unova|kalos)$/.test(a.id);
+    return '<img class="ach-img' + (badge ? ' ach-badge' : '') + '" src="img/ach/' + a.id + '.png" alt="" loading="lazy">';
+  }
+  function achTitle(a) { return t(a.title, { region: a.region ? t(a.region) : '' }); }
+  function achDesc(a) { return t(a.desc, { count: a.n, region: a.region ? t(a.region) : '' }); }
+
+  // Unlock anything newly reached. silent: no toasts (first load, so old progress doesn't flood the screen)
+  function achCheck(silent) {
+    if (!achReady) return;
+    var fresh = [];
+    achList().forEach(function(a) {
+      if (!achUnlocked[a.id] && a.p[0] >= a.p[1]) { achUnlocked[a.id] = Date.now(); fresh.push(a); }
+    });
+    achSaveAll();
+    if (!fresh.length) return;
+    fresh.forEach(function(a) {
+      track('achievement_unlock', { achievement_id: a.id });
+      if (!silent) achToast(a);
+    });
+    achUpdateBadge();
+    if (currentTab === 'achievements') achShowPage();
+  }
+  function achToast(a) {
+    var el = document.createElement('div');
+    el.className = 'toast family-toast ach-toast';
+    el.innerHTML = '<div class="family-label"></div><div class="ach-toast-row"><span class="ach-toast-icon"></span><span class="ach-toast-title"></span></div>';
+    el.querySelector('.family-label').textContent = t('🏅 Achievement unlocked');
+    el.querySelector('.ach-toast-icon').innerHTML = achIconHtml(a);
+    el.querySelector('.ach-toast-title').textContent = achTitle(a);
+    $toasts.appendChild(el);
+    setTimeout(function() { el.remove(); }, 5000);
+  }
+  function achUpdateBadge() {
+    var seen = 0;
+    try { seen = parseInt(localStorage.getItem('nea_ach_seen') || '0', 10); } catch(e) {}
+    var n = Object.keys(achUnlocked).length;
+    var btn = document.querySelector('.tab-btn[data-tab="achievements"]');
+    if (btn) btn.classList.toggle('has-new', n > seen && currentTab !== 'achievements');
+  }
+
+  function achOnNamed(matches) {
+    if (!achReady) return;
+    matches.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+    var now = Date.now();
+    achCombo.n = now - achCombo.last < 5000 ? achCombo.n + matches.length : matches.length;
+    achCombo.last = now;
+    if (achCombo.n > achStats.comboBest) achStats.comboBest = achCombo.n;
+    if (new Date().getHours() < 4) achStats.night = 1;
+    if (NEA_LANG !== 'en') achStats.polyglot = 1;
+    achCheck(false);
+  }
+  // Game events arrive through the analytics helper, so every end-of-game path is covered once
+  function achOnTrack(name, params) {
+    if (!achReady || name === 'achievement_unlock') return;
+    var changed = true;
+    if (name === 'share') achStats.share = 1;
+    else if (name === 'creator_mode' && params.action === 'start') achStats.creator = 1;
+    else if (name === 'room_end' && params.game_mode === 'duel' && params.outcome === 'win') achStats.duelWins++;
+    else if (name === 'room_end' && params.game_mode === 'coop') achStats.coop = 1;
+    else if (name === 'game_end' && params.game_mode === 'pokemon' && params.result === 'completed') {
+      if (params.total === 1025) {
+        achStats.runFull = 1;
+        if (!params.hints_used) achStats.runNoHint = 1;
+        if (params.time_sec < 7200) achStats.runHour = 1;
+      }
+      if (params.total === 151 && params.gens === 1 && params.time_sec < 600) achStats.runKanto = 1;
+    }
+    else if (name !== 'daily_end') changed = false;
+    if (changed) setTimeout(function() { achCheck(false); }, 400);
+  }
+
+  function achShowPage() {
+    $input.style.display = 'none';
+    document.querySelector('.stats').style.display = 'none';
+    var list = achList();
+    var got = list.filter(function(a) { return achUnlocked[a.id]; }).length;
+    var cats = [];
+    list.forEach(function(a) { if (cats.indexOf(a.cat) < 0) cats.push(a.cat); });
+    var esc = function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+    var html = '<div class="ach-page">' +
+      '<h2>' + esc(t('🏅 Achievements')) + '</h2>' +
+      '<div class="ach-summary">' + esc(t('{count} of {total} unlocked', { count: got, total: list.length })) + '</div>' +
+      '<div class="ach-bar ach-bar-big"><span style="width:' + Math.round(got * 100 / list.length) + '%"></span></div>' +
+      '<p class="ach-note">' + esc(t('Achievements are saved in this browser.')) + '</p>';
+    cats.forEach(function(cat) {
+      var inCat = list.filter(function(a) { return a.cat === cat; });
+      var catGot = inCat.filter(function(a) { return achUnlocked[a.id]; }).length;
+      html += '<h3 class="ach-cat">' + esc(t(cat)) + ' <span>' + catGot + ' / ' + inCat.length + '</span></h3><div class="ach-grid">';
+      inCat.forEach(function(a) {
+        var done = !!achUnlocked[a.id];
+        html += '<div class="ach-card' + (done ? ' unlocked' : '') + '">' +
+          '<div class="ach-icon">' + achIconHtml(a) + '</div><div class="ach-body">' +
+          '<div class="ach-title">' + esc(achTitle(a)) + '</div>' +
+          '<div class="ach-desc">' + esc(achDesc(a)) + '</div>';
+        if (done) {
+          html += '<div class="ach-date">✓ ' + esc(new Date(achUnlocked[a.id]).toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric', year: 'numeric' })) + '</div>';
+        } else if (a.p[1] > 1) {
+          html += '<div class="ach-bar"><span style="width:' + Math.round(a.p[0] * 100 / a.p[1]) + '%"></span></div>' +
+            '<div class="ach-prog">' + a.p[0] + ' / ' + a.p[1] + '</div>';
+        }
+        html += '</div></div>';
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+    $('grid-wrap').innerHTML = html;
+    try { localStorage.setItem('nea_ach_seen', String(got)); } catch(e) {}
+    achUpdateBadge();
+  }
+
+  achReady = true;
+  // Pick up progress from before achievements existed (saved Full Pokédex game, past dailies), quietly
+  if (currentTab === 'pokemon') foundSet.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+  setTimeout(function() {
+    if (currentTab === 'pokemon') foundSet.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+    achCheck(true);
+    achUpdateBadge();
+  }, 1500);
+
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
@@ -5764,7 +6039,7 @@ const Q = (function() {
         dailyState.prevOpen = true;
         _hash = 'daily';
       }
-      switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily' || _hash === 'multi') ? _hash : 'pokemon');
+      switchTab((_hash === 'duel' || _hash === 'coop' || _hash === 'daily' || _hash === 'multi' || _hash === 'achievements') ? _hash : 'pokemon');
     }
   }
   if (cycleFormsEnabled) startCycleForms();
