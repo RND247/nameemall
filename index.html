@@ -190,10 +190,13 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .settings-section-label { padding: 6px 14px 2px; font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; }
 .setting-row-slider { padding: 4px 14px 6px; }
 .setting-row-slider .mode-slider { width: 100%; }
+.settings-panel .settings-lang { display: block; width: 100%; font-size: 0.75rem; font-weight: 600; padding: 6px 8px; border-radius: 6px; }
+.settings-wide-btn { display: block; width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 7px 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.settings-wide-btn:hover { border-color: var(--accent); background: var(--bg-card-found); }
 .settings-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
 .settings-wrap { position: relative; }
-.settings-panel { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 0; min-width: 180px; z-index: 150; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+.settings-panel { display: none; position: absolute; top: calc(100% + 6px); right: 0; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 0; min-width: 180px; z-index: 150; box-shadow: 0 8px 24px rgba(0,0,0,0.5); max-height: calc(100vh - 140px); overflow-y: auto; overscroll-behavior: contain; }
 .settings-panel.open { display: block; }
 .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; font-size: 0.75rem; color: var(--text-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; cursor: pointer; transition: background 0.1s; }
 .setting-row:hover { background: var(--bg-card); }
@@ -825,7 +828,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="set-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="tog-typebg"></div></div>
         <div class="setting-row" id="set-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="tog-hover"></div></div>
         <div class="setting-row" id="set-spot"><span class="setting-label">Spotlight</span><div class="toggle-switch on" id="tog-spot"></div></div>
-        <div class="setting-row" id="set-creator"><span class="setting-label">🎥 Creator Mode</span><span class="setting-label">›</span></div>
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">For creators</div>
+        <div class="setting-row-slider"><button class="settings-wide-btn" id="set-creator">🎥 Creator Mode</button></div>
         <div class="settings-divider"></div>
         <div class="settings-section-label">Theme</div>
         <div class="setting-row-slider">
@@ -836,7 +841,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         </div>
         <div class="settings-divider"></div>
         <div class="settings-section-label">Language</div>
-        <div class="setting-row"><select class="lang-select" aria-label="Language"></select></div>
+        <div class="setting-row-slider"><select class="lang-select settings-lang" aria-label="Language"></select></div>
       </div>
     </div>
   </div>

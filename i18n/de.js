@@ -285,5 +285,6 @@ window.NEA_UI = {
   "Crop your capture to the game area": "Schneide die Aufnahme auf den Spielbereich zu",
   "Daily": "Täglich",
   "Multiplayer": "Mehrspieler",
-  "Spotlight": "Spotlight"
+  "Spotlight": "Spotlight",
+  "For creators": "Für Creator"
 };

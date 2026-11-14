@@ -285,5 +285,6 @@ window.NEA_UI = {
   "Crop your capture to the game area": "Ritaglia la cattura sull'area di gioco",
   "Daily": "Giornaliera",
   "Multiplayer": "Multigiocatore",
-  "Spotlight": "In evidenza"
+  "Spotlight": "In evidenza",
+  "For creators": "Per i creator"
 };

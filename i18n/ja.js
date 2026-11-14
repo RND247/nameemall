@@ -311,5 +311,6 @@ window.NEA_UI = {
   "Crop your capture to the game area": "この枠に合わせて切り抜いてください",
   "Daily": "デイリー",
   "Multiplayer": "マルチプレイ",
-  "Spotlight": "スポットライト"
+  "Spotlight": "スポットライト",
+  "For creators": "クリエイター向け"
 };

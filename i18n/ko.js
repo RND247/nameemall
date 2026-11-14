@@ -285,5 +285,6 @@ window.NEA_UI = {
   "Crop your capture to the game area": "게임 영역에 맞춰 화면을 자르세요",
   "Daily": "데일리",
   "Multiplayer": "멀티플레이",
-  "Spotlight": "스포트라이트"
+  "Spotlight": "스포트라이트",
+  "For creators": "크리에이터용"
 };

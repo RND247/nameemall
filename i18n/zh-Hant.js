@@ -285,5 +285,6 @@ window.NEA_UI = {
   "Crop your capture to the game area": "請依遊戲區域裁切畫面",
   "Daily": "每日挑戰",
   "Multiplayer": "多人遊戲",
-  "Spotlight": "焦點展示"
+  "Spotlight": "焦點展示",
+  "For creators": "創作者專區"
 };
