@@ -8,6 +8,7 @@
 <title>NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel &amp; Co-Op</title>
 <meta name="description" content="Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.">
 <meta name="keywords" content="NameEmAll, Name 'Em All, Name Em All, name all Pokémon, Pokémon quiz, 1025 Pokémon, Pokédex quiz, Who's that Pokémon, daily Pokémon game">
+<link rel="canonical" href="https://nameemall.com/">
 <meta property="og:site_name" content="NameEmAll">
 <meta property="og:title" content="NameEmAll: Can you name all 1025 Pokémon?">
 <meta property="og:description" content="Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.">
@@ -30,6 +31,7 @@
 <link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es">
 <link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it">
 <link rel="alternate" hreflang="x-default" href="https://nameemall.com/">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/", "description": "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.", "applicationCategory": "GameApplication", "genre": ["Quiz", "Trivia"], "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "inLanguage": ["en", "ja", "zh-Hant", "ko", "fr", "de", "es", "it"], "image": "https://nameemall.com/og-image.png"}</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -729,10 +731,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
   // Search engines: each language has its own address (?lang=xx), title and description
   var SITE = 'https://nameemall.com/';
-  var canonical = document.createElement('link');
-  canonical.rel = 'canonical';
+  var canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) { canonical = document.createElement('link'); canonical.rel = 'canonical'; document.head.appendChild(canonical); }
   canonical.href = SITE + (lang === 'en' ? '' : '?lang=' + lang);
-  document.head.appendChild(canonical);
   if (lang !== 'en') {
     var seoTitle = dict['NameEmAll: Name All 1025 Pokémon Quiz | Daily, Duel & Co-Op'];
     var seoDesc = dict['Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.'];
