@@ -73,6 +73,80 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-row { margin-bottom: 10px; }
 .quiz-links { margin-bottom: 10px; line-height: 1.8; }
 .fan-note { margin-bottom: 8px; font-size: 0.68rem; opacity: 0.75; }
+/* ── Creator mode: one steady, uncluttered layout for recording and streaming ── */
+.creator-nav, .creator-spot, .creator-crop-hint { display: none; }
+body.creator { scrollbar-width: none; }
+body.creator::-webkit-scrollbar { display: none; }
+body.creator .tab-bar, body.creator #app-version, body.creator #howto, body.creator .about, body.creator footer,
+body.creator .poke-popup, body.creator #btn-history { display: none !important; }
+body.creator header { padding: 16px 20px 10px; display: flex; flex-direction: column; }
+body.creator .creator-spot { order: 1; }
+body.creator .title-row { gap: 28px; margin-bottom: 12px; flex-wrap: wrap; }
+body.creator .title { font-size: 1.6rem; }
+body.creator .title .sub { font-size: 1rem; }
+body.creator .stats { font-size: 1.5rem; gap: 26px; color: var(--text); }
+body.creator .stats .num { font-size: 2.6rem; }
+body.creator .stats .total { font-size: 1.7rem; }
+body.creator .stats .timer-val { font-size: 1.9rem; font-weight: 800; }
+body.creator #input-box { font-size: 2rem; padding: 14px 24px; width: min(760px, 94%); border-width: 3px; border-radius: 14px; text-align: center; }
+body.creator #action-bar { opacity: 0.3; transition: opacity 0.2s; }
+body.creator #action-bar:hover, body.creator #action-bar:focus-within { opacity: 1; }
+body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe) { display: none; }
+body.creator .creator-nav { display: flex; position: absolute; top: 8px; right: 12px; gap: 6px; opacity: 0.25; transition: opacity 0.2s; z-index: 3; }
+body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacity: 1; }
+.creator-nav button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
+.creator-nav button.active { border-color: var(--accent); }
+body.creator.creator-spot-on .creator-spot:not(:empty) { display: flex; align-items: center; gap: 12px; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); max-width: 260px; }
+.creator-spot img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+.creator-spot .cs-name { font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.15; word-break: break-word; }
+.creator-spot .cs-num { font-size: 0.95rem; font-weight: 700; color: var(--text-dim); }
+.creator-spot.pop { animation: creatorPop 0.35s ease-out; }
+@keyframes creatorPop { 0% { transform: translateY(-50%) scale(0.6); opacity: 0; } 70% { transform: translateY(-50%) scale(1.08); opacity: 1; } 100% { transform: translateY(-50%) scale(1); } }
+@media (max-width: 1250px) {
+  body.creator.creator-spot-on .creator-spot:not(:empty) { position: static; transform: none; justify-content: center; max-width: none; margin: 10px auto 0; }
+  .creator-spot.pop { animation-name: creatorPopStatic; }
+}
+/* Spotlight in regular mode: compact, beside the header, only where there is room */
+body.spot-regular:not(.creator) .creator-spot:not(:empty) { display: flex; align-items: center; gap: 8px; position: absolute; left: max(16px, calc((100vw - 1400px) / 2 + 10px)); top: 50%; transform: translateY(-50%); max-width: 230px; }
+body.spot-regular:not(.creator) .creator-spot img { width: 60px; height: 60px; }
+body.spot-regular:not(.creator) .creator-spot .cs-name { font-size: 1.05rem; }
+body.spot-regular:not(.creator) .creator-spot .cs-num { font-size: 0.75rem; }
+@media (max-width: 1000px) { body.spot-regular:not(.creator) .creator-spot { display: none !important; } }
+@keyframes creatorPopStatic { 0% { transform: scale(0.6); opacity: 0; } 70% { transform: scale(1.08); opacity: 1; } 100% { transform: scale(1); } }
+/* Vertical: the whole game lives in a centered 9:16 frame that is easy to crop */
+html:has(body.creator-v) { background: #050509; }
+body.creator-v { --stage-w: min(100vw, calc(100vh * 9 / 16)); max-width: var(--stage-w); margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px var(--border); }
+body.creator-v .title-row { gap: 14px 22px; }
+body.creator-v .title { width: 100%; text-align: center; font-size: 1.4rem; }
+body.creator-v .stats .num { font-size: 2.3rem; }
+body.creator-v #input-box { font-size: 1.7rem; width: 94%; }
+body.creator-v.creator-spot-on .creator-spot:not(:empty) { position: static; transform: none; justify-content: center; max-width: none; margin: 10px auto 0; }
+body.creator-v .creator-spot.pop { animation-name: creatorPopStatic; }
+body.creator-v .creator-spot img { width: 80px; height: 80px; }
+body.creator-v .grid-wrap { padding: 6px; }
+body.creator-v .region-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+body.creator-v .toast-stack { right: calc((100vw - var(--stage-w)) / 2 + 12px); }
+body.creator-v .confetti-container { left: calc((100vw - var(--stage-w)) / 2); width: var(--stage-w); }
+body.creator-v .creator-crop-hint { display: flex; position: fixed; top: 0; bottom: 0; left: 0; width: calc((100vw - var(--stage-w)) / 2); align-items: center; justify-content: center; padding: 20px; text-align: center; color: #4b5060; font-size: 0.85rem; line-height: 1.5; pointer-events: none; }
+/* Milestone banner */
+.creator-banner { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 998; pointer-events: none; text-align: center; padding: 18px 34px; border-radius: 18px; background: rgba(15,15,26,0.88); border: 3px solid #f7d02c; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: bannerIn 0.4s cubic-bezier(.2,1.4,.4,1), fadeOut 0.5s ease 2.1s forwards; max-width: min(92vw, 640px); }
+.creator-banner .cb-title { font-size: 2.6rem; font-weight: 900; color: #f7d02c; line-height: 1.1; }
+.creator-banner .cb-sub { font-size: 1.2rem; font-weight: 700; color: #e8e8f0; margin-top: 6px; }
+.creator-banner.small { top: 26%; padding: 10px 22px; border-color: #f59e0b; }
+.creator-banner.small .cb-title { font-size: 1.8rem; color: #f59e0b; }
+body.creator-v .creator-banner .cb-title { font-size: 2rem; }
+@keyframes bannerIn { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+/* Setup dialog */
+.creator-modal { max-width: 460px; }
+.creator-orients { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 8px 0 12px; }
+.creator-orient { background: var(--bg-card); border: 2px solid var(--border); border-radius: 12px; padding: 12px 8px; cursor: pointer; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.creator-orient.active { border-color: var(--accent); }
+.creator-orient small { color: var(--text-dim); font-size: 0.72rem; }
+.co-shape { display: block; border: 2px solid currentColor; border-radius: 4px; margin-bottom: 4px; opacity: 0.8; }
+.co-h { width: 64px; height: 36px; } .co-v { width: 22px; height: 39px; }
+.creator-modal .setting-row { text-transform: none; font-size: 0.85rem; padding: 8px 4px; }
+.creator-tip { font-size: 0.78rem !important; margin: 8px 0 4px; }
+@media (prefers-reduced-motion: reduce) { .creator-banner, .creator-spot.pop { animation: fadeOut 0.5s ease 2.1s forwards; } }
 .lang-select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.75rem; padding: 3px 6px; cursor: pointer; }
 .app-version { position: fixed; top: 6px; right: 10px; z-index: 150; font-size: 0.68rem; font-weight: 500; color: var(--text-dim); opacity: 0.7; font-variant-numeric: tabular-nums; pointer-events: none; user-select: none; letter-spacing: 0.3px; }
 .tab-btn { background: none; border: none; color: var(--text-dim); padding: 10px 28px; font-size: 0.88rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; letter-spacing: 0.3px; }
@@ -695,7 +769,15 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <button class="tab-btn" data-tab="multi">👥 Multiplayer</button>
 </nav>
 
+<div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
 <header>
+  <div class="creator-nav" id="creator-nav">
+    <button data-creator-tab="daily" title="Daily">🗓️</button>
+    <button data-creator-tab="pokemon" title="Full Pokédex">📖</button>
+    <button data-creator-tab="multi" title="Multiplayer">👥</button>
+    <button id="creator-exit">✕ Exit</button>
+  </div>
+  <div class="creator-spot" id="creator-spot"></div>
   <div class="title-row">
     <h1 class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Full Pokédex</span></h1>
     <div class="stats">
@@ -742,6 +824,8 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="set-scroll"><span class="setting-label">Auto-scroll</span><div class="toggle-switch on" id="tog-scroll"></div></div>
         <div class="setting-row" id="set-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="tog-typebg"></div></div>
         <div class="setting-row" id="set-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="tog-hover"></div></div>
+        <div class="setting-row" id="set-spot"><span class="setting-label">Spotlight</span><div class="toggle-switch on" id="tog-spot"></div></div>
+        <div class="setting-row" id="set-creator"><span class="setting-label">🎥 Creator Mode</span><span class="setting-label">›</span></div>
         <div class="settings-divider"></div>
         <div class="settings-section-label">Theme</div>
         <div class="setting-row-slider">
@@ -898,6 +982,23 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </div>
 
+<div class="overlay" id="creator-overlay">
+  <div class="modal creator-modal">
+    <h2>🎥 Creator Mode</h2>
+    <p>A clean, steady layout for recording, streaming and making videos.</p>
+    <div class="settings-section-label">Format</div>
+    <div class="creator-orients">
+      <button class="creator-orient" data-orient="h"><span class="co-shape co-h"></span><b>Horizontal</b><small>16:9 · YouTube, Twitch</small></button>
+      <button class="creator-orient" data-orient="v"><span class="co-shape co-v"></span><b>Vertical</b><small>9:16 · TikTok, Shorts, Reels</small></button>
+    </div>
+    <div class="setting-row" id="set-creator-celebrate"><span class="setting-label">Celebrations and milestones</span><div class="toggle-switch" id="tog-creator-celebrate"></div></div>
+    <div class="setting-row" id="set-creator-spot"><span class="setting-label">Spotlight the last Pokémon named</span><div class="toggle-switch" id="tog-creator-spot"></div></div>
+    <p class="creator-tip">Tip: capture this browser window in OBS or your recorder. In vertical mode the game stays inside a 9:16 frame, so crop to it.</p>
+    <button class="btn danger" id="creator-start">Start Creator Mode</button>
+    <button class="btn" id="creator-cancel">Cancel</button>
+  </div>
+</div>
+
 <div class="overlay" id="daily-result-overlay">
   <div class="modal daily-modal">
     <h2 id="daily-result-title">Daily Complete!</h2>
@@ -1039,6 +1140,7 @@ const Q = (function() {
   let autoScrollEnabled = _savedSettings.scroll !== undefined ? _savedSettings.scroll : true;
   let typeBgEnabled = _savedSettings.typebg !== undefined ? _savedSettings.typebg : true;
   let hoverEnabled = _savedSettings.hover !== undefined ? _savedSettings.hover : true;
+  let spotlightEnabled = _savedSettings.spot !== undefined ? _savedSettings.spot : true;
   let orderMode = _savedSettings.order || 'dex-gens';
   let selectedGens = new Set(_savedSettings.gens && _savedSettings.gens.length ? _savedSettings.gens : [1,2,3,4,5,6,7,8,9]);
   // Landing-page presets (?gens=1,2 and ?hint=1) apply to this visit only: they don't change
@@ -1055,7 +1157,7 @@ const Q = (function() {
     } catch(e) {}
   })();
   function saveSettings() {
-    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
+    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, spot: spotlightEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
   }
 
   let keyToIndices = {};
@@ -1833,6 +1935,7 @@ const Q = (function() {
         setTimeout(() => {
           launchConfetti();
           regionToast(region);
+          if (creatorCelebrating() && revealed.size < items.length) creatorBanner(t('{region} (Gen {gen}) Complete!', { region: t(region), gen: REGION_GEN[region] }), '', 'big');
         }, 300);
       }
     }
@@ -2090,6 +2193,7 @@ const Q = (function() {
     $input.value = ''; $input.disabled = false;
     updateUI(); displayOrder = items.map((_, i) => i);
     renderGrid(); $input.focus(); localStorage.removeItem(saveKey());
+    $('creator-spot').innerHTML = '';
   }
 
   function setOrderMode(mode) {
@@ -4585,6 +4689,8 @@ const Q = (function() {
     track('tab_view', { tab: tab });
     var about = $('about-section'); if (about) about.open = (tab === 'daily');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === navTabFor(tab)));
+    creatorUpdateNav();
+    $('creator-spot').innerHTML = '';
     if (window.history.replaceState) {
       var qs = window.location.search;
       window.history.replaceState({}, '', window.location.pathname + qs + (tab === 'pokemon' ? '' : '#' + tab));
@@ -4775,6 +4881,7 @@ const Q = (function() {
         }
       }
       if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
+      if (currentTab === 'pokemon' || isDailyTab) creatorOnNamed(matches);
       if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
         track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
       }
@@ -4788,6 +4895,7 @@ const Q = (function() {
       }, 50);
       if (foundSet.size === items.length) {
         stopTimer();
+        creatorFinish();
         if (isDailyTab) dailyComplete(true);
         else showModal(true);
       }
@@ -4981,6 +5089,130 @@ const Q = (function() {
       prompt(t('Copy your result:'), text);
     }
   });
+  // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
+  // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
+  // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, spotlight: true };
+  try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
+  var creatorUrl = null;
+  try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
+  if (creatorUrl === 'h' || creatorUrl === 'v') { creatorCfg.on = true; creatorCfg.orient = creatorUrl; }
+  var creatorCombo = { n: 0, last: 0 };
+  var CREATOR_MILESTONES = [10, 25, 50, 75];
+
+  function creatorSave() { try { localStorage.setItem('nea_creator', JSON.stringify(creatorCfg)); } catch(e) {} }
+  function creatorApply() {
+    var b = document.body, on = creatorCfg.on;
+    b.classList.toggle('creator', on);
+    b.classList.toggle('creator-v', on && creatorCfg.orient === 'v');
+    b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v');
+    b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
+    b.classList.toggle('spot-regular', !on && spotlightEnabled);
+    if (on ? !creatorCfg.spotlight : !spotlightEnabled) $('creator-spot').innerHTML = '';
+    creatorUpdateNav();
+  }
+  function creatorUpdateNav() {
+    if (!creatorCfg) return;
+    document.querySelectorAll('[data-creator-tab]').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.creatorTab === navTabFor(currentTab));
+    });
+  }
+  function creatorCelebrating() { return !!creatorCfg && creatorCfg.on && creatorCfg.celebrate; }
+  function creatorSetupRender() {
+    document.querySelectorAll('.creator-orient').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.orient === creatorCfg.orient); });
+    $('tog-creator-celebrate').classList.toggle('on', creatorCfg.celebrate);
+    $('tog-creator-spot').classList.toggle('on', creatorCfg.spotlight);
+  }
+  function creatorOpenSetup() {
+    $('settings-panel').classList.remove('open');
+    creatorSetupRender();
+    $('creator-overlay').classList.add('active');
+  }
+
+  function creatorSpotlight(w) {
+    var el = $('creator-spot');
+    if (!el || !w) return;
+    el.innerHTML = '<img src="' + w.s + '" alt=""><div><div class="cs-name"></div><div class="cs-num">#' + w.id + '</div></div>';
+    el.querySelector('.cs-name').textContent = displayName(w);
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  }
+  function creatorBanner(title, sub, size) {
+    var el = document.createElement('div');
+    el.className = 'creator-banner ' + (size || 'big');
+    el.innerHTML = '<div class="cb-title"></div>' + (sub ? '<div class="cb-sub"></div>' : '');
+    el.querySelector('.cb-title').textContent = title;
+    if (sub) el.querySelector('.cb-sub').textContent = sub;
+    document.querySelectorAll('.creator-banner').forEach(function(old) { old.remove(); });
+    document.body.appendChild(el);
+    setTimeout(function() { el.remove(); }, 2700);
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (size !== 'small' && !calm) launchConfetti();
+  }
+  function creatorOnNamed(matches) {
+    if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]]);
+    if (!creatorCfg.on || !creatorCfg.celebrate) return;
+    var now = Date.now();
+    creatorCombo.n = now - creatorCombo.last < 5000 ? creatorCombo.n + matches.length : matches.length;
+    creatorCombo.last = now;
+    var n = foundSet.size, prev = n - matches.length, total = items.length;
+    if (n >= total) return; // the finish has its own celebration
+    var crossed = function(m) { return prev < m && n >= m; };
+    if (total >= 60) {
+      var hit = CREATOR_MILESTONES.filter(crossed)[0];
+      for (var m = 100; m <= n && !hit; m += 100) if (crossed(m)) hit = m;
+      if (hit) { creatorBanner(t('🎉 {count} Pokémon!', { count: hit }), t('{left} to go', { left: total - n }), 'big'); return; }
+      if (crossed(Math.ceil(total / 2))) { creatorBanner(t('Halfway there!'), n + ' / ' + total, 'big'); return; }
+    }
+    if (creatorCombo.n >= 5 && Math.floor(creatorCombo.n / 5) > Math.floor((creatorCombo.n - matches.length) / 5)) {
+      creatorBanner(t('🔥 Combo x{count}', { count: creatorCombo.n }), '', 'small');
+    }
+  }
+  function creatorFinish() {
+    if (!creatorCelebrating()) return;
+    creatorBanner(t('🏆 All {total} named!', { total: items.length }), fmtTime(elapsedMs), 'big');
+    setTimeout(launchConfetti, 700);
+  }
+
+  document.querySelectorAll('.creator-orient').forEach(function(btn) {
+    btn.addEventListener('click', function() { creatorCfg.orient = btn.dataset.orient; creatorSetupRender(); });
+  });
+  $('set-creator-celebrate').addEventListener('click', function() { creatorCfg.celebrate = !creatorCfg.celebrate; creatorSetupRender(); });
+  $('set-creator-spot').addEventListener('click', function() { creatorCfg.spotlight = !creatorCfg.spotlight; creatorSetupRender(); });
+  $('set-creator').addEventListener('click', creatorOpenSetup);
+  $('tog-spot').classList.toggle('on', spotlightEnabled);
+  $('set-spot').addEventListener('click', function() {
+    spotlightEnabled = !spotlightEnabled;
+    $('tog-spot').classList.toggle('on', spotlightEnabled);
+    saveSettings(); creatorApply();
+    track('setting_change', { setting: 'spotlight', value: spotlightEnabled });
+  });
+  $('creator-cancel').addEventListener('click', function() { $('creator-overlay').classList.remove('active'); });
+  $('creator-start').addEventListener('click', function() {
+    creatorCfg.on = true;
+    creatorSave(); creatorApply();
+    $('creator-overlay').classList.remove('active');
+    track('creator_mode', { action: 'start', orientation: creatorCfg.orient === 'v' ? 'vertical' : 'horizontal',
+                            celebrations: creatorCfg.celebrate, spotlight: creatorCfg.spotlight });
+    window.scrollTo(0, 0);
+    $input.focus();
+  });
+  $('creator-exit').addEventListener('click', function() {
+    creatorCfg.on = false;
+    creatorSave(); creatorApply();
+    track('creator_mode', { action: 'exit' });
+  });
+  document.querySelectorAll('[data-creator-tab]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var tabBtn = document.querySelector('.tab-btn[data-tab="' + btn.dataset.creatorTab + '"]');
+      if (tabBtn) tabBtn.click();
+    });
+  });
+  creatorApply();
+  if (creatorUrl === 'setup') {
+    setTimeout(creatorOpenSetup, 300);
+    try { var _cu = new URL(location.href); _cu.searchParams.delete('creator'); history.replaceState({}, '', _cu.pathname + _cu.search + _cu.hash); } catch(e) {}
+  }
+
   // ── Share as image: a 1080x1350 card that fits Instagram, X, Discord and chats ──
   // The image is drawn ahead of time (when results open) so the share sheet can open straight
   // from the tap; Safari blocks sharing that starts after a long async step.
