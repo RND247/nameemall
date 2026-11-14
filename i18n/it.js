@@ -364,5 +364,7 @@ window.NEA_UI = {
   "Type Pokémon names in chat to play!": "Scrivi nomi di Pokémon in chat per giocare!",
   "You {you} · Chat {chat}": "Tu {you} · Chat {chat}",
   "💬 Chat named {count}": "💬 La chat ne ha indovinati {count}",
-  "Top chatter: {name} ({count})": "Miglior spettatore: {name} ({count})"
+  "Top chatter: {name} ({count})": "Miglior spettatore: {name} ({count})",
+  "🗑️ Reset achievements": "🗑️ Azzera obiettivi",
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "Azzerare tutti gli obiettivi? I tuoi progressi ripartono da adesso. Non si può annullare."
 };

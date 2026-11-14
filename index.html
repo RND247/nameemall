@@ -104,6 +104,8 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .ach-date { font-size: 0.7rem; color: #d4a017; font-weight: 700; margin-top: 4px; }
 body:not(.light) .ach-date { color: #f7d02c; }
 .ach-prog { font-size: 0.68rem; color: var(--text-dim); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ach-reset { text-align: center; margin-top: 28px; }
+.ach-reset .btn { font-size: 0.72rem; }
 .ach-toast-row { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: var(--text); }
 .ach-toast-icon { display: flex; }
 .ach-toast-icon .ach-img { width: 40px; height: 40px; }
@@ -5218,7 +5220,13 @@ const Q = (function() {
     ultra: [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806]
   };
   var achReady = false;
-  var achUnlocked = {}, achDex = new Set(), achStats = { duelWins: 0, coop: 0, comboBest: 0, share: 0, runFull: 0, runNoHint: 0, runHour: 0, runKanto: 0 };
+  function achDefaultStats() { return { duelWins: 0, coop: 0, comboBest: 0, share: 0, runFull: 0, runNoHint: 0, runHour: 0, runKanto: 0, backfilled: 0 }; }
+  var achUnlocked = {}, achDex = new Set(), achStats = achDefaultStats();
+  // After a reset, Daily results that existed at that moment no longer count (snapshot of result fingerprints)
+  var achResetSnap = null;
+  try { var _snap = JSON.parse(localStorage.getItem('nea_ach_reset')); if (_snap) achResetSnap = new Set(_snap); } catch(e) {}
+  function achResultKey(src, day, mode, r) { return src + '|' + day + '|' + mode + '|' + r.score + '|' + r.time + '|' + (r.gaveUp ? 1 : 0); }
+  function achKeep(src, day, mode, r) { return !achResetSnap || !achResetSnap.has(achResultKey(src, day, mode, r)); }
   var achCombo = { n: 0, last: 0 };
   try { achUnlocked = JSON.parse(localStorage.getItem('nea_ach')) || {}; } catch(e) {}
   try { achDex = new Set(JSON.parse(localStorage.getItem('nea_ach_dex')) || []); } catch(e) {}
@@ -5236,12 +5244,17 @@ const Q = (function() {
   // Daily numbers come straight from the saved results (ranked days for streaks, archive too for perfect runs)
   function achDailyStats() {
     var ranked = dailyLoadResults(), archive = dailyLoadArchive(), legacy = dailyLoadLegacy();
-    var s = { played: dailyPlayedDays(ranked, legacy), finished: 0, mini: false, midi: false, fastMini: false, best: 0 };
-    [ranked, archive].forEach(function(all) {
+    var s = { played: 0, finished: 0, mini: false, midi: false, fastMini: false, best: 0 };
+    if (!achResetSnap) s.played = dailyPlayedDays(ranked, legacy);
+    else Object.keys(ranked).forEach(function(day) {
+      if (['mini', 'midi'].some(function(mode) { var r = ranked[day] && ranked[day][mode]; return r && achKeep('r', day, mode, r); })) s.played++;
+    });
+    [[ranked, 'r'], [archive, 'a']].forEach(function(pair) {
+      var all = pair[0], src = pair[1];
       Object.keys(all).forEach(function(day) {
         ['mini', 'midi'].forEach(function(mode) {
           var r = all[day] && all[day][mode];
-          if (!r) return;
+          if (!r || !achKeep(src, day, mode, r)) return;
           s.finished++;
           if (dailyIsSuccess(r)) {
             if (mode === 'mini') { s.mini = true; if (r.time && r.time < 30000) s.fastMini = true; }
@@ -5251,7 +5264,10 @@ const Q = (function() {
       });
     });
     ['mini', 'midi'].forEach(function(mode) {
-      var days = Object.keys(ranked).filter(function(k) { return dailyIsSuccess(ranked[k] && ranked[k][mode]); }).sort();
+      var days = Object.keys(ranked).filter(function(k) {
+        var r = ranked[k] && ranked[k][mode];
+        return dailyIsSuccess(r) && achKeep('r', k, mode, r);
+      }).sort();
       var run = 0, prev = null;
       days.forEach(function(k) {
         var p = k.split('-'), d = new Date(p[0], p[1] - 1, p[2]);
@@ -5416,17 +5432,40 @@ const Q = (function() {
       });
       html += '</div>';
     });
+    html += '<div class="ach-reset"><button class="btn" id="ach-reset-btn">' + esc(t('🗑️ Reset achievements')) + '</button></div>';
     html += '</div>';
     $('grid-wrap').innerHTML = html;
+    $('ach-reset-btn').addEventListener('click', achReset);
     try { localStorage.setItem('nea_ach_seen', String(got)); } catch(e) {}
     achUpdateBadge();
   }
 
+  function achReset() {
+    if (!confirm(t('Reset all achievements? Your progress starts over from now. This can\'t be undone.'))) return;
+    var snap = [];
+    var ranked = dailyLoadResults(), archive = dailyLoadArchive();
+    [[ranked, 'r'], [archive, 'a']].forEach(function(pair) {
+      Object.keys(pair[0]).forEach(function(day) {
+        ['mini', 'midi'].forEach(function(mode) { var r = pair[0][day] && pair[0][day][mode]; if (r) snap.push(achResultKey(pair[1], day, mode, r)); });
+      });
+    });
+    achResetSnap = new Set(snap);
+    achUnlocked = {}; achDex = new Set(); achStats = achDefaultStats(); achStats.backfilled = 1;
+    achCombo = { n: 0, last: 0 };
+    try { localStorage.setItem('nea_ach_reset', JSON.stringify(snap)); localStorage.setItem('nea_ach_seen', '0'); } catch(e) {}
+    achSaveAll();
+    track('achievements_reset', {});
+    achShowPage();
+  }
+
   achReady = true;
   // Pick up progress from before achievements existed (saved Full Pokédex game, past dailies), quietly
-  if (currentTab === 'pokemon') foundSet.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+  // (only once, so a reset isn't undone by the saved game on the next visit)
   setTimeout(function() {
-    if (currentTab === 'pokemon') foundSet.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+    if (!achStats.backfilled) {
+      if (currentTab === 'pokemon') foundSet.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
+      achStats.backfilled = 1;
+    }
     achCheck(true);
     achUpdateBadge();
   }, 1500);

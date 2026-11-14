@@ -364,5 +364,7 @@ window.NEA_UI = {
   "Type Pokémon names in chat to play!": "在聊天室輸入寶可夢名字一起玩!",
   "You {you} · Chat {chat}": "你 {you} · 聊天室 {chat}",
   "💬 Chat named {count}": "💬 聊天室說出了 {count} 隻",
-  "Top chatter: {name} ({count})": "最佳觀眾:{name}({count})"
+  "Top chatter: {name} ({count})": "最佳觀眾:{name}({count})",
+  "🗑️ Reset achievements": "🗑️ 重設成就",
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "要重設所有成就嗎?進度會從現在重新開始,而且無法復原。"
 };

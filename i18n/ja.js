@@ -390,5 +390,7 @@ window.NEA_UI = {
   "Type Pokémon names in chat to play!": "チャットでポケモンの名前を書いて参加しよう!",
   "You {you} · Chat {chat}": "あなた {you} · チャット {chat}",
   "💬 Chat named {count}": "💬 チャットが{count}匹当てました",
-  "Top chatter: {name} ({count})": "トップ参加者:{name}({count})"
+  "Top chatter: {name} ({count})": "トップ参加者:{name}({count})",
+  "🗑️ Reset achievements": "🗑️ 実績をリセット",
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "すべての実績をリセットしますか?進行状況は今から最初からになります。元に戻せません。"
 };
