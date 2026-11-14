@@ -349,5 +349,20 @@ window.NEA_UI = {
   "Share a result with friends": "和朋友分享成績",
   "Achievements": "成就",
   "Under Two Hours": "兩小時內",
-  "Name all {count} in one game in under 2 hours": "在一局中於 2 小時內說出全部 {count} 隻"
+  "Name all {count} in one game in under 2 hours": "在一局中於 2 小時內說出全部 {count} 隻",
+  "Twitch Chat Plays (optional)": "Twitch 聊天室一起玩(選填)",
+  "Your Twitch channel": "你的 Twitch 頻道",
+  "🤝 Together": "🤝 一起玩",
+  "⚔️ Chat vs You": "⚔️ 聊天室對決你",
+  "Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.": "觀眾在你的 Twitch 聊天室輸入寶可夢名字就能參與。適用於全國圖鑑模式。單人遊玩請留空。",
+  "Connecting…": "連線中…",
+  "Live": "直播中",
+  "Reconnecting…": "重新連線中…",
+  "Offline": "離線",
+  "You": "你",
+  "Chat": "聊天室",
+  "Type Pokémon names in chat to play!": "在聊天室輸入寶可夢名字一起玩!",
+  "You {you} · Chat {chat}": "你 {you} · 聊天室 {chat}",
+  "💬 Chat named {count}": "💬 聊天室說出了 {count} 隻",
+  "Top chatter: {name} ({count})": "最佳觀眾:{name}({count})"
 };

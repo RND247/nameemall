@@ -375,5 +375,20 @@ window.NEA_UI = {
   "Share a result with friends": "友だちに結果をシェアする",
   "Achievements": "実績",
   "Under Two Hours": "2時間切り",
-  "Name all {count} in one game in under 2 hours": "1回のゲームで{count}匹すべてを2時間以内に当てる"
+  "Name all {count} in one game in under 2 hours": "1回のゲームで{count}匹すべてを2時間以内に当てる",
+  "Twitch Chat Plays (optional)": "Twitchチャット参加(任意)",
+  "Your Twitch channel": "あなたのTwitchチャンネル",
+  "🤝 Together": "🤝 みんなで",
+  "⚔️ Chat vs You": "⚔️ チャット対あなた",
+  "Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.": "視聴者がTwitchチャットにポケモンの名前を書き込むと当てたことになります。全国図鑑モードで使えます。ひとりで遊ぶ場合は空欄のままで。",
+  "Connecting…": "接続中…",
+  "Live": "ライブ",
+  "Reconnecting…": "再接続中…",
+  "Offline": "オフライン",
+  "You": "あなた",
+  "Chat": "チャット",
+  "Type Pokémon names in chat to play!": "チャットでポケモンの名前を書いて参加しよう!",
+  "You {you} · Chat {chat}": "あなた {you} · チャット {chat}",
+  "💬 Chat named {count}": "💬 チャットが{count}匹当てました",
+  "Top chatter: {name} ({count})": "トップ参加者:{name}({count})"
 };

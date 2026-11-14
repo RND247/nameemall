@@ -156,6 +156,7 @@ body.spot-regular:not(.creator) .creator-spot .cs-num { font-size: 0.75rem; }
 html:has(body.creator-v) { background: #050509; }
 body.creator-v { --stage-w: min(100vw, calc(100vh * 9 / 16)); max-width: var(--stage-w); margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px var(--border); }
 body.creator-v .title-row { gap: 14px 22px; }
+body.creator-v header { padding-top: 40px; }
 body.creator-v .title { width: 100%; text-align: center; font-size: 1.4rem; }
 body.creator-v .stats .num { font-size: 2.3rem; }
 body.creator-v #input-box { font-size: 1.7rem; width: 94%; }
@@ -167,6 +168,37 @@ body.creator-v .region-grid { grid-template-columns: repeat(auto-fill, minmax(70
 body.creator-v .toast-stack { right: calc((100vw - var(--stage-w)) / 2 + 12px); }
 body.creator-v .confetti-container { left: calc((100vw - var(--stage-w)) / 2); width: var(--stage-w); }
 body.creator-v .creator-crop-hint { display: flex; position: fixed; top: 0; bottom: 0; left: 0; width: calc((100vw - var(--stage-w)) / 2); align-items: center; justify-content: center; padding: 20px; text-align: center; color: #4b5060; font-size: 0.85rem; line-height: 1.5; pointer-events: none; }
+/* Twitch Chat Plays panel */
+.creator-chat { display: none; }
+body.creator.chat-on .creator-chat:not(:empty) { display: block; position: absolute; right: 20px; top: 46px; width: 240px; background: rgba(145,70,255,0.08); border: 1px solid rgba(145,70,255,0.45); border-radius: 12px; padding: 8px 10px; font-size: 0.8rem; z-index: 2; }
+.cc-head { display: flex; align-items: center; gap: 6px; font-weight: 800; }
+.cc-chan { color: #bf94ff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cc-status { margin-left: auto; font-size: 0.68rem; color: var(--text-dim); font-weight: 600; }
+.cc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-dim); flex-shrink: 0; }
+.cc-dot.cc-live { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.cc-dot.cc-connecting, .cc-dot.cc-retry { background: #f59e0b; }
+.cc-vs { display: flex; justify-content: space-between; margin: 6px 0 2px; font-size: 0.95rem; font-weight: 700; }
+.cc-vs b { font-size: 1.15rem; color: var(--green); }
+.cc-vs .cc-vs-chat b { color: #bf94ff; }
+.cc-top { list-style: none; margin: 6px 0 0; padding: 0; }
+.cc-top li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; font-weight: 700; }
+.cc-top li:first-child .cc-name::before { content: '👑 '; }
+.cc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #bf94ff; }
+.cc-empty { color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; }
+.card.found.chat-claim { border-color: #9146ff; box-shadow: 0 0 8px rgba(145,70,255,0.55), inset 0 0 0 1px #9146ff; }
+.creator-spot .cs-by { font-size: 0.85rem; font-weight: 800; color: #bf94ff; }
+.creator-twitch { margin: 2px 0 6px; }
+.creator-twitch input { width: 100%; background: var(--input-bg); border: 2px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; padding: 8px 12px; outline: none; margin-bottom: 8px; }
+.creator-twitch input:focus { border-color: #9146ff; }
+.creator-twitch input.invalid { border-color: var(--accent); }
+.creator-twitch .mode-slider { width: 100%; }
+.modal-chat { white-space: pre-line; color: #bf94ff !important; font-weight: 700; }
+@media (max-width: 1250px) {
+  body.creator.chat-on .creator-chat:not(:empty) { position: static; width: auto; max-width: 420px; margin: 10px auto 0; order: 2; }
+}
+body.creator-v.chat-on .creator-chat:not(:empty) { position: static; width: auto; margin: 8px 6px 0; order: 2; }
+body.creator-v .cc-top { display: flex; gap: 10px; flex-wrap: wrap; }
+body.creator-v .cc-top li { gap: 4px; }
 /* Milestone banner */
 .creator-banner { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 998; pointer-events: none; text-align: center; padding: 18px 34px; border-radius: 18px; background: rgba(15,15,26,0.88); border: 3px solid #f7d02c; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: bannerIn 0.4s cubic-bezier(.2,1.4,.4,1), fadeOut 0.5s ease 2.1s forwards; max-width: min(92vw, 640px); }
 .creator-banner .cb-title { font-size: 2.6rem; font-weight: 900; color: #f7d02c; line-height: 1.1; }
@@ -820,6 +852,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <button id="creator-exit">✕ Exit</button>
   </div>
   <div class="creator-spot" id="creator-spot"></div>
+  <div class="creator-chat" id="creator-chat"></div>
   <div class="title-row">
     <h1 class="title">Name<span class="accent">'Em All</span><span class="sub" id="subtitle">Full Pokédex</span></h1>
     <div class="stats">
@@ -1020,6 +1053,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="modal-pct"></p>
     <p id="modal-hint" class="modal-hint" hidden></p>
     <p id="modal-best"></p>
+    <p id="modal-chat" class="modal-chat" hidden></p>
     <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
@@ -1037,6 +1071,15 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     </div>
     <div class="setting-row" id="set-creator-celebrate"><span class="setting-label">Celebrations and milestones</span><div class="toggle-switch" id="tog-creator-celebrate"></div></div>
     <div class="setting-row" id="set-creator-spot"><span class="setting-label">Spotlight the last Pokémon named</span><div class="toggle-switch" id="tog-creator-spot"></div></div>
+    <div class="settings-section-label">Twitch Chat Plays (optional)</div>
+    <div class="creator-twitch">
+      <input type="text" id="creator-twitch" placeholder="Your Twitch channel" maxlength="40" autocomplete="off" spellcheck="false">
+      <div class="mode-slider" id="creator-chat-mode">
+        <button data-chat-mode="coop">🤝 Together</button>
+        <button data-chat-mode="vs">⚔️ Chat vs You</button>
+      </div>
+      <p class="creator-tip">Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.</p>
+    </div>
     <p class="creator-tip">Tip: capture this browser window in OBS or your recorder. In vertical mode the game stays inside a 9:16 frame, so crop to it.</p>
     <button class="btn danger" id="creator-start">Start Creator Mode</button>
     <button class="btn" id="creator-cancel">Cancel</button>
@@ -1304,6 +1347,45 @@ const Q = (function() {
           if (!sameMon && !sharedLang) { ambiguousKeys.add(k); break; }
         }
       }
+    }
+  }
+
+  // Everything that happens when Pokémon are named: by the player (by = null) or by Twitch chat (by = {name, color})
+  function onNamed(matches, by) {
+    var isDailyTab = currentTab === 'daily';
+    if (!timerRunning && !givenUp) startTimer();
+    for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); if (!by) toast(items[idx]); }
+    if (by) chatOnNamed(matches, by);
+    if (!howtoSeen()) dismissHowto();
+    if (currentTab === 'pokemon' || isDailyTab) {
+      for (var mi = 0; mi < matches.length; mi++) {
+        var tp = isDailyTab
+          ? { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(), guess_number: foundSet.size - matches.length + mi + 1 }
+          : { game_mode: 'pokemon', guess_number: foundSet.size - matches.length + mi + 1 };
+        if (by) tp.source = 'twitch_chat';
+        trackPokemon('pokemon_named', matches[mi], tp);
+      }
+    }
+    if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
+    if (currentTab === 'pokemon' || isDailyTab) { creatorOnNamed(matches, by); if (!by) achOnNamed(matches); }
+    if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
+      track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
+    }
+    if ((currentTab === 'pokemon' || isDailyTab) && soundEnabled) playCry(items[matches[0]].id);
+    if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
+    if (!by) flashInput();
+    updateUI();
+    if (chatEnabled()) chatRender();
+    if (!isDailyTab) save();
+    if (autoScrollEnabled) setTimeout(function() {
+      var card = $('c' + matches[0]);
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
+    if (foundSet.size === items.length) {
+      stopTimer();
+      creatorFinish();
+      if (isDailyTab) dailyComplete(true);
+      else showModal(true);
     }
   }
 
@@ -2040,6 +2122,15 @@ const Q = (function() {
     $('modal-best').textContent = hsParts.join(' · ');
     displayHighscore();
     $('modal-image-btn').hidden = currentTab !== 'pokemon';
+    var chatLine = '';
+    if (currentTab === 'pokemon' && chatEnabled() && chat.claims.size) {
+      var chatN = 0; chat.claims.forEach(function(i) { if (foundSet.has(i)) chatN++; });
+      var topName = Object.keys(chat.credits).sort(function(a, b) { return chat.credits[b].n - chat.credits[a].n; })[0];
+      chatLine = (chatVersus() ? t('You {you} · Chat {chat}', { you: count - chatN, chat: chatN }) : t('💬 Chat named {count}', { count: chatN })) +
+        (topName ? '\n' + t('Top chatter: {name} ({count})', { name: topName, count: chat.credits[topName].n }) : '');
+    }
+    $('modal-chat').hidden = !chatLine;
+    $('modal-chat').textContent = chatLine;
     if (currentTab === 'pokemon') sharePrepare(sharePokedexKey(), sharePokedexCard);
     $overlay.classList.add('active');
   }
@@ -2239,6 +2330,7 @@ const Q = (function() {
     updateUI(); displayOrder = items.map((_, i) => i);
     renderGrid(); $input.focus(); localStorage.removeItem(saveKey());
     $('creator-spot').innerHTML = '';
+    chatResetScores();
   }
 
   function setOrderMode(mode) {
@@ -4919,37 +5011,10 @@ const Q = (function() {
       return;
     }
 
-    var isDailyTab = currentTab === 'daily';
     const matches = findAllMatches(val);
     if (matches.length > 0) {
-      for (const idx of matches) { foundSet.add(idx); revealCard(idx, false); toast(items[idx]); }
-      if (!howtoSeen()) dismissHowto();
-      if (currentTab === 'pokemon' || isDailyTab) {
-        for (var mi = 0; mi < matches.length; mi++) {
-          trackPokemon('pokemon_named', matches[mi], isDailyTab
-            ? { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(), guess_number: foundSet.size - matches.length + mi + 1 }
-            : { game_mode: 'pokemon', guess_number: foundSet.size - matches.length + mi + 1 });
-        }
-      }
-      if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
-      if (currentTab === 'pokemon' || isDailyTab) { creatorOnNamed(matches); achOnNamed(matches); }
-      if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
-        track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
-      }
-      if ((currentTab === 'pokemon' || isDailyTab) && soundEnabled) playCry(items[matches[0]].id);
-      if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
-      flashInput(); updateUI(); this.value = '';
-      if (!isDailyTab) save();
-      if (autoScrollEnabled) setTimeout(function() {
-        var card = $('c' + matches[0]);
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 50);
-      if (foundSet.size === items.length) {
-        stopTimer();
-        creatorFinish();
-        if (isDailyTab) dailyComplete(true);
-        else showModal(true);
-      }
+      onNamed(matches, null);
+      this.value = '';
     } else if (val.length > 0) {
       var q = normalizeAnswer(val);
       var dupeIndices = keyToIndices[q];
@@ -5366,10 +5431,126 @@ const Q = (function() {
     achUpdateBadge();
   }, 1500);
 
+  // ── Twitch Chat Plays (part of Creator Mode) ──
+  // Reads the streamer's public Twitch chat anonymously (no login, no Twitch app) and treats each
+  // message as a guess on the Full Pokédex board. Modes: 'coop' (chat helps) or 'vs' (chat vs streamer).
+  var chat = { ws: null, status: 'off', retry: 0, retryTimer: null, credits: {}, claims: new Set(), wanted: false };
+  function chatCleanChannel(v) {
+    v = String(v || '').trim().replace(/^https?:\/\/(www\.)?twitch\.tv\//i, '').replace(/^#/, '').split(/[/?#\s]/)[0];
+    return /^[A-Za-z0-9_]{3,25}$/.test(v) ? v.toLowerCase() : '';
+  }
+  function chatEnabled() { return !!(creatorCfg && creatorCfg.on && creatorCfg.twitch); }
+  function chatVersus() { return chatEnabled() && creatorCfg.chatMode === 'vs'; }
+
+  function chatConnect() {
+    chatDisconnect(true);
+    if (!chatEnabled() || !window.WebSocket) return;
+    chat.wanted = true;
+    chat.status = 'connecting'; chatRender();
+    var ws;
+    try { ws = new WebSocket('wss://irc-ws.chat.twitch.tv:443'); } catch(e) { chatScheduleRetry(); return; }
+    chat.ws = ws;
+    ws.onopen = function() {
+      ws.send('CAP REQ :twitch.tv/tags');
+      ws.send('PASS SCHMOOPIIE');
+      ws.send('NICK justinfan' + Math.floor(10000 + Math.random() * 89999));
+      ws.send('JOIN #' + creatorCfg.twitch);
+    };
+    ws.onmessage = function(ev) {
+      String(ev.data).split('\r\n').forEach(function(line) {
+        if (!line) return;
+        if (line.indexOf('PING') === 0) { ws.send('PONG :tmi.twitch.tv'); return; }
+        if (/ (366|ROOMSTATE) /.test(line) && chat.status !== 'live') { chat.status = 'live'; chat.retry = 0; chatRender(); return; }
+        var m = /^(?:@(\S+) )?:(\w+)!\S+ PRIVMSG #\S+ :(.*)$/.exec(line);
+        if (!m) return;
+        var tags = {};
+        (m[1] || '').split(';').forEach(function(kv) { var i = kv.indexOf('='); if (i > 0) tags[kv.slice(0, i)] = kv.slice(i + 1); });
+        chatGuess(m[3], tags['display-name'] || m[2], tags.color || '');
+      });
+    };
+    ws.onclose = function() { if (chat.ws === ws) { chat.ws = null; if (chat.wanted) chatScheduleRetry(); } };
+    ws.onerror = function() { try { ws.close(); } catch(e) {} };
+  }
+  function chatScheduleRetry() {
+    chat.status = 'retry'; chatRender();
+    clearTimeout(chat.retryTimer);
+    var wait = Math.min(30000, 2000 * Math.pow(2, chat.retry++));
+    chat.retryTimer = setTimeout(function() { if (chat.wanted) chatConnect(); }, wait);
+  }
+  function chatDisconnect(keepState) {
+    chat.wanted = false;
+    clearTimeout(chat.retryTimer);
+    if (chat.ws) { var ws = chat.ws; chat.ws = null; try { ws.close(); } catch(e) {} }
+    if (!keepState) { chat.status = 'off'; chatRender(); }
+  }
+  function chatSync() {
+    document.body.classList.toggle('chat-on', chatEnabled());
+    if (chatEnabled()) chatConnect(); else chatDisconnect();
+    chatRender();
+  }
+  function chatResetScores() {
+    chat.credits = {}; chat.claims = new Set();
+    document.querySelectorAll('.card.chat-claim').forEach(function(c) { c.classList.remove('chat-claim'); });
+    chatRender();
+  }
+
+  // A chat message can be a name ("pikachu"), a name with extra words ("pikachu lets go"), or several names
+  function chatGuess(text, user, color) {
+    if (!chatEnabled() || currentTab !== 'pokemon' || !items.length || givenUp || paused || $input.disabled) return;
+    var words = String(text).replace(/[!?.,:;]+$/g, '').split(/\s+/).filter(Boolean).slice(0, 8);
+    var tries = [words.join(' ')];
+    if (words.length > 1) {
+      for (var i = 0; i < words.length; i++) {
+        tries.push(words[i]);
+        if (i + 1 < words.length) tries.push(words[i] + ' ' + words[i + 1]);
+      }
+    }
+    var by = { name: String(user).slice(0, 25), color: /^#[0-9a-f]{6}$/i.test(color) ? color : '' };
+    for (var k = 0; k < tries.length; k++) {
+      if (foundSet.size === items.length) return;
+      var matches = findAllMatches(tries[k]);
+      if (matches.length) onNamed(matches, by);
+    }
+  }
+  function chatOnNamed(matches, by) {
+    var c = chat.credits[by.name] || (chat.credits[by.name] = { n: 0, color: by.color });
+    c.n += matches.length;
+    if (by.color) c.color = by.color;
+    matches.forEach(function(i) {
+      chat.claims.add(i);
+      if (chatVersus()) { var card = $('c' + i); if (card) card.classList.add('chat-claim'); }
+    });
+    chatRender();
+  }
+
+  function chatRender() {
+    var el = $('creator-chat');
+    if (!el) return;
+    if (!chatEnabled()) { el.innerHTML = ''; return; }
+    var esc = function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+    var label = { connecting: t('Connecting…'), live: t('Live'), retry: t('Reconnecting…'), off: t('Offline') }[chat.status] || '';
+    var html = '<div class="cc-head"><span class="cc-dot cc-' + chat.status + '"></span><span class="cc-chan">#' + esc(creatorCfg.twitch) + '</span><span class="cc-status">' + esc(label) + '</span></div>';
+    if (chatVersus()) {
+      var chatN = 0;
+      chat.claims.forEach(function(i) { if (foundSet.has(i)) chatN++; });
+      html += '<div class="cc-vs"><span>' + esc(t('You')) + ' <b>' + (foundSet.size - chatN) + '</b></span><span class="cc-vs-chat">💬 ' + esc(t('Chat')) + ' <b>' + chatN + '</b></span></div>';
+    }
+    var top = Object.keys(chat.credits).map(function(n) { return [n, chat.credits[n]]; })
+      .sort(function(a, b) { return b[1].n - a[1].n; }).slice(0, document.body.classList.contains('creator-v') ? 3 : 4);
+    if (top.length) {
+      html += '<ol class="cc-top">' + top.map(function(r) {
+        return '<li><span class="cc-name"' + (r[1].color ? ' style="color:' + r[1].color + '"' : '') + '>' + esc(r[0]) + '</span><b>' + r[1].n + '</b></li>';
+      }).join('') + '</ol>';
+    } else {
+      html += '<div class="cc-empty">' + esc(t('Type Pokémon names in chat to play!')) + '</div>';
+    }
+    el.innerHTML = html;
+  }
+
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
-  var creatorCfg = { on: false, orient: 'h', celebrate: true, spotlight: true };
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, spotlight: true, twitch: '', chatMode: 'coop' };
   try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
   var creatorUrl = null;
   try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
@@ -5399,18 +5580,23 @@ const Q = (function() {
     document.querySelectorAll('.creator-orient').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.orient === creatorCfg.orient); });
     $('tog-creator-celebrate').classList.toggle('on', creatorCfg.celebrate);
     $('tog-creator-spot').classList.toggle('on', creatorCfg.spotlight);
+    document.querySelectorAll('[data-chat-mode]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.chatMode === creatorCfg.chatMode); });
   }
   function creatorOpenSetup() {
     $('settings-panel').classList.remove('open');
     creatorSetupRender();
+    $('creator-twitch').value = creatorCfg.twitch || '';
+    $('creator-twitch').classList.remove('invalid');
     $('creator-overlay').classList.add('active');
   }
 
-  function creatorSpotlight(w) {
+  function creatorSpotlight(w, by) {
     var el = $('creator-spot');
     if (!el || !w) return;
-    el.innerHTML = '<img src="' + w.s + '" alt=""><div><div class="cs-name"></div><div class="cs-num">#' + w.id + '</div></div>';
+    el.innerHTML = '<img src="' + w.s + '" alt=""><div><div class="cs-name"></div><div class="cs-num">#' + w.id + '</div>' +
+      (by ? '<div class="cs-by"></div>' : '') + '</div>';
     el.querySelector('.cs-name').textContent = displayName(w);
+    if (by) { var b = el.querySelector('.cs-by'); b.textContent = '💬 ' + by.name; if (by.color) b.style.color = by.color; }
     el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   }
   function creatorBanner(title, sub, size) {
@@ -5425,8 +5611,8 @@ const Q = (function() {
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (size !== 'small' && !calm) launchConfetti();
   }
-  function creatorOnNamed(matches) {
-    if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]]);
+  function creatorOnNamed(matches, by) {
+    if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]], by);
     if (!creatorCfg.on || !creatorCfg.celebrate) return;
     var now = Date.now();
     creatorCombo.n = now - creatorCombo.last < 5000 ? creatorCombo.n + matches.length : matches.length;
@@ -5464,9 +5650,21 @@ const Q = (function() {
     track('setting_change', { setting: 'spotlight', value: spotlightEnabled });
   });
   $('creator-cancel').addEventListener('click', function() { $('creator-overlay').classList.remove('active'); });
+  document.querySelectorAll('[data-chat-mode]').forEach(function(btn) {
+    btn.addEventListener('click', function() { creatorCfg.chatMode = btn.dataset.chatMode; creatorSetupRender(); });
+  });
   $('creator-start').addEventListener('click', function() {
+    var rawChannel = $('creator-twitch').value.trim();
+    var channel = chatCleanChannel(rawChannel);
+    if (rawChannel && !channel) { $('creator-twitch').classList.add('invalid'); $('creator-twitch').focus(); return; }
+    $('creator-twitch').classList.remove('invalid');
+    var newChannel = channel !== creatorCfg.twitch;
     creatorCfg.on = true;
+    creatorCfg.twitch = channel;
     creatorSave(); creatorApply();
+    if (newChannel) chatResetScores();
+    chatSync();
+    if (channel) track('chat_plays', { action: 'connect', mode: creatorCfg.chatMode });
     $('creator-overlay').classList.remove('active');
     track('creator_mode', { action: 'start', orientation: creatorCfg.orient === 'v' ? 'vertical' : 'horizontal',
                             celebrations: creatorCfg.celebrate, spotlight: creatorCfg.spotlight });
@@ -5476,6 +5674,7 @@ const Q = (function() {
   $('creator-exit').addEventListener('click', function() {
     creatorCfg.on = false;
     creatorSave(); creatorApply();
+    chatSync();
     track('creator_mode', { action: 'exit' });
   });
   document.querySelectorAll('[data-creator-tab]').forEach(function(btn) {
@@ -5485,6 +5684,7 @@ const Q = (function() {
     });
   });
   creatorApply();
+  chatSync();
   if (creatorUrl === 'setup') {
     setTimeout(creatorOpenSetup, 300);
     try { var _cu = new URL(location.href); _cu.searchParams.delete('creator'); history.replaceState({}, '', _cu.pathname + _cu.search + _cu.hash); } catch(e) {}

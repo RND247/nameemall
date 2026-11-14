@@ -349,5 +349,20 @@ window.NEA_UI = {
   "Share a result with friends": "Comparte un resultado con tus amigos",
   "Achievements": "Logros",
   "Under Two Hours": "Menos de dos horas",
-  "Name all {count} in one game in under 2 hours": "Nombra los {count} en una partida en menos de 2 horas"
+  "Name all {count} in one game in under 2 hours": "Nombra los {count} en una partida en menos de 2 horas",
+  "Twitch Chat Plays (optional)": "Twitch Chat Plays (opcional)",
+  "Your Twitch channel": "Tu canal de Twitch",
+  "🤝 Together": "🤝 Juntos",
+  "⚔️ Chat vs You": "⚔️ El chat contra ti",
+  "Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.": "Tus espectadores nombran Pokémon escribiéndolos en tu chat de Twitch. Funciona en la Pokédex completa. Déjalo vacío para jugar solo.",
+  "Connecting…": "Conectando…",
+  "Live": "En directo",
+  "Reconnecting…": "Reconectando…",
+  "Offline": "Desconectado",
+  "You": "Tú",
+  "Chat": "Chat",
+  "Type Pokémon names in chat to play!": "¡Escribe nombres de Pokémon en el chat para jugar!",
+  "You {you} · Chat {chat}": "Tú {you} · Chat {chat}",
+  "💬 Chat named {count}": "💬 El chat nombró {count}",
+  "Top chatter: {name} ({count})": "Mejor espectador: {name} ({count})"
 };

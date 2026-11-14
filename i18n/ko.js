@@ -349,5 +349,20 @@ window.NEA_UI = {
   "Share a result with friends": "친구에게 결과 공유하기",
   "Achievements": "업적",
   "Under Two Hours": "2시간 이내",
-  "Name all {count} in one game in under 2 hours": "한 게임에서 {count}마리를 2시간 안에 모두 맞히기"
+  "Name all {count} in one game in under 2 hours": "한 게임에서 {count}마리를 2시간 안에 모두 맞히기",
+  "Twitch Chat Plays (optional)": "Twitch 채팅 참여 (선택)",
+  "Your Twitch channel": "내 Twitch 채널",
+  "🤝 Together": "🤝 함께하기",
+  "⚔️ Chat vs You": "⚔️ 채팅 대 나",
+  "Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.": "시청자가 Twitch 채팅에 포켓몬 이름을 입력하면 맞힌 것으로 처리돼요. 전국도감 모드에서 사용할 수 있어요. 혼자 하려면 비워 두세요.",
+  "Connecting…": "연결 중…",
+  "Live": "라이브",
+  "Reconnecting…": "다시 연결 중…",
+  "Offline": "오프라인",
+  "You": "나",
+  "Chat": "채팅",
+  "Type Pokémon names in chat to play!": "채팅에 포켓몬 이름을 입력해서 참여하세요!",
+  "You {you} · Chat {chat}": "나 {you} · 채팅 {chat}",
+  "💬 Chat named {count}": "💬 채팅이 {count}마리를 맞혔어요",
+  "Top chatter: {name} ({count})": "최고 참여자: {name} ({count})"
 };
