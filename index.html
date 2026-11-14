@@ -4861,10 +4861,10 @@ const Q = (function() {
           }
         }
       }
+      // A finished game comes back as its final board; the results were already shown when it ended
       if (givenUp) {
         $input.disabled = true;
         for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
-        showModal(false);
       }
     }
     updateUI(); displayHighscore();
