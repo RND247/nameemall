@@ -3,6 +3,8 @@
 //   POST /v1/daily/result   submit a ranked Daily result, returns the day's stats for that player
 //   GET  /v1/daily/stats    ?day=N&mode=mini|midi[&player=ID]  day stats (+ percentile for player)
 //   GET  /v1/daily/counts   ?day=N  players per mode (lobby)
+//   POST /v1/transfer       store an encrypted progress snapshot for 24h (body {id, data})
+//   GET  /v1/transfer/:id   fetch it on another device
 //   GET  /health
 //
 // Everything is anonymous: the browser sends a random player ID. Raw IPs are never stored;
@@ -25,6 +27,8 @@ export default {
       if (url.pathname === '/v1/daily/result' && request.method === 'POST') return await submitResult(request, env, cors);
       if (url.pathname === '/v1/daily/stats' && request.method === 'GET') return await getStats(url, env, cors);
       if (url.pathname === '/v1/daily/counts' && request.method === 'GET') return await getCounts(url, env, cors);
+      if (url.pathname === '/v1/transfer' && request.method === 'POST') return await putTransfer(request, env, cors);
+      if (url.pathname.startsWith('/v1/transfer/') && request.method === 'GET') return await getTransfer(url, request, env, cors);
       return json({ error: 'not_found' }, 404, cors);
     } catch (err) {
       console.error(err && err.stack || err);
@@ -188,4 +192,45 @@ async function getCounts(url, env, cors) {
   const out = { day, mini: 0, midi: 0 };
   for (const r of rows.results || []) if (MODES[r.mode]) out[r.mode] = r.n;
   return json(out, 200, cors, { 'Cache-Control': 'public, max-age=60' });
+}
+
+// ── Device transfer ──
+// The browser sends only a fingerprint of the code (id) and data it already encrypted with the code,
+// so nothing stored here can be read without the code the player was shown.
+const TRANSFER_TTL_MS = 24 * 3600 * 1000;
+const TRANSFER_MAX_BYTES = 300000;
+const TRANSFER_LIMITS = { put: 20, get: 60 };   // per network per day
+const TRANSFER_ID_RE = /^[a-f0-9]{64}$/;
+
+async function transferHit(request, env, kind) {
+  const day = Math.floor(Date.now() / 86400000);
+  const hash = await ipHash(request, env, day);
+  const row = await env.DB.prepare('SELECT n FROM transfer_hits WHERE ip_hash = ? AND day = ? AND kind = ?').bind(hash, day, kind).first();
+  if (row && row.n >= TRANSFER_LIMITS[kind]) return false;
+  await env.DB.prepare('INSERT INTO transfer_hits (ip_hash, day, kind, n) VALUES (?, ?, ?, 1) ON CONFLICT(ip_hash, day, kind) DO UPDATE SET n = n + 1')
+    .bind(hash, day, kind).run();
+  return true;
+}
+
+async function putTransfer(request, env, cors) {
+  let body;
+  try { body = await request.json(); } catch (e) { return json({ error: 'bad_json' }, 400, cors); }
+  const { id, data } = body || {};
+  if (typeof id !== 'string' || !TRANSFER_ID_RE.test(id)) return json({ error: 'bad_id' }, 400, cors);
+  if (typeof data !== 'string' || !data.length || data.length > TRANSFER_MAX_BYTES || !/^[A-Za-z0-9+/=]+$/.test(data)) return json({ error: 'bad_data' }, 400, cors);
+  if (!(await transferHit(request, env, 'put'))) return json({ error: 'rate_limited' }, 429, cors);
+  const now = Date.now();
+  await env.DB.prepare('DELETE FROM transfers WHERE expires_at < ?').bind(now).run();
+  await env.DB.prepare('INSERT OR REPLACE INTO transfers (id, data, created_at, expires_at) VALUES (?, ?, ?, ?)')
+    .bind(id, data, now, now + TRANSFER_TTL_MS).run();
+  return json({ ok: true, expires_at: now + TRANSFER_TTL_MS }, 200, cors);
+}
+
+async function getTransfer(url, request, env, cors) {
+  const id = url.pathname.slice('/v1/transfer/'.length);
+  if (!TRANSFER_ID_RE.test(id)) return json({ error: 'bad_id' }, 400, cors);
+  if (!(await transferHit(request, env, 'get'))) return json({ error: 'rate_limited' }, 429, cors);
+  const row = await env.DB.prepare('SELECT data, expires_at FROM transfers WHERE id = ?').bind(id).first();
+  if (!row || row.expires_at < Date.now()) return json({ error: 'not_found' }, 404, cors, { 'Cache-Control': 'no-store' });
+  return json({ data: row.data, expires_at: row.expires_at }, 200, cors, { 'Cache-Control': 'no-store' });
 }

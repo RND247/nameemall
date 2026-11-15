@@ -104,7 +104,19 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .ach-date { font-size: 0.7rem; color: #d4a017; font-weight: 700; margin-top: 4px; }
 body:not(.light) .ach-date { color: #f7d02c; }
 .ach-prog { font-size: 0.68rem; color: var(--text-dim); margin-top: 3px; font-variant-numeric: tabular-nums; }
-.ach-reset { text-align: center; margin-top: 28px; }
+.ach-transfer { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+.ach-reset { text-align: center; margin-top: 14px; }
+.transfer-modal { max-width: 420px; }
+.transfer-modal p { font-size: 0.85rem; }
+.tr-code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 2rem; font-weight: 800; letter-spacing: 3px; color: var(--text); margin: 10px 0 6px; user-select: all; }
+.tr-qr { display: flex; justify-content: center; margin: 8px 0; }
+.tr-qr svg { width: 168px; height: 168px; background: #fff; border-radius: 10px; padding: 6px; }
+.tr-note { font-size: 0.74rem !important; color: var(--text-dim); }
+.tr-input { width: 100%; background: var(--input-bg); border: 2px solid var(--border); border-radius: 8px; color: var(--text); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.4rem; letter-spacing: 2px; text-align: center; text-transform: uppercase; padding: 10px; outline: none; margin: 8px 0; }
+.tr-input:focus { border-color: var(--accent); }
+.tr-msg { min-height: 1.2em; font-weight: 700; }
+.tr-msg.err { color: var(--accent) !important; }
+.tr-msg.ok { color: var(--green) !important; }
 .ach-reset .btn { font-size: 0.72rem; }
 .ach-toast-row { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.9rem; color: var(--text); }
 .ach-toast-icon { display: flex; }
@@ -1074,6 +1086,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+  </div>
+</div>
+
+<div class="overlay" id="transfer-overlay">
+  <div class="modal transfer-modal">
+    <h2 id="transfer-title">📲 Move to another device</h2>
+    <div id="transfer-body"></div>
+    <button class="btn" id="transfer-close">Close</button>
   </div>
 </div>
 
@@ -5493,10 +5513,14 @@ const Q = (function() {
       });
       html += '</div>';
     });
+    html += '<div class="ach-transfer"><button class="btn" id="ach-export-btn">' + esc(t('📲 Move to another device')) + '</button>' +
+      '<button class="btn" id="ach-import-btn">' + esc(t('📥 Enter a transfer code')) + '</button></div>';
     html += '<div class="ach-reset"><button class="btn" id="ach-reset-btn">' + esc(t('🗑️ Reset achievements')) + '</button></div>';
     html += '</div>';
     $('grid-wrap').innerHTML = html;
     $('ach-reset-btn').addEventListener('click', achReset);
+    $('ach-export-btn').addEventListener('click', transferShowExport);
+    $('ach-import-btn').addEventListener('click', function() { transferShowImport(''); });
     try { localStorage.setItem('nea_ach_seen', String(got)); } catch(e) {}
     achUpdateBadge();
   }
@@ -5530,6 +5554,146 @@ const Q = (function() {
     achCheck(true);
     achUpdateBadge();
   }, 1500);
+
+  // ── Move progress to another device (no account) ──
+  // A random code is shown to the player. The browser encrypts its saved progress with a key derived from
+  // that code and uploads it under a fingerprint of the code, so the server can't read it. Expires in 24 hours.
+  var TRANSFER_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  var TRANSFER_PREFIXES = ['nea_', 'namemall_', 'langquiz_', 'daily_'];
+  function transferStoredKeys() {
+    var out = [];
+    try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (TRANSFER_PREFIXES.some(function(p) { return k.indexOf(p) === 0; })) out.push(k); } } catch(e) {}
+    return out;
+  }
+  function transferNewCode() {
+    var b = new Uint8Array(10); crypto.getRandomValues(b);
+    var s = ''; for (var i = 0; i < 10; i++) s += TRANSFER_ALPHABET[b[i] % TRANSFER_ALPHABET.length];
+    return s.slice(0, 5) + '-' + s.slice(5);
+  }
+  function transferCleanCode(v) {
+    var s = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (s.length !== 10) return '';
+    for (var i = 0; i < 10; i++) if (TRANSFER_ALPHABET.indexOf(s[i]) < 0) return '';
+    return s.slice(0, 5) + '-' + s.slice(5);
+  }
+  async function transferSecrets(code) {
+    var c = code.replace('-', ''), enc = new TextEncoder();
+    var idBuf = new Uint8Array(await crypto.subtle.digest('SHA-256', enc.encode('nea-transfer-id:' + c)));
+    var keyBuf = await crypto.subtle.digest('SHA-256', enc.encode('nea-transfer-key:' + c));
+    return {
+      id: Array.from(idBuf).map(function(b) { return b.toString(16).padStart(2, '0'); }).join(''),
+      key: await crypto.subtle.importKey('raw', keyBuf, 'AES-GCM', false, ['encrypt', 'decrypt'])
+    };
+  }
+  function transferB64(u8) { var s = ''; for (var i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); }
+  function transferUnB64(str) { var s = atob(str), u = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+  function transferError(e) {
+    var m = e && e.message;
+    if (m === 'notfound') return t('Code not found or expired. Create a new one on your other device.');
+    if (m === 'rate') return t('Too many tries. Please try again later.');
+    if (m === 'bad') return t('That code doesn\'t match. Check it and try again.');
+    return t('Couldn\'t reach the server. Check your connection and try again.');
+  }
+  async function transferUpload() {
+    var items = {};
+    transferStoredKeys().forEach(function(k) { items[k] = localStorage.getItem(k); });
+    var code = transferNewCode(), sec = await transferSecrets(code);
+    var iv = crypto.getRandomValues(new Uint8Array(12));
+    var ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, sec.key,
+      new TextEncoder().encode(JSON.stringify({ v: 1, at: Date.now(), items: items }))));
+    var blob = new Uint8Array(12 + ct.length); blob.set(iv); blob.set(ct, 12);
+    var res;
+    try { res = await fetch(STATS_API + '/v1/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: sec.id, data: transferB64(blob) }) }); }
+    catch(e) { throw new Error('net'); }
+    if (!res.ok) throw new Error(res.status === 429 ? 'rate' : 'server');
+    return code;
+  }
+  async function transferDownload(code) {
+    var sec = await transferSecrets(code), res;
+    try { res = await fetch(STATS_API + '/v1/transfer/' + sec.id, { cache: 'no-store' }); } catch(e) { throw new Error('net'); }
+    if (res.status === 404) throw new Error('notfound');
+    if (!res.ok) throw new Error(res.status === 429 ? 'rate' : 'server');
+    try {
+      var blob = transferUnB64((await res.json()).data);
+      var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: blob.slice(0, 12) }, sec.key, blob.slice(12));
+      var obj = JSON.parse(new TextDecoder().decode(pt));
+      if (!obj || !obj.items) throw 0;
+      return obj;
+    } catch(e) { throw new Error('bad'); }
+  }
+
+  function transferOpen(title, html) {
+    $('transfer-title').textContent = title;
+    $('transfer-body').innerHTML = html;
+    $('transfer-overlay').classList.add('active');
+  }
+  function transferQr(el, text) {
+    var draw = function() { try { var qr = window.qrcode(0, 'M'); qr.addData(text); qr.make(); el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2 }); } catch(e) {} };
+    if (window.qrcode) return draw();
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+    sc.onload = draw;
+    document.head.appendChild(sc);
+  }
+  async function transferShowExport() {
+    var esc = function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+    transferOpen(t('📲 Move to another device'), '<p class="tr-msg">' + esc(t('Creating your code…')) + '</p>');
+    try {
+      var code = await transferUpload();
+      var link = 'https://nameemall.com/?transfer=' + code.replace('-', '');
+      transferOpen(t('📲 Move to another device'),
+        '<p>' + esc(t('On your other device, scan this or open 🏅 Achievements → 📥 Enter a transfer code:')) + '</p>' +
+        '<div class="tr-code" id="tr-code">' + code + '</div>' +
+        '<div class="tr-qr" id="tr-qr"></div>' +
+        '<button class="btn" id="tr-copy">' + esc(t('📋 Copy code')) + '</button>' +
+        '<p class="tr-note">' + esc(t('Valid for 24 hours. Moves your achievements, Daily streaks and history, saved games and settings.')) + '</p>');
+      transferQr($('tr-qr'), link);
+      $('tr-copy').addEventListener('click', function() {
+        var btn = this;
+        if (navigator.clipboard) navigator.clipboard.writeText(code).then(function() { btn.textContent = t('✓ Copied!'); });
+      });
+      track('transfer', { action: 'export' });
+    } catch(e) {
+      transferOpen(t('📲 Move to another device'), '<p class="tr-msg err">' + esc(transferError(e)) + '</p>');
+    }
+  }
+  function transferShowImport(prefill) {
+    var esc = function(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; };
+    transferOpen(t('📥 Enter a transfer code'),
+      '<p>' + esc(t('Enter the code shown on your other device.')) + '</p>' +
+      '<input class="tr-input" id="tr-input" maxlength="11" autocomplete="off" spellcheck="false" placeholder="XXXXX-XXXXX">' +
+      '<p class="tr-msg" id="tr-msg"></p>' +
+      '<button class="btn danger" id="tr-go">' + esc(t('Transfer')) + '</button>');
+    var input = $('tr-input');
+    input.value = prefill ? (transferCleanCode(prefill) || prefill) : '';
+    var go = async function() {
+      var code = transferCleanCode(input.value), msg = $('tr-msg');
+      if (!code) { msg.className = 'tr-msg err'; msg.textContent = t('Codes look like ABCDE-FGH23.'); return; }
+      msg.className = 'tr-msg'; msg.textContent = t('Transferring…');
+      try {
+        var obj = await transferDownload(code);
+        if (!confirm(t('Replace the progress on this device with the transferred progress? What\'s saved here now will be overwritten.'))) { msg.textContent = ''; return; }
+        transferStoredKeys().forEach(function(k) { localStorage.removeItem(k); });
+        Object.keys(obj.items).forEach(function(k) {
+          if (TRANSFER_PREFIXES.some(function(p) { return k.indexOf(p) === 0; })) localStorage.setItem(k, obj.items[k]);
+        });
+        track('transfer', { action: 'import' });
+        msg.className = 'tr-msg ok'; msg.textContent = t('Done! Reloading…');
+        setTimeout(function() { location.href = location.pathname + '#achievements'; location.reload(); }, 900);
+      } catch(e) { msg.className = 'tr-msg err'; msg.textContent = transferError(e); }
+    };
+    $('tr-go').addEventListener('click', go);
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') go(); });
+    setTimeout(function() { input.focus(); }, 50);
+  }
+  $('transfer-close').addEventListener('click', function() { $('transfer-overlay').classList.remove('active'); });
+  (function() {
+    var p = null;
+    try { p = new URLSearchParams(location.search).get('transfer'); } catch(e) {}
+    if (!p) return;
+    try { var u = new URL(location.href); u.searchParams.delete('transfer'); history.replaceState({}, '', u.pathname + u.search + u.hash); } catch(e) {}
+    setTimeout(function() { transferShowImport(p); }, 400);
+  })();
 
   // ── Twitch Chat Plays (part of Creator Mode) ──
   // Reads the streamer's public Twitch chat anonymously (no login, no Twitch app) and treats each

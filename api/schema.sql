@@ -17,3 +17,19 @@ CREATE TABLE IF NOT EXISTS daily_results (
 
 CREATE INDEX IF NOT EXISTS idx_daily_rank ON daily_results (day, mode, score, time_ms);
 CREATE INDEX IF NOT EXISTS idx_daily_ip ON daily_results (day, ip_hash);
+
+-- Device transfer (no accounts): the browser encrypts its progress with a random code it shows the player.
+-- The server only sees a SHA-256 fingerprint of that code and the encrypted blob, which expires after 24 hours.
+CREATE TABLE IF NOT EXISTS transfers (
+  id         TEXT    PRIMARY KEY,         -- hex SHA-256 of the code (the code itself never reaches the server)
+  data       TEXT    NOT NULL,            -- base64 AES-GCM ciphertext
+  created_at INTEGER NOT NULL,
+  expires_at INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS transfer_hits (
+  ip_hash TEXT    NOT NULL,               -- salted daily IP hash, only for rate limiting
+  day     INTEGER NOT NULL,
+  kind    TEXT    NOT NULL,               -- 'put' | 'get'
+  n       INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (ip_hash, day, kind)
+);
