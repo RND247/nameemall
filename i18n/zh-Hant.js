@@ -366,5 +366,12 @@ window.NEA_UI = {
   "💬 Chat named {count}": "💬 聊天室說出了 {count} 隻",
   "Top chatter: {name} ({count})": "最佳觀眾:{name}({count})",
   "🗑️ Reset achievements": "🗑️ 重設成就",
-  "Reset all achievements? Your progress starts over from now. This can't be undone.": "要重設所有成就嗎?進度會從現在重新開始,而且無法復原。"
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "要重設所有成就嗎?進度會從現在重新開始,而且無法復原。",
+  "👤 Silhouettes": "👤 剪影",
+  "✏️ Spelling Assistant": "✏️ 拼字輔助",
+  "Spelling Assistant accepts names that sound right, like \"firow\" for Fearow. Games with hints are marked on your score.": "拼字輔助會接受發音正確的名字,例如把 \"firow\" 當成 Fearow。使用提示的遊戲會在成績上標註。",
+  "Turn on the Spelling Assistant? This game will be marked as played with hints.": "要開啟拼字輔助嗎?這局遊戲會被標註為使用提示。",
+  "💡 Hints used: {list}": "💡 使用的提示:{list}",
+  "Hints used": "使用的提示",
+  "Hints (marked on your score)": "提示(會標註在成績上)"
 };

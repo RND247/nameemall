@@ -366,5 +366,12 @@ window.NEA_UI = {
   "💬 Chat named {count}": "💬 Le chat en a trouvé {count}",
   "Top chatter: {name} ({count})": "Meilleur viewer : {name} ({count})",
   "🗑️ Reset achievements": "🗑️ Réinitialiser les succès",
-  "Reset all achievements? Your progress starts over from now. This can't be undone.": "Réinitialiser tous les succès ? Ta progression repart de zéro. Cette action est irréversible."
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "Réinitialiser tous les succès ? Ta progression repart de zéro. Cette action est irréversible.",
+  "👤 Silhouettes": "👤 Silhouettes",
+  "✏️ Spelling Assistant": "✏️ Aide à l'orthographe",
+  "Spelling Assistant accepts names that sound right, like \"firow\" for Fearow. Games with hints are marked on your score.": "L'aide à l'orthographe accepte les noms qui sonnent juste, comme « dracofeu » pour Dracaufeu. Les parties avec indices sont signalées sur ton score.",
+  "Turn on the Spelling Assistant? This game will be marked as played with hints.": "Activer l'aide à l'orthographe ? Cette partie sera marquée comme jouée avec des indices.",
+  "💡 Hints used: {list}": "💡 Indices utilisés : {list}",
+  "Hints used": "Indices utilisés",
+  "Hints (marked on your score)": "Indices (signalés sur ton score)"
 };

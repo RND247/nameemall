@@ -392,5 +392,12 @@ window.NEA_UI = {
   "💬 Chat named {count}": "💬 チャットが{count}匹当てました",
   "Top chatter: {name} ({count})": "トップ参加者:{name}({count})",
   "🗑️ Reset achievements": "🗑️ 実績をリセット",
-  "Reset all achievements? Your progress starts over from now. This can't be undone.": "すべての実績をリセットしますか?進行状況は今から最初からになります。元に戻せません。"
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "すべての実績をリセットしますか?進行状況は今から最初からになります。元に戻せません。",
+  "👤 Silhouettes": "👤 シルエット",
+  "✏️ Spelling Assistant": "✏️ スペル補助",
+  "Spelling Assistant accepts names that sound right, like \"firow\" for Fearow. Games with hints are marked on your score.": "スペル補助は、音が合っていれば正解にします(例:「フシギダネ」を少し間違えても大丈夫)。ヒントを使ったゲームはスコアに記録されます。",
+  "Turn on the Spelling Assistant? This game will be marked as played with hints.": "スペル補助をオンにしますか?このゲームはヒントありとして記録されます。",
+  "💡 Hints used: {list}": "💡 使ったヒント:{list}",
+  "Hints used": "使ったヒント",
+  "Hints (marked on your score)": "ヒント(スコアに記録されます)"
 };

@@ -132,7 +132,7 @@ body.creator .stats .timer-val { font-size: 1.9rem; font-weight: 800; }
 body.creator #input-box { font-size: 2rem; padding: 14px 24px; width: min(760px, 94%); border-width: 3px; border-radius: 14px; text-align: center; }
 body.creator #action-bar { opacity: 0.3; transition: opacity 0.2s; }
 body.creator #action-bar:hover, body.creator #action-bar:focus-within { opacity: 1; }
-body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe) { display: none; }
+body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe):not(.toast-spell) { display: none; }
 body.creator .creator-nav { display: flex; position: absolute; top: 8px; right: 12px; gap: 6px; opacity: 0.25; transition: opacity 0.2s; z-index: 3; }
 body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacity: 1; }
 .creator-nav button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
@@ -479,6 +479,14 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 .about:not([open]) summary h2::after { content: " ▸"; }
 .about[open] summary h2::after { content: " ▾"; }
 .hint-btn.hint-on { border-color: #facc15; color: #facc15; background: rgba(250,204,21,0.1); }
+.hint-wrap { position: relative; display: inline-block; }
+.hint-menu { display: none; position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 0; width: 270px; z-index: 150; box-shadow: 0 8px 24px rgba(0,0,0,0.5); text-align: left; }
+.hint-menu.open { display: block; }
+.hint-menu .setting-row { text-transform: none; font-size: 0.82rem; }
+.hint-menu-note { font-size: 0.68rem; color: var(--text-dim); padding: 6px 14px 2px; line-height: 1.45; }
+.toast.toast-spell { background: rgba(56,189,248,0.12); border-color: #38bdf8; color: var(--text); }
+.toast.toast-spell s { color: var(--text-dim); }
+.toast.toast-spell b { color: #38bdf8; }
 .modal-hint { color: #facc15; font-weight: 700; }
 .sb-hint { cursor: help; }
 .icon-btn { padding: 3px 9px; font-size: 0.85rem; line-height: 1.2; }
@@ -874,7 +882,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <button class="btn danger" id="btn-give-up">Give Up</button>
     <button class="btn" id="btn-reset">Reset</button>
     <button class="btn icon-btn" id="btn-pause" title="Pause" aria-label="Pause">⏸</button>
-    <button class="btn hint-btn" id="btn-hint" title="Show Pokémon silhouettes as a hint (marked on your score)">💡 Hint</button>
+    <div class="hint-wrap" id="hint-wrap">
+      <button class="btn hint-btn" id="btn-hint" title="Hints (marked on your score)">💡 Hint</button>
+      <div class="hint-menu" id="hint-menu">
+        <div class="setting-row" id="set-hint-sil"><span class="setting-label">👤 Silhouettes</span><div class="toggle-switch" id="tog-hint-sil"></div></div>
+        <div class="setting-row" id="set-hint-spell"><span class="setting-label">✏️ Spelling Assistant</span><div class="toggle-switch" id="tog-hint-spell"></div></div>
+        <div class="hint-menu-note">Spelling Assistant accepts names that sound right, like "firow" for Fearow. Games with hints are marked on your score.</div>
+      </div>
+    </div>
     <div class="btn-sep"></div>
     <div class="settings-wrap">
       <button class="btn" id="btn-settings" title="Settings">⚙️ Settings</button>
@@ -1224,7 +1239,11 @@ const Q = (function() {
   let shadowsEnabled = _savedSettings.shadows !== undefined ? _savedSettings.shadows : false;
   // Full Pokédex: silhouettes are an opt-in hint, and any game played with them is marked
   let pokedexHints = !!_savedSettings.hints;
+  let spellHints = !!_savedSettings.spell;
   let hintsUsed = false;
+  let hintKinds = { sil: false, spell: false };
+  function markHint(kind) { hintKinds[kind] = true; hintsUsed = true; }
+  function hintCode() { return (hintKinds.sil ? 's' : '') + (hintKinds.spell ? 'p' : ''); }
   let cycleFormsEnabled = _savedSettings.cycle !== undefined ? _savedSettings.cycle : true;
   let cycleFormsInterval = null;
   let autoScrollEnabled = _savedSettings.scroll !== undefined ? _savedSettings.scroll : true;
@@ -1247,7 +1266,7 @@ const Q = (function() {
     } catch(e) {}
   })();
   function saveSettings() {
-    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, spot: spotlightEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
+    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, spell: spellHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, spot: spotlightEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
   }
 
   let keyToIndices = {};
@@ -1304,6 +1323,44 @@ const Q = (function() {
     if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC');
     return s;
   }
+  // "How it sounds" key for the Spelling Assistant. Input must already be normalizeAnswer()-ed.
+  // Latin names: letters that sound alike are merged. Kana: long marks and small tsu ignored. Hangul/Chinese: none.
+  function soundKey(s) {
+    if (/[가-힯㐀-鿿]/.test(s)) return null;
+    if (/[゠-ヿ]/.test(s)) {
+      var k = s.replace(/[^゠-ヿ]/g, '').replace(/[ーッ・]/g, '').replace(/ヴ/g, 'ブ');
+      return k.length >= 3 ? k : null;
+    }
+    s = s.replace(/ß/g, 'ss').replace(/[^a-z]/g, '');
+    if (s.length < 4) return null;
+    s = s.replace(/sch/g, 'S').replace(/sh/g, 'S').replace(/ch/g, 'C').replace(/ph/g, 'f').replace(/gh/g, 'g')
+         .replace(/ck/g, 'k').replace(/q/g, 'k').replace(/x/g, 'ks').replace(/z/g, 's')
+         .replace(/c(?=[eiy])/g, 's').replace(/c/g, 'k').replace(/y/g, 'i')
+         .replace(/au|aw/g, 'o').replace(/ea|ee|ie|ei/g, 'i').replace(/oo|ou/g, 'u').replace(/ae/g, 'e')
+         .replace(/([^aeiou])h/g, '$1').replace(/h$/, '')
+         .replace(/(.)\1+/g, '$1');
+    if (s.length > 4) s = s.replace(/e$/, '');
+    return s;
+  }
+  // Damerau-Levenshtein distance, capped (returns cap+1 when larger)
+  function soundDist(a, b, cap) {
+    if (Math.abs(a.length - b.length) > cap) return cap + 1;
+    var d = [];
+    for (var i = 0; i <= a.length; i++) { d[i] = [i]; }
+    for (var j = 0; j <= b.length; j++) d[0][j] = j;
+    for (i = 1; i <= a.length; i++) {
+      var best = cap + 1;
+      for (j = 1; j <= b.length; j++) {
+        var c = a[i - 1] === b[j - 1] ? 0 : 1;
+        d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + c);
+        if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+        if (d[i][j] < best) best = d[i][j];
+      }
+      if (best > cap) return cap + 1;
+    }
+    return d[a.length][b.length];
+  }
+
   var LANG_NAMES = (window.NEA_NAMES && window.NEA_NAMES.pokemon) || {};
   // Answers in the selected language (names/<lang>.js); English answers are always accepted too
   function localKeys(w) { var e = LANG_NAMES[w.id]; return e ? e.slice(1) : []; }
@@ -1368,7 +1425,8 @@ const Q = (function() {
         trackPokemon('pokemon_named', matches[mi], tp);
       }
     }
-    if (currentTab === 'pokemon' && pokedexHints) hintsUsed = true;
+    if (currentTab === 'pokemon') { if (pokedexHints) markHint('sil'); if (spellHints) markHint('spell'); }
+    clearTimeout(spellTimer);
     if (currentTab === 'pokemon' || isDailyTab) { creatorOnNamed(matches, by); if (!by) achOnNamed(matches); }
     if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
       track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
@@ -1538,7 +1596,7 @@ const Q = (function() {
 
   function saveToHistory(count, total, time, hints) {
     const list = loadHistory(currentTab);
-    list.unshift({ date: Date.now(), count: count, total: total, time: time, hint: hints ? 1 : undefined });
+    list.unshift({ date: Date.now(), count: count, total: total, time: time, hint: hints ? 1 : undefined, hk: hints ? hintCode() : undefined });
     if (list.length > 50) list.length = 50;
     localStorage.setItem(histKey(currentTab), JSON.stringify(list));
   }
@@ -1557,7 +1615,7 @@ const Q = (function() {
       const dateStr = d.toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric', year: 'numeric' }) + ' ' + d.toLocaleTimeString(NEA_LOCALE, { hour: '2-digit', minute: '2-digit' });
       const pct = (r.count / r.total * 100).toFixed(1);
       const cls = r.count === r.total ? 'complete' : 'partial';
-      var hintMark = r.hint ? ' <span class="sb-hint" title="' + t('Silhouette hints used') + '">💡</span>' : '';
+      var hintMark = r.hint ? ' <span class="sb-hint" title="' + t('Hints used') + '">💡' + ((!r.hk || r.hk.indexOf('s') >= 0) ? '👤' : '') + (r.hk && r.hk.indexOf('p') >= 0 ? '✏️' : '') + '</span>' : '';
       html += '<div class="sb-row"><span class="sb-date">' + dateStr + '</span><span class="sb-result ' + cls + '">' + r.count + '/' + r.total + ' (' + pct + '%)' + hintMark + '</span><span class="sb-time">' + fmtTime(r.time) + '</span></div>';
     });
     $list.innerHTML = html;
@@ -2103,7 +2161,8 @@ const Q = (function() {
       result: won ? 'completed' : (givenUp ? 'gave_up' : 'ended'),
       found: count, total: items.length, pct: pctOf(count, items.length),
       time_sec: Math.floor(elapsedMs / 1000), gens: selectedGens ? selectedGens.size : undefined,
-      hints_used: currentTab === 'pokemon' ? hintsUsed : undefined
+      hints_used: currentTab === 'pokemon' ? hintsUsed : undefined,
+      hint_types: currentTab === 'pokemon' && hintsUsed ? hintCode() : undefined
     });
     $('modal-title').textContent = won ? 'Incredible!' : 'Results';
     $('modal-title').className = won ? 'win' : 'lose';
@@ -2114,7 +2173,7 @@ const Q = (function() {
     $('modal-pct').textContent = (count / items.length * 100).toFixed(1) + '%';
     var withHints = currentTab === 'pokemon' && hintsUsed;
     $('modal-hint').hidden = !withHints;
-    $('modal-hint').textContent = withHints ? t('💡 Played with silhouette hints') : '';
+    $('modal-hint').textContent = withHints ? hintListText() : '';
     saveToHistory(count, items.length, elapsedMs, withHints);
     // Games played with hints are kept in history but don't set best scores or records
     const hs = withHints ? loadHighscore() : saveHighscore(count, elapsedMs);
@@ -2278,13 +2337,13 @@ const Q = (function() {
   // ── Save / Load ──
 
   function saveKey() { return 'langquiz_' + currentTab + (currentTab === 'pokemon' && gensPreset ? '_g' + gensPreset : ''); }
-  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined, h: hintsUsed || undefined })); }
+  function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined, h: hintsUsed || undefined, hk: hintsUsed ? hintCode() : undefined })); }
   function load() {
     try {
       const d = JSON.parse(localStorage.getItem(saveKey()));
       if (d && d.f && d.f.length) {
         if (d.g) { var savedGens = new Set(d.g); if (savedGens.size !== selectedGens.size || ![...savedGens].every(g => selectedGens.has(g))) return false; }
-        foundSet = new Set(d.f); elapsedMs = d.e || 0; givenUp = !!d.gu; hintsUsed = !!d.h; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
+        foundSet = new Set(d.f); elapsedMs = d.e || 0; givenUp = !!d.gu; hintsUsed = !!d.h; hintKinds = { sil: d.hk ? d.hk.indexOf('s') >= 0 : !!d.h, spell: !!(d.hk && d.hk.indexOf('p') >= 0) }; if (d.o && d.o.length === items.length) displayOrder = d.o; return true;
       }
     } catch(e) {}
     return false;
@@ -2323,7 +2382,7 @@ const Q = (function() {
       return;
     }
     if (foundSet.size > 0 && !confirm(t('Reset? All progress will be lost.'))) return;
-    givenUp = false; hintsUsed = false; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
+    givenUp = false; hintsUsed = false; hintKinds = { sil: false, spell: false }; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
@@ -4852,7 +4911,8 @@ const Q = (function() {
     $('set-gens-section').style.display = isPoke ? '' : 'none';
     $('set-sound').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-shadows').style.display = 'none';
-    $('btn-hint').style.display = isPoke ? '' : 'none';
+    $('hint-wrap').style.display = isPoke ? '' : 'none';
+    $('hint-menu').classList.remove('open');
     updateHintBtn();
     $('set-cycle').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-scroll').style.display = isMulti ? 'none' : '';
@@ -5018,6 +5078,7 @@ const Q = (function() {
       onNamed(matches, null);
       this.value = '';
     } else if (val.length > 0) {
+      if (currentTab === 'pokemon') spellSchedule(val);
       var q = normalizeAnswer(val);
       var dupeIndices = keyToIndices[q];
       if (dupeIndices && dupeIndices.length > 0 && dupeIndices.every(function(i) { return foundSet.has(i); })) {
@@ -5821,7 +5882,7 @@ const Q = (function() {
     return base.c;
   }
 
-  function sharePokedexKey() { return ['pokedex', foundSet.size, items.length, elapsedMs, hintsUsed ? 1 : 0].join('|'); }
+  function sharePokedexKey() { return ['pokedex', foundSet.size, items.length, elapsedMs, hintCode()].join('|'); }
   function sharePokedexCard() {
     var gens = Array.from(selectedGens).sort(function(a, b) { return a - b; });
     var regions = REGION_ORDER.filter(function(r) { return gens.indexOf(REGION_GEN[r]) >= 0; });
@@ -5832,7 +5893,7 @@ const Q = (function() {
     shareLine(ctx, (count / total * 100).toFixed(1) + '% · ' + t('in {time}', { time: fmtTime(elapsedMs) }), 480, 46, '600', '#9aa0ad');
 
     var top = 525;
-    if (hintsUsed) { shareLine(ctx, t('💡 Played with silhouette hints'), 545, 36, '600', '#f59e0b'); top = 580; }
+    if (hintsUsed) { shareLine(ctx, hintListText(), 545, 36, '600', '#f59e0b'); top = 580; }
 
     // A row of Pokémon the player named
     var found = Array.from(foundSet), picks = [];
@@ -5981,26 +6042,107 @@ const Q = (function() {
     soundEnabled = !soundEnabled; syncSoundToggles(); saveSettings();
   });
 
+  function hintListText() {
+    var a = [];
+    if (hintKinds.sil) a.push(t('👤 Silhouettes'));
+    if (hintKinds.spell) a.push(t('✏️ Spelling Assistant'));
+    return t('💡 Hints used: {list}', { list: a.join(', ') });
+  }
   function updateHintBtn() {
     var b = $('btn-hint');
     if (!b) return;
-    b.textContent = pokedexHints ? t('💡 Hint on') : t('💡 Hint');
-    b.classList.toggle('hint-on', pokedexHints);
+    var on = pokedexHints || spellHints;
+    b.textContent = on ? t('💡 Hint on') : t('💡 Hint');
+    b.classList.toggle('hint-on', on);
+    $('tog-hint-sil').classList.toggle('on', pokedexHints);
+    $('tog-hint-spell').classList.toggle('on', spellHints);
   }
-  $('btn-hint').addEventListener('click', function() {
-    if (!pokedexHints) {
+  $('btn-hint').addEventListener('click', function(e) {
+    e.stopPropagation();
+    $('settings-panel').classList.remove('open');
+    $('hint-menu').classList.toggle('open');
+  });
+  $('hint-menu').addEventListener('click', function(e) { e.stopPropagation(); });
+  document.addEventListener('click', function() { $('hint-menu').classList.remove('open'); });
+  function hintToggle(kind) {
+    var turningOn = kind === 'sil' ? !pokedexHints : !spellHints;
+    if (turningOn) {
       var inProgress = foundSet.size > 0 && !givenUp && foundSet.size < items.length;
-      if (inProgress && !hintsUsed && !confirm(t('Show silhouettes as a hint? This game will be marked as played with hints.'))) return;
+      var msg = kind === 'sil' ? t('Show silhouettes as a hint? This game will be marked as played with hints.')
+                               : t('Turn on the Spelling Assistant? This game will be marked as played with hints.');
+      if (inProgress && !hintKinds[kind] && !confirm(msg)) return;
     }
-    pokedexHints = !pokedexHints;
-    hintPreset = false;
-    if (pokedexHints && foundSet.size > 0 && !givenUp) { hintsUsed = true; save(); }
-    $('grid-wrap').classList.toggle('shadows-on', pokedexHints);
+    if (kind === 'sil') { pokedexHints = !pokedexHints; hintPreset = false; $('grid-wrap').classList.toggle('shadows-on', pokedexHints); }
+    else { spellHints = !spellHints; if (!spellHints) clearTimeout(spellTimer); }
+    if (turningOn && foundSet.size > 0 && !givenUp) { markHint(kind); save(); }
     updateHintBtn();
     saveSettings();
-    track('hint_toggle', { game_mode: 'pokemon', on: pokedexHints });
-    $input.focus();
-  });
+    track('hint_toggle', { game_mode: 'pokemon', hint_type: kind === 'sil' ? 'silhouettes' : 'spelling', on: turningOn });
+  }
+  $('set-hint-sil').addEventListener('click', function() { hintToggle('sil'); });
+  $('set-hint-spell').addEventListener('click', function() { hintToggle('spell'); });
+  updateHintBtn();
+
+  // ── Spelling Assistant: after a short pause, accept a name that sounds like exactly one Pokémon ──
+  var spellTimer = null, spellIndex = null, spellIndexFor = null;
+  function getSpellIndex() {
+    if (spellIndexFor !== keyToIndices) {
+      var map = {};
+      Object.keys(keyToIndices).forEach(function(key) {
+        var sk = soundKey(key);
+        if (!sk) return;
+        var set = map[sk] || (map[sk] = new Set());
+        keyToIndices[key].forEach(function(i) { set.add(i); });
+      });
+      spellIndex = { map: map, list: Object.keys(map).map(function(k) { return [k, map[k]]; }) };
+      spellIndexFor = keyToIndices;
+    }
+    return spellIndex;
+  }
+  function spellFind(typed) {
+    var q = normalizeAnswer(typed);
+    if (!q || keyToIndices[q]) return null;
+    var sk = soundKey(q);
+    if (!sk) return null;
+    var ix = getSpellIndex();
+    // Still typing? If this is the start of a longer name (in letters or in sound), wait for the rest
+    if (hasAnyExtension(q) || ix.list.some(function(e) { return e[0].length > sk.length && e[0].indexOf(sk) === 0; })) return null;
+    // Only a single, still-unnamed Pokémon counts; if two sound alike, don't guess
+    var pick = function(set) { var ids = Array.from(set); return ids.length === 1 && !foundSet.has(ids[0]) ? ids[0] : null; };
+    if (ix.map[sk]) return pick(ix.map[sk]);
+    if (sk.length < 5) return null;
+    var cap = sk.length >= 9 ? 2 : 1, best = cap + 1, cands = new Set();
+    ix.list.forEach(function(e) {
+      var d = soundDist(sk, e[0], cap);
+      if (d < best) { best = d; cands = new Set(e[1]); }
+      else if (d === best) e[1].forEach(function(i) { cands.add(i); });
+    });
+    return best <= cap ? pick(cands) : null;
+  }
+  function spellSchedule(val) {
+    clearTimeout(spellTimer);
+    if (!spellHints || currentTab !== 'pokemon' || givenUp) return;
+    var typed = val;
+    spellTimer = setTimeout(function() {
+      if ($input.value.trim() !== typed || !spellHints || currentTab !== 'pokemon' || givenUp || paused || $input.disabled) return;
+      var idx = spellFind(typed);
+      if (idx == null) return;
+      markHint('spell');
+      onNamed([idx], null);
+      $input.value = '';
+      spellToast(typed, items[idx]);
+      track('spelling_assist', { game_mode: 'pokemon' });
+    }, 900);
+  }
+  function spellToast(typed, w) {
+    var el = document.createElement('div');
+    el.className = 'toast toast-spell';
+    el.innerHTML = '<span>✏️</span> <s></s> → <b></b>';
+    el.querySelector('s').textContent = typed;
+    el.querySelector('b').textContent = displayName(w);
+    $toasts.appendChild(el);
+    setTimeout(function() { el.remove(); }, 3200);
+  }
 
   $('set-shadows').addEventListener('click', function() {
     shadowsEnabled = !shadowsEnabled;

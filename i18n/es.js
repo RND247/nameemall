@@ -366,5 +366,12 @@ window.NEA_UI = {
   "💬 Chat named {count}": "💬 El chat nombró {count}",
   "Top chatter: {name} ({count})": "Mejor espectador: {name} ({count})",
   "🗑️ Reset achievements": "🗑️ Reiniciar logros",
-  "Reset all achievements? Your progress starts over from now. This can't be undone.": "¿Reiniciar todos los logros? Tu progreso empieza de cero desde ahora. No se puede deshacer."
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "¿Reiniciar todos los logros? Tu progreso empieza de cero desde ahora. No se puede deshacer.",
+  "👤 Silhouettes": "👤 Siluetas",
+  "✏️ Spelling Assistant": "✏️ Ayuda ortográfica",
+  "Spelling Assistant accepts names that sound right, like \"firow\" for Fearow. Games with hints are marked on your score.": "La ayuda ortográfica acepta nombres que suenan bien, como \"firow\" para Fearow. Las partidas con pistas se marcan en tu puntuación.",
+  "Turn on the Spelling Assistant? This game will be marked as played with hints.": "¿Activar la ayuda ortográfica? Esta partida se marcará como jugada con pistas.",
+  "💡 Hints used: {list}": "💡 Pistas usadas: {list}",
+  "Hints used": "Pistas usadas",
+  "Hints (marked on your score)": "Pistas (se marcan en tu puntuación)"
 };

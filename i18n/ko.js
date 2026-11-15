@@ -366,5 +366,12 @@ window.NEA_UI = {
   "💬 Chat named {count}": "💬 채팅이 {count}마리를 맞혔어요",
   "Top chatter: {name} ({count})": "최고 참여자: {name} ({count})",
   "🗑️ Reset achievements": "🗑️ 업적 초기화",
-  "Reset all achievements? Your progress starts over from now. This can't be undone.": "모든 업적을 초기화할까요? 진행 상황이 지금부터 다시 시작돼요. 되돌릴 수 없어요."
+  "Reset all achievements? Your progress starts over from now. This can't be undone.": "모든 업적을 초기화할까요? 진행 상황이 지금부터 다시 시작돼요. 되돌릴 수 없어요.",
+  "👤 Silhouettes": "👤 실루엣",
+  "✏️ Spelling Assistant": "✏️ 철자 도우미",
+  "Spelling Assistant accepts names that sound right, like \"firow\" for Fearow. Games with hints are marked on your score.": "철자 도우미는 발음이 맞는 이름을 정답으로 인정해요(예: \"firow\" → Fearow). 힌트를 사용한 게임은 점수에 표시돼요.",
+  "Turn on the Spelling Assistant? This game will be marked as played with hints.": "철자 도우미를 켤까요? 이 게임은 힌트 사용으로 표시돼요.",
+  "💡 Hints used: {list}": "💡 사용한 힌트: {list}",
+  "Hints used": "사용한 힌트",
+  "Hints (marked on your score)": "힌트 (점수에 표시됨)"
 };
