@@ -33,6 +33,12 @@
 <link rel="alternate" hreflang="x-default" href="https://nameemall.com/">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/", "description": "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.", "applicationCategory": "GameApplication", "genre": ["Quiz", "Trivia"], "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "inLanguage": ["en", "ja", "zh-Hant", "ko", "fr", "de", "es", "it"], "image": "https://nameemall.com/og-image.png"}</script>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0f0f1a">
+<link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NameEmAll">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
@@ -292,6 +298,11 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .toggle-switch.on::after { transform: translateX(16px); }
 
 .grid-wrap { padding: 8px 10px; max-width: 1400px; margin: 0 auto; }
+.theme-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 1400px; margin: 6px auto 0; padding: 8px 14px; border-radius: var(--radius); background: var(--bg-card); border: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; }
+.theme-banner[hidden] { display: none; }
+.theme-banner-exit { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+.theme-banner-exit:hover { color: var(--text); }
+.theme-picker { width: 100%; padding: 7px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 0.75rem; }
 .grid { display: grid; gap: 3px; }
 .grid.mandarin-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 
@@ -559,6 +570,8 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .gen-selector button { font-size: 0.66rem; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-dim); cursor: pointer; transition: all 0.18s; font-weight: 600; min-width: 30px; }
 .gen-selector button:hover { border-color: var(--text-dim); color: var(--text); }
 .gen-selector button.active { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 1px 4px rgba(233,69,96,0.25); }
+.gen-selector button.gen-new { position: relative; }
+.gen-selector button.gen-new::after { content: 'NEW'; position: absolute; top: -7px; right: -8px; font-size: 0.45rem; font-weight: 800; letter-spacing: 0.3px; padding: 1px 3px; border-radius: 4px; background: #facc15; color: #1a1a2e; }
 .gen-selector-wrap { display: flex; flex-direction: column; gap: 8px; }
 .gen-selector-actions { display: flex; gap: 6px; justify-content: center; }
 .gen-selector-actions button { font-size: 0.62rem; padding: 3px 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-dim); cursor: pointer; font-weight: 600; transition: all 0.15s; }
@@ -857,6 +870,38 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     })
     .catch(function() {});
 </script>
+<script>
+  // Installable app (PWA): register the service worker and offer an Install button where the
+  // browser supports it (Chrome, Edge, Android). iOS users add it via Share, Add to Home Screen.
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').catch(function() {});
+    });
+  }
+  (function() {
+    var deferred = null;
+    function section() { return document.getElementById('set-install-section'); }
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferred = e;
+      var s = section(); if (s) s.hidden = false;
+    });
+    window.addEventListener('appinstalled', function() {
+      deferred = null;
+      var s = section(); if (s) s.hidden = true;
+      try { gtag('event', 'pwa_installed'); } catch(e) {}
+    });
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest || !e.target.closest('#set-install') || !deferred) return;
+      deferred.prompt();
+      deferred.userChoice.then(function(c) {
+        try { gtag('event', 'pwa_install_prompt', { outcome: c.outcome }); } catch(err) {}
+        deferred = null;
+        var s = section(); if (s) s.hidden = true;
+      });
+    });
+  })();
+</script>
 
 <nav class="tab-bar">
   <button class="tab-btn" data-tab="daily">🗓️ Daily</button>
@@ -917,6 +962,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         </div>
         <div class="settings-divider"></div>
         </div>
+        <div class="settings-section-label">Themed quizzes</div>
+        <div class="setting-row-slider"><select class="theme-picker" id="theme-picker" aria-label="Themed quizzes"><option value="">📖 Full Pokédex</option></select></div>
+        <div class="settings-divider"></div>
         <div id="set-gens-section">
         <div class="settings-section-label">Generations</div>
         <div class="setting-row-slider" id="reg-gen-selector-wrap"></div>
@@ -933,6 +981,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="settings-section-label">For creators</div>
         <div class="setting-row-slider"><button class="settings-wide-btn" id="set-creator">🎥 Creator Mode</button></div>
         <div class="settings-divider"></div>
+        <div id="set-install-section" hidden>
+        <div class="setting-row-slider"><button class="settings-wide-btn" id="set-install">📲 Install app</button></div>
+        <div class="settings-divider"></div>
+        </div>
         <div class="settings-section-label">Theme</div>
         <div class="setting-row-slider">
           <div class="mode-slider" id="theme-slider">
@@ -1030,6 +1082,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
 </header>
 
+<div class="theme-banner" id="theme-banner" hidden>
+  <span class="theme-banner-title"></span>
+  <a href="/" class="theme-banner-exit">✕ <span>Back to Full Pokédex</span></a>
+</div>
 <div class="grid-wrap" id="grid-wrap">
   <div class="grid mandarin-grid" id="grid"><div class="loading">Loading…</div></div>
 </div>
@@ -1271,18 +1327,26 @@ const Q = (function() {
   let hoverEnabled = _savedSettings.hover !== undefined ? _savedSettings.hover : true;
   let spotlightEnabled = _savedSettings.spot !== undefined ? _savedSettings.spot : true;
   let orderMode = _savedSettings.order || 'dex-gens';
+  // Gen 10 (Pokémon Winds and Waves, 2027) is opt-in while only its starters are known, so the
+  // default "Full Pokédex" stays the 1025 official Pokémon of Gens 1-9.
+  var MAX_GEN = 10;
   let selectedGens = new Set(_savedSettings.gens && _savedSettings.gens.length ? _savedSettings.gens : [1,2,3,4,5,6,7,8,9]);
   // Landing-page presets (?gens=1,2 and ?hint=1) apply to this visit only: they don't change
   // saved settings, and a gens preset plays in its own save slot so full-Pokédex progress is kept
   var _savedGensArr = Array.from(selectedGens), _savedHints = pokedexHints;
   var gensPreset = null, hintPreset = false;
+  // Themed quizzes (?theme=fire-type, ?theme=legendary...): ID lists live in themes.json.
+  // A theme replaces the generation filter and plays in its own save slot.
+  var themePreset = null, themeList = null, themeInfo = null, themeIdSet = null;
   function gensSlot(set) { return Array.from(set).sort(function(a, b) { return a - b; }).join('-'); }
   (function() {
     try {
       var p = new URLSearchParams(location.search);
-      var g = (p.get('gens') || '').split(',').map(Number).filter(function(n) { return Number.isInteger(n) && n >= 1 && n <= 9; });
+      var g = (p.get('gens') || '').split(',').map(Number).filter(function(n) { return Number.isInteger(n) && n >= 1 && n <= MAX_GEN; });
       if (g.length) { selectedGens = new Set(g); gensPreset = gensSlot(selectedGens); }
       if (p.get('hint') === '1') { pokedexHints = true; hintPreset = true; }
+      var th = p.get('theme');
+      if (th && /^[a-z-]{2,30}$/.test(th)) themePreset = th;
     } catch(e) {}
   })();
   function saveSettings() {
@@ -1308,7 +1372,7 @@ const Q = (function() {
   let wtpRevealed = false;
   let wtpSpriteShown = false;
   let wtpGenGuessed = false;
-  const WTP_REGIONS = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea'];
+  const WTP_REGIONS = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea','Gen 10'];
 
   const $ = id => document.getElementById(id);
   const $input = $('input-box');
@@ -1449,7 +1513,7 @@ const Q = (function() {
     clearTimeout(spellTimer);
     if (currentTab === 'pokemon' || isDailyTab) { creatorOnNamed(matches, by); if (!by) achOnNamed(matches); }
     if ((currentTab === 'pokemon' || currentTab === 'mandarin') && foundSet.size === matches.length) {
-      track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length });
+      track('game_start', { game_mode: currentTab, order_mode: orderMode, total: items.length, theme: currentTab === 'pokemon' && themeInfo ? themeInfo.slug : undefined });
     }
     if ((currentTab === 'pokemon' || isDailyTab) && soundEnabled) playCry(items[matches[0]].id);
     if (currentTab === 'pokemon') { checkFamilyComplete(matches.map(i => items[i].id)); checkRegionComplete(); }
@@ -1516,8 +1580,13 @@ const Q = (function() {
   }
 
   function isOutsideSelectedGens(q) {
+    if (currentTab === 'pokemon' && themeIdSet) {
+      if (hasAnyExtension(q)) return null;
+      var tp = findInFullData(q);
+      return tp && !themeIdSet.has(tp.id) ? tp : null;
+    }
     var gens = currentTab === 'duel' ? duelSettings.gens : currentTab === 'coop' ? coopSettings.gens : selectedGens;
-    if (gens.size === 9) return null;
+    if (gens.size === MAX_GEN) return null;
     if (hasAnyExtension(q)) return null;
     var p = findInFullData(q);
     if (p && !gens.has(REGION_GEN[p.g])) return p;
@@ -1527,7 +1596,9 @@ const Q = (function() {
   function toastOutsideGen(p) {
     var el = document.createElement('div');
     el.className = 'toast toast-dupe';
-    el.innerHTML = '<img src="' + p.s + '" alt=""> ' + t('{name} is not in the selected generations', { name: displayName(p) });
+    el.innerHTML = '<img src="' + p.s + '" alt=""> ' + (currentTab === 'pokemon' && themeIdSet
+      ? t('{name} is not in this quiz', { name: displayName(p) })
+      : t('{name} is not in the selected generations', { name: displayName(p) }));
     $toasts.appendChild(el);
     setTimeout(function() { el.remove(); }, 2500);
   }
@@ -1673,11 +1744,11 @@ const Q = (function() {
   function fullMeaning(w) { return w.m.slice(0, 4).map(m => m.split(';')[0].trim()).join('; '); }
 
   function filterByGens(data, gens) {
-    if (gens.size === 9) return data;
+    if (gens.size === MAX_GEN) return data;
     return data.filter(function(p) { return gens.has(REGION_GEN[p.g]); });
   }
 
-  const GEN_COUNTS = {1:151, 2:100, 3:135, 4:107, 5:156, 6:72, 7:88, 8:96, 9:120};
+  const GEN_COUNTS = {1:151, 2:100, 3:135, 4:107, 5:156, 6:72, 7:88, 8:96, 9:120, 10:3};
 
   function genTotal(gensSet) {
     var total = 0;
@@ -1687,8 +1758,10 @@ const Q = (function() {
 
   function buildGenSelectorHTML(prefix, activeGens) {
     var html = '<div class="gen-selector-wrap"><div class="gen-selector" id="' + prefix + '-gen-btns">';
-    for (var g = 1; g <= 9; g++) {
-      html += '<button data-gen="' + g + '"' + (activeGens.has(g) ? ' class="active"' : '') + '>' + g + '</button>';
+    for (var g = 1; g <= MAX_GEN; g++) {
+      var cls = (activeGens.has(g) ? 'active' : '') + (g === 10 ? ' gen-new' : '');
+      html += '<button data-gen="' + g + '"' + (cls.trim() ? ' class="' + cls.trim() + '"' : '') +
+        (g === 10 ? ' title="' + t('Gen 10: the 3 starters revealed so far') + '"' : '') + '>' + g + '</button>';
     }
     html += '</div><div class="gen-selector-actions">' +
       '<button data-action="all" id="' + prefix + '-gen-all">All</button>' +
@@ -1720,7 +1793,7 @@ const Q = (function() {
       if (onChange) onChange();
     });
     $(prefix + '-gen-all').addEventListener('click', function() {
-      for (var g = 1; g <= 9; g++) gensSet.add(g);
+      for (var g = 1; g <= MAX_GEN; g++) gensSet.add(g);
       container.querySelectorAll('button').forEach(function(b) { b.classList.add('active'); });
       updateGenTotal(prefix, gensSet);
       if (onChange) onChange();
@@ -1739,9 +1812,15 @@ const Q = (function() {
 
   // ── Render grid ──
 
-  const REGION_ORDER = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea'];
-  const REGION_GEN = { Kanto:1, Johto:2, Hoenn:3, Sinnoh:4, Unova:5, Kalos:6, Alola:7, Galar:8, Paldea:9 };
+  const REGION_ORDER = ['Kanto','Johto','Hoenn','Sinnoh','Unova','Kalos','Alola','Galar','Paldea','Gen 10'];
+  const REGION_GEN = { Kanto:1, Johto:2, Hoenn:3, Sinnoh:4, Unova:5, Kalos:6, Alola:7, Galar:8, Paldea:9, 'Gen 10':10 };
   let regionIndices = {};
+  // 'Gen 10' has no region name yet, so it is shown on its own instead of "Gen 10 (Gen 10)"
+  function regionLabel(region, complete) {
+    if (REGION_GEN[region] >= 10) return complete ? t('{region} Complete!', { region: t(region) }) : t(region);
+    return complete ? t('{region} (Gen {gen}) Complete!', { region: t(region), gen: REGION_GEN[region] })
+                    : t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] });
+  }
 
   function makeCard(idx) {
     const w = items[idx];
@@ -1806,7 +1885,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         const hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">' + found + '/' + list.length + '</span>';
+        hdr.innerHTML = regionLabel(region) + ' <span class="region-count" id="rc-' + region + '">' + found + '/' + list.length + '</span>';
         sec.appendChild(hdr);
         const grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -1841,7 +1920,7 @@ const Q = (function() {
   }, true);
 
   function pokeCryUrl(id) { return 'https://cdn.jsdelivr.net/gh/PokeAPI/cries@main/cries/pokemon/latest/' + id + '.ogg'; }
-  function playCry(id) { try { const a = new Audio(pokeCryUrl(id)); a.volume = 0.3; a.play().catch(()=>{}); } catch(e){} }
+  function playCry(id) { if (id > 1025) return; try { const a = new Audio(pokeCryUrl(id)); a.volume = 0.3; a.play().catch(()=>{}); } catch(e){} }
 
   function setTypeBg(c, types) {
     if (!typeBgEnabled) { c.style.background = ''; return; }
@@ -2142,7 +2221,7 @@ const Q = (function() {
         setTimeout(() => {
           launchConfetti();
           regionToast(region);
-          if (creatorCelebrating() && revealed.size < items.length) creatorBanner(t('{region} (Gen {gen}) Complete!', { region: t(region), gen: REGION_GEN[region] }), '', 'big');
+          if (creatorCelebrating() && revealed.size < items.length) creatorBanner(regionLabel(region, true), '', 'big');
         }, 300);
       }
     }
@@ -2153,7 +2232,7 @@ const Q = (function() {
     el.className = 'toast family-toast';
     const label = document.createElement('div');
     label.className = 'family-label';
-    label.textContent = t('{region} (Gen {gen}) Complete!', { region: t(region), gen: REGION_GEN[region] });
+    label.textContent = regionLabel(region, true);
     label.style.fontSize = '0.85rem';
     el.appendChild(label);
     $toasts.appendChild(el);
@@ -2180,7 +2259,8 @@ const Q = (function() {
       game_mode: currentTab, order_mode: orderMode,
       result: won ? 'completed' : (givenUp ? 'gave_up' : 'ended'),
       found: count, total: items.length, pct: pctOf(count, items.length),
-      time_sec: Math.floor(elapsedMs / 1000), gens: selectedGens ? selectedGens.size : undefined,
+      time_sec: Math.floor(elapsedMs / 1000), gens: currentTab === 'pokemon' && themeInfo ? 0 : (selectedGens ? selectedGens.size : undefined),
+      theme: currentTab === 'pokemon' && themeInfo ? themeInfo.slug : undefined,
       hints_used: currentTab === 'pokemon' ? hintsUsed : undefined,
       hint_types: currentTab === 'pokemon' && hintsUsed ? hintCode() : undefined
     });
@@ -2356,7 +2436,10 @@ const Q = (function() {
 
   // ── Save / Load ──
 
-  function saveKey() { return 'langquiz_' + currentTab + (currentTab === 'pokemon' && gensPreset ? '_g' + gensPreset : ''); }
+  function saveKey() {
+    if (currentTab === 'pokemon' && themePreset && themeInfo) return 'langquiz_pokemon_t' + themePreset;
+    return 'langquiz_' + currentTab + (currentTab === 'pokemon' && gensPreset ? '_g' + gensPreset : '');
+  }
   function save() { localStorage.setItem(saveKey(), JSON.stringify({ f: Array.from(foundSet), e: elapsedMs, o: displayOrder, g: Array.from(selectedGens), gu: givenUp || undefined, h: hintsUsed || undefined, hk: hintsUsed ? hintCode() : undefined })); }
   function load() {
     try {
@@ -2522,7 +2605,7 @@ const Q = (function() {
     const genGrid = $('wtp-gen-grid');
     if (!genSection || !genGrid) return;
     genGrid.innerHTML = WTP_REGIONS.map(function(r, i) {
-      return '<button class="wtp-gen-btn" data-region="' + r + '">' + t('{region} (Gen {gen})', { region: t(r), gen: i + 1 }) + '</button>';
+      return '<button class="wtp-gen-btn" data-region="' + r + '">' + (i >= 9 ? t(r) : t('{region} (Gen {gen})', { region: t(r), gen: i + 1 })) + '</button>';
     }).join('');
     genSection.style.display = '';
     genGrid.querySelectorAll('.wtp-gen-btn').forEach(function(btn) {
@@ -3073,7 +3156,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         var hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
+        hdr.innerHTML = regionLabel(region) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
         sec.appendChild(hdr);
         var grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -4543,7 +4626,7 @@ const Q = (function() {
         sec.id = 'rs-' + region;
         var hdr = document.createElement('div');
         hdr.className = 'region-header';
-        hdr.innerHTML = t('{region} (Gen {gen})', { region: t(region), gen: REGION_GEN[region] }) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
+        hdr.innerHTML = regionLabel(region) + ' <span class="region-count" id="rc-' + region + '">0/' + list.length + '</span>';
         sec.appendChild(hdr);
         var grid = document.createElement('div');
         grid.className = 'region-grid';
@@ -5006,8 +5089,41 @@ const Q = (function() {
     }
   }
 
+  function themeTitle(th) {
+    if (!th.type) return t(th.title);
+    var tn = t(th.type);
+    if (tn === th.type) tn = th.type.charAt(0).toUpperCase() + th.type.slice(1);
+    return t('{type}-type Pokémon', { type: tn });
+  }
+  function showThemeBanner() {
+    var b = $('theme-banner');
+    if (!b) return;
+    if (!themeInfo) { b.hidden = true; return; }
+    b.hidden = false;
+    b.querySelector('.theme-banner-title').textContent = themeInfo.icon + ' ' + themeTitle(themeInfo);
+    var gs = $('set-gens-section'); if (gs) gs.hidden = true;
+  }
+  function loadThemes() {
+    if (themeList) return Promise.resolve(themeList);
+    return fetch('themes.json').then(function(r) { return r.json(); }).then(function(l) { themeList = l; return l; });
+  }
+
   function activateData(data) {
-    items = currentTab === 'pokemon' ? filterByGens(data, selectedGens) : data;
+    if (currentTab === 'pokemon' && themePreset && !themeList) {
+      $('grid-wrap').innerHTML = '<div class="loading">Loading…</div>';
+      loadThemes().then(function() { activateData(data); }, function() { themePreset = null; activateData(data); });
+      return;
+    }
+    if (currentTab === 'pokemon' && themePreset && !themeInfo) {
+      themeInfo = themeList.find(function(x) { return x.slug === themePreset; }) || null;
+      if (themeInfo) themeIdSet = new Set(themeInfo.ids); else themePreset = null;
+    }
+    if (currentTab === 'pokemon' && themeIdSet) {
+      items = data.filter(function(p) { return themeIdSet.has(p.id); });
+    } else {
+      items = currentTab === 'pokemon' ? filterByGens(data, selectedGens) : data;
+    }
+    showThemeBanner();
     foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     $timer.textContent = '00:00'; $input.value = ''; $input.disabled = false;
     $('total-count').textContent = items.length;
@@ -5371,6 +5487,7 @@ const Q = (function() {
       { id: 'dex1025', cat: 'Getting started', icon: '📕', title: "Gotta Name 'Em All", desc: 'Name all {count} Pokémon at least once', n: 1025, p: [Math.min(dex, 1025), 1025] }
     ];
     REGION_ORDER.forEach(function(region) {
+      if (!ACH_REGION_RANGES[region]) return; // Gen 10 has no region achievement until its games release
       var ids = achRegionIds(region);
       list.push({ id: 'region_' + region.toLowerCase(), cat: 'Regions', icon: '🗺️', title: '{region} Master', region: region,
                   desc: 'Name all {count} Pokémon from {region}', n: ids.length, p: [achCountIds(ids), ids.length] });
@@ -5469,7 +5586,7 @@ const Q = (function() {
     else if (name === 'room_end' && params.game_mode === 'duel' && params.outcome === 'win') achStats.duelWins++;
     else if (name === 'room_end' && params.game_mode === 'coop') achStats.coop = 1;
     else if (name === 'game_end' && params.game_mode === 'pokemon' && params.result === 'completed') {
-      if (params.total === 1025) {
+      if (params.total >= 1025) {
         achStats.runFull = 1;
         if (!params.hints_used) achStats.runNoHint = 1;
         if (params.time_sec < 7200) achStats.runHour = 1;
@@ -6050,7 +6167,8 @@ const Q = (function() {
   function sharePokedexCard() {
     var gens = Array.from(selectedGens).sort(function(a, b) { return a - b; });
     var regions = REGION_ORDER.filter(function(r) { return gens.indexOf(REGION_GEN[r]) >= 0; });
-    var sub = regions.length === REGION_ORDER.length ? t('Full Pokédex') : regions.map(function(r) { return t(r); }).join(' · ');
+    var allOfficial = [1,2,3,4,5,6,7,8,9].every(function(g) { return gens.indexOf(g) >= 0; });
+    var sub = themeInfo ? themeInfo.icon + ' ' + themeTitle(themeInfo) : allOfficial ? t('Full Pokédex') : regions.map(function(r) { return t(r); }).join(' · ');
     var base = shareBase(sub), ctx = base.ctx;
     var count = foundSet.size, total = items.length;
     shareLine(ctx, count + ' / ' + total, 400, 170, '800', count === total ? '#22c55e' : '#e8e8f0');
@@ -6190,6 +6308,28 @@ const Q = (function() {
     }
   }
   initRegGenSelector();
+
+  // Themed quiz picker (settings): fills from themes.json and reloads into the chosen theme
+  (function initThemePicker() {
+    var sel = $('theme-picker');
+    if (!sel) return;
+    loadThemes().then(function(list) {
+      var specials = list.filter(function(x) { return !x.type; }), types = list.filter(function(x) { return x.type; });
+      function opts(arr) { return arr.map(function(x) {
+        return '<option value="' + x.slug + '">' + x.icon + ' ' + themeTitle(x) + ' (' + x.ids.length + ')</option>'; }).join(''); }
+      sel.innerHTML = '<option value="">📖 ' + t('Full Pokédex') + '</option>' +
+        '<optgroup label="' + t('Themes') + '">' + opts(specials) + '</optgroup>' +
+        '<optgroup label="' + t('By type') + '">' + opts(types) + '</optgroup>';
+      sel.value = themePreset && themeList.some(function(x) { return x.slug === themePreset; }) ? themePreset : '';
+    }).catch(function() {});
+    sel.addEventListener('change', function() {
+      var u = new URL(location.href);
+      ['theme', 'gens', 'hint'].forEach(function(k) { u.searchParams.delete(k); });
+      if (sel.value) u.searchParams.set('theme', sel.value);
+      u.hash = '';
+      location.href = u.pathname + u.search;
+    });
+  })();
 
   function syncSoundToggles() {
     $('tog-sound').classList.toggle('on', soundEnabled);
