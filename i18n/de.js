@@ -266,6 +266,7 @@ window.NEA_UI = {
   "Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.": "Fan-Projekt, nicht mit Nintendo, Game Freak oder The Pokémon Company verbunden.",
   "🎥 Creator Mode": "🎥 Creator-Modus",
   "📲 Install app": "📲 App installieren",
+  "OK": "OK",
   "Themed quizzes": "Themen-Quiz",
   "Themes": "Themen",
   "By type": "Nach Typ",

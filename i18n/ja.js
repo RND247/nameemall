@@ -292,6 +292,7 @@ window.NEA_UI = {
   "Fan-made, not affiliated with Nintendo, Game Freak or The Pokémon Company.": "ファンによる非公式ゲームです。任天堂、ゲームフリーク、株式会社ポケモンとは関係ありません。",
   "🎥 Creator Mode": "🎥 クリエイターモード",
   "📲 Install app": "📲 アプリをインストール",
+  "OK": "OK",
   "Themed quizzes": "テーマ別クイズ",
   "Themes": "テーマ",
   "By type": "タイプ別",

@@ -417,6 +417,11 @@ body.light .shadows-on .card.unrevealed .poke-sprite { opacity: 0.25; }
 @keyframes fadeOut { to { opacity: 0; } }
 
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 200; align-items: center; justify-content: center; }
+.nea-confirm { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.nea-confirm-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 22px 22px 18px; max-width: 360px; width: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.nea-confirm-msg { color: var(--text); font-size: 0.92rem; line-height: 1.45; margin: 0 0 18px; }
+.nea-confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.nea-confirm-actions .btn { font-size: 0.85rem; padding: 7px 18px; }
 .overlay.active { display: flex; }
 .pause-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 250; align-items: center; justify-content: center; flex-direction: column; gap: 16px; cursor: pointer; }
 .pause-overlay.active { display: flex; }
@@ -872,6 +877,45 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     .catch(function() {});
 </script>
 <script>
+  // In-page confirmation dialog. The browser's confirm() is not shown in some installed-app
+  // windows and embedded browsers (it silently returns false), so every "Are you sure?" in the
+  // game goes through this instead. Returns a Promise<boolean>.
+  window.neaConfirm = function(message) {
+    return new Promise(function(resolve) {
+      var tr = window.t || function(s) { return s; };
+      var ov = document.createElement('div');
+      ov.className = 'nea-confirm';
+      ov.setAttribute('role', 'dialog');
+      ov.setAttribute('aria-modal', 'true');
+      ov.innerHTML = '<div class="nea-confirm-box"><p class="nea-confirm-msg"></p>' +
+        '<div class="nea-confirm-actions"><button type="button" class="btn" data-v="0"></button>' +
+        '<button type="button" class="btn danger" data-v="1"></button></div></div>';
+      ov.querySelector('.nea-confirm-msg').textContent = message;
+      ov.querySelector('[data-v="0"]').textContent = tr('Cancel');
+      ov.querySelector('[data-v="1"]').textContent = tr('OK');
+      var prevFocus = document.activeElement;
+      function done(v) {
+        document.removeEventListener('keydown', onKey, true);
+        ov.remove();
+        if (prevFocus && prevFocus.focus && !v) try { prevFocus.focus(); } catch(e) {}
+        resolve(v);
+      }
+      function onKey(e) {
+        if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); done(false); }
+        else if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); done(true); }
+      }
+      ov.addEventListener('click', function(e) {
+        var b = e.target.closest('button[data-v]');
+        if (b) done(b.dataset.v === '1');
+        else if (e.target === ov) done(false);
+      });
+      document.addEventListener('keydown', onKey, true);
+      document.body.appendChild(ov);
+      ov.querySelector('[data-v="1"]').focus();
+    });
+  };
+</script>
+<script>
   // Installable app (PWA): register the service worker and offer an Install button where the
   // browser supports it (Chrome, Edge, Android). iOS users add it via Share, Add to Home Screen.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
@@ -1278,17 +1322,20 @@ const Q = (function() {
     sel.addEventListener('change', function() {
       var next = sel.value;
       // Regular/Co-Op progress is saved; an active Daily is not, so confirm first
-      if (typeof dailyState !== 'undefined' && dailyState.active && foundSet.size > 0 &&
-          !confirm(t('Switching language reloads the page and ends your current daily challenge. Continue?'))) {
-        sel.value = NEA_LANG;
+      function go() {
+        track('language_change', { from: NEA_LANG, to: next });
+        try { localStorage.setItem('nea_lang', next); } catch(e) {}
+        // Keep the address in sync so it can be shared and indexed per language
+        var u = new URL(location.href);
+        if (next === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', next);
+        location.href = u.toString();
+      }
+      if (typeof dailyState !== 'undefined' && dailyState.active && foundSet.size > 0) {
+        neaConfirm(t('Switching language reloads the page and ends your current daily challenge. Continue?'))
+          .then(function(ok) { if (ok) go(); else sel.value = NEA_LANG; });
         return;
       }
-      track('language_change', { from: NEA_LANG, to: next });
-      try { localStorage.setItem('nea_lang', next); } catch(e) {}
-      // Keep the address in sync so it can be shared and indexed per language
-      var u = new URL(location.href);
-      if (next === 'en') u.searchParams.delete('lang'); else u.searchParams.set('lang', next);
-      location.href = u.toString();
+      go();
     });
     });
   })();
@@ -2455,10 +2502,13 @@ const Q = (function() {
 
   // ── Actions ──
 
-  function giveUp() {
+  function giveUp(confirmed) {
     if (currentTab === 'daily') {
       if (!dailyState.active) return;
-      if (!confirm(t('Give up the daily challenge? Remaining Pokémon will be revealed.'))) return;
+      if (confirmed !== true) {
+        neaConfirm(t('Give up the daily challenge? Remaining Pokémon will be revealed.')).then(function(ok) { if (ok) giveUp(true); });
+        return;
+      }
       stopTimer(); $input.disabled = true;
       track('give_up', { game_mode: 'daily', daily_mode: dailyState.mode, play_type: dailyPlayType(),
                          found: foundSet.size, total: items.length, pct: pctOf(foundSet.size, items.length),
@@ -2468,7 +2518,10 @@ const Q = (function() {
       return;
     }
     if (givenUp) return;
-    if (!confirm(t('Give up? All remaining Pokémon will be revealed.'))) return;
+    if (confirmed !== true) {
+      neaConfirm(t('Give up? All remaining Pokémon will be revealed.')).then(function(ok) { if (ok) giveUp(true); });
+      return;
+    }
     givenUp = true; stopTimer(); $input.disabled = true;
     track('give_up', { game_mode: currentTab, found: foundSet.size, total: items.length,
                        pct: pctOf(foundSet.size, items.length), time_sec: Math.floor(elapsedMs / 1000) });
@@ -2477,15 +2530,21 @@ const Q = (function() {
     showModal(false);
   }
 
-  function reset() {
+  function reset(confirmed) {
     if (currentTab === 'daily') {
-      if (dailyState.active && foundSet.size > 0 && !confirm(t('Exit the daily challenge? Your progress will be lost.'))) return;
+      if (confirmed !== true && dailyState.active && foundSet.size > 0) {
+        neaConfirm(t('Exit the daily challenge? Your progress will be lost.')).then(function(ok) { if (ok) reset(true); });
+        return;
+      }
       dailyState.active = false;
       stopTimer(); timerRunning = false;
       dailyExitToLobby();
       return;
     }
-    if (foundSet.size > 0 && !confirm(t('Reset? All progress will be lost.'))) return;
+    if (confirmed !== true && foundSet.size > 0) {
+      neaConfirm(t('Reset? All progress will be lost.')).then(function(ok) { if (ok) reset(true); });
+      return;
+    }
     givenUp = false; hintsUsed = false; hintKinds = { sil: false, spell: false }; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
@@ -4960,22 +5019,32 @@ const Q = (function() {
       !(currentTab === 'pokemon' || currentTab === 'daily');
   }
 
-  function switchTab(tab) {
+  function switchTab(tab, confirmed) {
     if (tab === currentTab && items.length) return;
+    if (confirmed !== true) {
+      var leaveMsg = currentTab === 'pokemon' && foundSet.size > 0 && !givenUp
+          ? t('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?')
+        : currentTab === 'daily' && dailyState.active && foundSet.size > 0
+          ? t('Leaving will end your daily challenge. Continue?')
+        : (currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)
+          ? t('You\'ll disconnect from the room. The other player can wait for you to reconnect.')
+        : null;
+      if (leaveMsg) {
+        neaConfirm(leaveMsg).then(function(ok) { if (ok) switchTab(tab, true); });
+        return;
+      }
+    }
     if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
-      if (!confirm(t('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?'))) return;
       givenUp = true; stopTimer(); $input.disabled = true;
       for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
       save();
       showModal(false);
     }
     if (currentTab === 'daily' && dailyState.active && foundSet.size > 0) {
-      if (!confirm(t('Leaving will end your daily challenge. Continue?'))) return;
       dailyComplete(false, 'left');
     }
     var _preserveSession = null;
     if ((currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)) {
-      if (!confirm(t('You\'ll disconnect from the room. The other player can wait for you to reconnect.'))) return;
       _preserveSession = getRoomSession();
     }
     stopTimer(); timerRunning = false; givenUp = false;
@@ -5643,8 +5712,11 @@ const Q = (function() {
     achUpdateBadge();
   }
 
-  function achReset() {
-    if (!confirm(t('Reset all achievements? Your progress starts over from now. This can\'t be undone.'))) return;
+  function achReset(confirmed) {
+    if (confirmed !== true) {
+      neaConfirm(t('Reset all achievements? Your progress starts over from now. This can\'t be undone.')).then(function(ok) { if (ok) achReset(true); });
+      return;
+    }
     var snap = [];
     var ranked = dailyLoadResults(), archive = dailyLoadArchive();
     [[ranked, 'r'], [archive, 'a']].forEach(function(pair) {
@@ -5790,7 +5862,7 @@ const Q = (function() {
       msg.className = 'tr-msg'; msg.textContent = t('Transferring…');
       try {
         var obj = await transferDownload(code);
-        if (!confirm(t('Replace the progress on this device with the transferred progress? What\'s saved here now will be overwritten.'))) { msg.textContent = ''; return; }
+        if (!(await neaConfirm(t('Replace the progress on this device with the transferred progress? What\'s saved here now will be overwritten.')))) { msg.textContent = ''; return; }
         transferStoredKeys().forEach(function(k) { localStorage.removeItem(k); });
         Object.keys(obj.items).forEach(function(k) {
           if (TRANSFER_PREFIXES.some(function(p) { return k.indexOf(p) === 0; })) localStorage.setItem(k, obj.items[k]);
@@ -6288,16 +6360,22 @@ const Q = (function() {
     $('reg-gen-selector-wrap').innerHTML = buildGenSelectorHTML('reg', selectedGens);
     wireGenSelector('reg', selectedGens, onRegGenChange);
   }
-  function onRegGenChange() {
-    saveSettings();
+  function onRegGenChange(confirmed) {
     if (currentTab === 'pokemon' && dataSources['pokemon']) {
       var hadProgress = foundSet.size > 0 && !givenUp;
-      if (hadProgress && !confirm(t('Changing generations will reset your current game. Continue?'))) {
-        if (gensPreset) selectedGens = new Set(gensPreset.split('-').map(Number));
-        else try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
-        initRegGenSelector();
+      if (hadProgress && confirmed !== true) {
+        neaConfirm(t('Changing generations will reset your current game. Continue?')).then(function(ok) {
+          if (ok) { onRegGenChange(true); return; }
+          // Cancelled: put the generation buttons back the way they were
+          if (gensPreset) selectedGens = new Set(gensPreset.split('-').map(Number));
+          else try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
+          initRegGenSelector();
+        });
         return;
       }
+    }
+    saveSettings();
+    if (currentTab === 'pokemon' && dataSources['pokemon']) {
       if (gensPreset) {
         gensPreset = gensSlot(selectedGens);
         try { var u = new URL(location.href); u.searchParams.set('gens', Array.from(selectedGens).sort(function(a, b) { return a - b; }).join(',')); history.replaceState({}, '', u.pathname + u.search + u.hash); } catch(e) {}
@@ -6369,13 +6447,16 @@ const Q = (function() {
   });
   $('hint-menu').addEventListener('click', function(e) { e.stopPropagation(); });
   document.addEventListener('click', function() { $('hint-menu').classList.remove('open'); });
-  function hintToggle(kind) {
+  function hintToggle(kind, confirmed) {
     var turningOn = kind === 'sil' ? !pokedexHints : !spellHints;
-    if (turningOn) {
+    if (turningOn && confirmed !== true) {
       var inProgress = foundSet.size > 0 && !givenUp && foundSet.size < items.length;
       var msg = kind === 'sil' ? t('Show silhouettes as a hint? This game will be marked as played with hints.')
                                : t('Turn on the Spelling Assistant? This game will be marked as played with hints.');
-      if (inProgress && !hintKinds[kind] && !confirm(msg)) return;
+      if (inProgress && !hintKinds[kind]) {
+        neaConfirm(msg).then(function(ok) { if (ok) hintToggle(kind, true); });
+        return;
+      }
     }
     if (kind === 'sil') { pokedexHints = !pokedexHints; hintPreset = false; $('grid-wrap').classList.toggle('shadows-on', pokedexHints); }
     else { spellHints = !spellHints; if (!spellHints) clearTimeout(spellTimer); }
@@ -6559,10 +6640,11 @@ const Q = (function() {
   $('btn-history').addEventListener('click', openScoreboard);
   $('sb-close-btn').addEventListener('click', function() { $('sb-overlay').classList.remove('active'); });
   $('sb-clear-btn').addEventListener('click', function() {
-    if (confirm(t('Clear all history for this tab?'))) {
+    neaConfirm(t('Clear all history for this tab?')).then(function(ok) {
+      if (!ok) return;
       localStorage.removeItem(histKey(sbCurrentTab));
       renderScoreboard(sbCurrentTab);
-    }
+    });
   });
   $('sb-overlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
 
