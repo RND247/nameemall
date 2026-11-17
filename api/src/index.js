@@ -9,6 +9,10 @@
 //
 // Everything is anonymous: the browser sends a random player ID. Raw IPs are never stored;
 // a salted, per-day hash is kept only to rate-limit abuse.
+//
+// Cron (wrangler.toml [triggers]): posts the daily "Daily #N is live" + yesterday's recap to Discord.
+
+import { postDaily } from './discord.js';
 
 const EPOCH_MS = Date.UTC(2026, 3, 30); // Daily #1 = 2026-04-30
 const MODES = { mini: 5, midi: 30 };
@@ -17,6 +21,10 @@ const MAX_ROWS_FOR_RATES = 20000;       // cap rows scanned for per-Pokémon fou
 const PLAYER_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(postDaily(env, event.scheduledTime).then(r => console.log('discord', JSON.stringify(r))));
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     const cors = corsHeaders(request, env);

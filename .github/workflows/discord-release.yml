@@ -1,0 +1,32 @@
+# Posts the release notes for a new version to Discord #announcements.
+# Runs when version.txt changes on main. Posts only if CHANGELOG.md has a "## vX.Y.Z" section
+# for that version and the DISCORD_RELEASES_WEBHOOK repository secret is set.
+name: Discord release notes
+
+on:
+  push:
+    branches: [main]
+    paths: [version.txt]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Post to Discord
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_RELEASES_WEBHOOK }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then echo "DISCORD_RELEASES_WEBHOOK not set, skipping"; exit 0; fi
+          V=$(tr -d '[:space:]' < version.txt)
+          NOTES=$(awk -v h="## v$V" '$0==h{on=1;next} on&&/^## /{exit} on' CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          if [ -z "$NOTES" ]; then echo "No CHANGELOG.md section for v$V, skipping"; exit 0; fi
+          LINK="<https://nameemall.com/?utm_source=discord&utm_medium=social&utm_campaign=release>"
+          CONTENT=$(printf '🆕 **NameEmAll v%s**\n%s\n%s' "$V" "$NOTES" "$LINK" | head -c 1900)
+          jq -n --arg c "$CONTENT" '{content: $c, allowed_mentions: {parse: []}}' > body.json
+          curl -sS --fail-with-body -H 'Content-Type: application/json' -d @body.json "$WEBHOOK"

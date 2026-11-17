@@ -415,5 +415,6 @@ window.NEA_UI = {
   "Appearance": "Darstellung",
   "All gens": "Alle Generationen",
   "Gen {range}": "Gen {range}",
-  "{count} gens": "{count} Generationen"
+  "{count} gens": "{count} Generationen",
+  "💬 Compare results on our Discord": "💬 Vergleiche deine Ergebnisse auf unserem Discord"
 };

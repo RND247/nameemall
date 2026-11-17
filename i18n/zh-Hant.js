@@ -415,5 +415,6 @@ window.NEA_UI = {
   "Appearance": "外觀",
   "All gens": "全世代",
   "Gen {range}": "第{range}世代",
-  "{count} gens": "{count} 個世代"
+  "{count} gens": "{count} 個世代",
+  "💬 Compare results on our Discord": "💬 到我們的 Discord 比較成績"
 };

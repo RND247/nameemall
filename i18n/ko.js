@@ -415,5 +415,6 @@ window.NEA_UI = {
   "Appearance": "화면 모드",
   "All gens": "모든 세대",
   "Gen {range}": "{range}세대",
-  "{count} gens": "{count}개 세대"
+  "{count} gens": "{count}개 세대",
+  "💬 Compare results on our Discord": "💬 Discord에서 결과 비교하기"
 };

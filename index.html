@@ -723,6 +723,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .daily-lobby .dl-arch-note { font-size: 0.68rem; color: var(--text-dim); margin-top: 6px; }
 .daily-result-global { white-space: pre-line; font-size: 0.82rem; line-height: 1.5; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.35); border-radius: 10px; padding: 8px 10px; margin: 8px 0 4px; font-variant-numeric: tabular-nums; }
 .daily-result-global b { color: var(--text); }
+.discord-link { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 6px; background: #5865F2; color: #fff; font-size: 0.78rem; font-weight: 700; text-decoration: none; transition: filter 0.15s; }
+.discord-link:hover { filter: brightness(1.1); }
+.discord-link[hidden] { display: none; }
 .daily-lobby .dl-mode-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.74rem; }
 .daily-lobby .dl-mode-streak { color: #f59e0b; font-weight: 700; }
 .daily-lobby .dl-prev-toggle { margin-top: 18px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 8px 18px; font-size: 0.8rem; }
@@ -1275,6 +1278,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <button class="btn" id="daily-challenge-btn">⚔️ Challenge a Friend</button>
     </div>
     <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
+    <a class="discord-link" id="daily-discord" hidden target="_blank" rel="noopener">💬 Compare results on our Discord</a>
     <div class="daily-share-row" style="margin-top:14px;">
       <button class="btn" id="daily-result-close">👀 See Board</button>
       <button class="btn" id="daily-result-lobby">← Back to Daily</button>
@@ -3606,6 +3610,16 @@ const Q = (function() {
   var DAILY_ARCHIVE_KEY = 'daily_archive_v1';  // { 'YYYY-MM-DD': { mini: best, midi: best } } for past days (never counts toward streaks)
   var DAILY_NAME_KEY = 'daily_player_name';
   var DAILY_SITE_URL = 'https://nameemall.com/';
+  // Discord invite shown on the Daily results screen (empty = hidden). Only there, not on the
+  // main screen or the kids page: Discord is for ages 13+.
+  var DISCORD_INVITE = 'https://discord.gg/zF6kCJEVGN';
+  (function() {
+    var a = document.getElementById('daily-discord');
+    if (!a || !DISCORD_INVITE) return;
+    a.href = DISCORD_INVITE;
+    a.hidden = false;
+    a.addEventListener('click', function() { track('discord_click', { from: 'daily_result' }); });
+  })();
 
   var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, archive: false, lastResult: null, archivePick: null, challenge: null };
   var dailyCountdownTimer = null;
