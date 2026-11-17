@@ -410,5 +410,10 @@ window.NEA_UI = {
   "Replace the progress on this device with the transferred progress? What's saved here now will be overwritten.": "이 기기의 진행 상황을 옮겨 온 진행 상황으로 바꿀까요? 지금 여기에 저장된 내용은 덮어쓰기돼요.",
   "Done! Reloading…": "완료! 새로고침 중…",
   "Close": "닫기",
-  "✓ Copied!": "✓ 복사됨!"
+  "✓ Copied!": "✓ 복사됨!",
+  "Choose quiz": "퀴즈 선택",
+  "Appearance": "화면 모드",
+  "All gens": "모든 세대",
+  "Gen {range}": "{range}세대",
+  "{count} gens": "{count}개 세대"
 };

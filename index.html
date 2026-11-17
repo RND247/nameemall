@@ -282,7 +282,6 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .settings-section-label { padding: 6px 14px 2px; font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; }
 .setting-row-slider { padding: 4px 14px 6px; }
 .setting-row-slider .mode-slider { width: 100%; }
-.settings-panel .settings-lang { display: block; width: 100%; font-size: 0.75rem; font-weight: 600; padding: 6px 8px; border-radius: 6px; }
 .settings-wide-btn { display: block; width: 100%; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 7px 8px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
 .settings-wide-btn:hover { border-color: var(--accent); background: var(--bg-card-found); }
 .settings-divider { height: 1px; background: var(--border); margin: 4px 0; }
@@ -303,7 +302,33 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .theme-banner[hidden] { display: none; }
 .theme-banner-exit { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
 .theme-banner-exit:hover { color: var(--text); }
-.theme-picker { width: 100%; padding: 7px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text); font-size: 0.75rem; }
+.quiz-btn { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
+.quiz-panel { width: 340px; right: auto; left: 50%; transform: translateX(-50%); }
+.quiz-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 4px 14px 8px; }
+.quiz-cards .qc-head { grid-column: 1 / -1; font-size: 0.6rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; padding: 4px 0 0; }
+.quiz-card { display: flex; align-items: center; gap: 7px; text-align: left; background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 7px 8px; font-size: 0.74rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s; line-height: 1.2; min-width: 0; }
+.quiz-card:hover { border-color: var(--text-pinyin); }
+.quiz-card.active { border-color: var(--accent); background: var(--bg-card-found); }
+.quiz-card .qc-icon { font-size: 1.1rem; flex-shrink: 0; }
+.quiz-card .qc-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.quiz-card .qc-count { font-size: 0.62rem; color: var(--text-dim); flex-shrink: 0; }
+.quiz-card.qc-full { grid-column: 1 / -1; }
+.quiz-cards.types { grid-template-columns: 1fr 1fr 1fr; }
+.quiz-cards.types .quiz-card { padding: 6px; font-size: 0.7rem; gap: 5px; }
+.lang-btn { text-transform: none; }
+#settings-panel { min-width: 230px; }
+.lang-list { display: flex; flex-direction: column; padding: 2px 6px 4px; }
+.lang-list button { background: none; border: none; color: var(--text); text-align: left; padding: 8px 10px; border-radius: 6px; font-size: 0.82rem; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; }
+.lang-list button:hover { background: var(--bg-card); }
+.lang-list button.active { color: var(--accent); font-weight: 700; }
+.panel-backdrop { display: none; }
+@media (max-width: 600px) {
+  .settings-panel.open { position: fixed; top: auto; bottom: 0; left: 0; right: 0; transform: none; width: auto; min-width: 0; max-height: 75vh; border-radius: 14px 14px 0 0; padding: 14px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 160; }
+  .settings-panel.open::before { content: ''; display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: -6px auto 8px; }
+  body.panel-open .panel-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 155; }
+  .install-btn .btn-text { display: none; }
+  #action-bar .btn-sep { display: none; }
+}
 .grid { display: grid; gap: 3px; }
 .grid.mandarin-grid { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 
@@ -925,7 +950,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   }
   (function() {
     var deferred = null;
-    function section() { return document.getElementById('set-install-section'); }
+    function section() { return document.getElementById('set-install'); }
     window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       deferred = e;
@@ -957,6 +982,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 
 <div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
 <header>
+  <div class="panel-backdrop" id="panel-backdrop"></div>
   <div class="creator-nav" id="creator-nav">
     <button data-creator-tab="daily" title="Daily">🗓️</button>
     <button data-creator-tab="pokemon" title="Full Pokédex">📖</button>
@@ -993,9 +1019,14 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       </div>
     </div>
     <div class="btn-sep"></div>
-    <div class="settings-wrap">
-      <button class="btn" id="btn-settings" title="Settings">⚙️ Settings</button>
-      <div class="settings-panel" id="settings-panel">
+    <div class="settings-wrap" id="quiz-wrap">
+      <button class="btn quiz-btn" id="btn-quiz" title="Choose quiz" aria-label="Choose quiz" aria-haspopup="true"><span id="quiz-label" data-no-i18n>🎯 Gen 1-9</span> ▾</button>
+      <div class="settings-panel quiz-panel" id="quiz-panel">
+        <div id="set-gens-section">
+        <div class="settings-section-label">Generations</div>
+        <div class="setting-row-slider" id="reg-gen-selector-wrap"></div>
+        <div class="settings-divider"></div>
+        </div>
         <div id="set-order-section">
         <div class="settings-section-label">Order By</div>
         <div class="setting-row-slider">
@@ -1008,13 +1039,12 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="settings-divider"></div>
         </div>
         <div class="settings-section-label">Themed quizzes</div>
-        <div class="setting-row-slider"><select class="theme-picker" id="theme-picker" aria-label="Themed quizzes"><option value="">📖 Full Pokédex</option></select></div>
-        <div class="settings-divider"></div>
-        <div id="set-gens-section">
-        <div class="settings-section-label">Generations</div>
-        <div class="setting-row-slider" id="reg-gen-selector-wrap"></div>
-        <div class="settings-divider"></div>
-        </div>
+        <div class="quiz-cards" id="theme-cards"></div>
+      </div>
+    </div>
+    <div class="settings-wrap">
+      <button class="btn icon-btn" id="btn-settings" title="Settings" aria-label="Settings">⚙️</button>
+      <div class="settings-panel" id="settings-panel">
         <div class="setting-row" id="set-sound"><span class="setting-label">Sound (Cries)</span><div class="toggle-switch on" id="tog-sound"></div></div>
         <div class="setting-row" id="set-shadows" hidden><span class="setting-label">Shadows</span><div class="toggle-switch" id="tog-shadows"></div></div>
         <div class="setting-row" id="set-cycle"><span class="setting-label">Cycle Forms</span><div class="toggle-switch on" id="tog-cycle"></div></div>
@@ -1023,14 +1053,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="set-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="tog-hover"></div></div>
         <div class="setting-row" id="set-spot"><span class="setting-label">Spotlight</span><div class="toggle-switch on" id="tog-spot"></div></div>
         <div class="settings-divider"></div>
-        <div class="settings-section-label">For creators</div>
-        <div class="setting-row-slider"><button class="settings-wide-btn" id="set-creator">🎥 Creator Mode</button></div>
-        <div class="settings-divider"></div>
-        <div id="set-install-section" hidden>
-        <div class="setting-row-slider"><button class="settings-wide-btn" id="set-install">📲 Install app</button></div>
-        <div class="settings-divider"></div>
-        </div>
-        <div class="settings-section-label">Theme</div>
+        <div class="settings-section-label">Appearance</div>
         <div class="setting-row-slider">
           <div class="mode-slider" id="theme-slider">
             <button id="btn-dark" class="active">🌙 Dark</button>
@@ -1038,10 +1061,18 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
           </div>
         </div>
         <div class="settings-divider"></div>
-        <div class="settings-section-label">Language</div>
-        <div class="setting-row-slider"><select class="lang-select settings-lang" aria-label="Language"></select></div>
+        <div class="settings-section-label">For creators</div>
+        <div class="setting-row-slider"><button class="settings-wide-btn" id="set-creator">🎥 Creator Mode</button></div>
       </div>
     </div>
+    <div class="settings-wrap">
+      <button class="btn lang-btn" id="btn-lang" title="Language" aria-label="Language" aria-haspopup="true">🌐 <span id="lang-btn-code" data-no-i18n>EN</span></button>
+      <div class="settings-panel lang-panel" id="lang-panel">
+        <div class="settings-section-label">Language</div>
+        <div class="lang-list" id="lang-list"></div>
+      </div>
+    </div>
+    <button class="btn install-btn" id="set-install" hidden title="📲 Install app">📲<span class="btn-text"> Install app</span></button>
   </div>
   <div class="btn-row" id="duel-settings-bar" style="display:none;justify-content:center;">
     <div class="settings-wrap">
@@ -1053,7 +1084,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="dset-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="dtog-hover"></div></div>
         <div class="setting-row" id="dset-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="dtog-typebg"></div></div>
         <div class="settings-divider"></div>
-        <div class="settings-section-label">Theme</div>
+        <div class="settings-section-label">Appearance</div>
         <div class="setting-row-slider">
           <div class="mode-slider" id="duel-theme-slider">
             <button id="dbtn-dark" class="active">🌙 Dark</button>
@@ -1100,7 +1131,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
         <div class="setting-row" id="cset-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="ctog-hover"></div></div>
         <div class="setting-row" id="cset-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="ctog-typebg"></div></div>
         <div class="settings-divider"></div>
-        <div class="settings-section-label">Theme</div>
+        <div class="settings-section-label">Appearance</div>
         <div class="setting-row-slider">
           <div class="mode-slider" id="coop-theme-slider">
             <button id="cbtn-dark" class="active">🌙 Dark</button>
@@ -2548,6 +2579,7 @@ const Q = (function() {
     givenUp = false; hintsUsed = false; hintKinds = { sil: false, spell: false }; foundSet = new Set(); elapsedMs = 0; completedFamilies = new Set(); completedRegions = new Set();
     orderMode = 'dex-gens';
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === 'dex-gens'); });
+    updateQuizLabel();
     stopTimer(); timerRunning = false; $timer.textContent = '00:00';
     if (typeof paused !== 'undefined' && paused) { paused = false; $('pause-overlay').classList.remove('active'); setPauseBtn(false); }
     $input.value = ''; $input.disabled = false;
@@ -2568,6 +2600,7 @@ const Q = (function() {
     }
     $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === mode); });
     saveSettings();
+    updateQuizLabel();
     renderGrid();
     restoreRevealed();
   }
@@ -5080,7 +5113,7 @@ const Q = (function() {
     $input.placeholder = 'Type a Pokémon name…';
     if (!isPokeLike && !isMulti) stopCycleForms();
     else if (cycleFormsEnabled && isPokeLike) startCycleForms();
-    $('set-order-section').style.display = (isMulti || isDaily) ? 'none' : '';
+    $('quiz-wrap').style.display = isPoke ? '' : 'none';
     $('set-gens-section').style.display = isPoke ? '' : 'none';
     $('set-sound').style.display = (isPokeLike || isCoop) ? '' : 'none';
     $('set-shadows').style.display = 'none';
@@ -5172,6 +5205,7 @@ const Q = (function() {
     b.hidden = false;
     b.querySelector('.theme-banner-title').textContent = themeInfo.icon + ' ' + themeTitle(themeInfo);
     var gs = $('set-gens-section'); if (gs) gs.hidden = true;
+    updateQuizLabel();
   }
   function loadThemes() {
     if (themeList) return Promise.resolve(themeList);
@@ -6330,31 +6364,67 @@ const Q = (function() {
     setOrderMode(btn.dataset.order);
   });
 
-  $('btn-settings').addEventListener('click', function(e) {
-    e.stopPropagation();
-    $('settings-panel').classList.toggle('open');
-    $('duel-settings-panel').classList.remove('open');
-    $('coop-settings-panel').classList.remove('open');
-  });
-  $('btn-duel-settings').addEventListener('click', function(e) {
-    e.stopPropagation();
-    $('duel-settings-panel').classList.toggle('open');
-    $('settings-panel').classList.remove('open');
-    $('coop-settings-panel').classList.remove('open');
-  });
-  $('btn-coop-settings').addEventListener('click', function(e) {
-    e.stopPropagation();
-    $('coop-settings-panel').classList.toggle('open');
-    $('settings-panel').classList.remove('open');
-    $('duel-settings-panel').classList.remove('open');
+  function qEsc(v) { var d = document.createElement('div'); d.textContent = v; return d.innerHTML.replace(/"/g, '&quot;'); }
+  // Toolbar dropdowns (Quiz, Settings, Language, Duel/Co-Op settings): one open at a time.
+  // On phones they open as bottom sheets over a backdrop.
+  function closePanels(except) {
+    document.querySelectorAll('.settings-panel.open').forEach(function(p) { if (p.id !== except) p.classList.remove('open'); });
+    if (except !== 'hint-menu') $('hint-menu').classList.remove('open');
+    document.body.classList.toggle('panel-open', !!document.querySelector('.settings-panel.open'));
+  }
+  function togglePanel(id) {
+    var open = !$(id).classList.contains('open');
+    closePanels(id);
+    $(id).classList.toggle('open', open);
+    document.body.classList.toggle('panel-open', open);
+  }
+  [['btn-quiz', 'quiz-panel'], ['btn-settings', 'settings-panel'], ['btn-lang', 'lang-panel'],
+   ['btn-duel-settings', 'duel-settings-panel'], ['btn-coop-settings', 'coop-settings-panel']].forEach(function(p) {
+    $(p[0]).addEventListener('click', function(e) { e.stopPropagation(); togglePanel(p[1]); });
   });
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.settings-wrap')) {
-      $('settings-panel').classList.remove('open');
-      $('duel-settings-panel').classList.remove('open');
-      $('coop-settings-panel').classList.remove('open');
-    }
+    if (!e.target.closest('.settings-wrap')) closePanels();
   });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && document.querySelector('.settings-panel.open')) closePanels();
+  });
+
+  // Language menu: the footer <select> owns the switching logic (including the Daily confirm)
+  (function initLangMenu() {
+    var list = $('lang-list'), sel = $('lang-select');
+    var code = NEA_LANG === 'zh-Hant' ? '繁中' : NEA_LANG.split('-')[0].toUpperCase();
+    $('lang-btn-code').textContent = code;
+    list.innerHTML = Object.keys(NEA_LANGS).map(function(c) {
+      return '<button type="button" data-lang="' + c + '" data-no-i18n' + (c === NEA_LANG ? ' class="active"' : '') + '>' +
+        qEsc(NEA_LANGS[c]) + (c === NEA_LANG ? '<span>✓</span>' : '') + '</button>';
+    }).join('');
+    list.addEventListener('click', function(e) {
+      var b = e.target.closest('button[data-lang]');
+      if (!b || b.dataset.lang === NEA_LANG) { closePanels(); return; }
+      closePanels();
+      sel.value = b.dataset.lang;
+      sel.dispatchEvent(new Event('change'));
+    });
+  })();
+
+  // Label on the Quiz button: the theme, or the generations (+ order when not the default)
+  function gensRangeLabel(set) {
+    var a = Array.from(set).sort(function(x, y) { return x - y; });
+    if (a.length === MAX_GEN) return t('All gens');
+    var contiguous = a[a.length - 1] - a[0] === a.length - 1;
+    if (a.length === 1) return t('Gen {range}', { range: a[0] });
+    if (contiguous) return t('Gen {range}', { range: a[0] + '-' + a[a.length - 1] });
+    if (a.length <= 3) return t('Gen {range}', { range: a.join(', ') });
+    return t('{count} gens', { count: a.length });
+  }
+  function updateQuizLabel() {
+    var el = $('quiz-label');
+    if (!el) return;
+    var label = themeInfo ? themeInfo.icon + ' ' + themeTitle(themeInfo) : '🎯 ' + gensRangeLabel(selectedGens);
+    if (orderMode === 'dex') label += ' · ' + t('Dex');
+    else if (orderMode === 'random') label += ' · ' + t('Random');
+    el.textContent = label;
+  }
 
   function initRegGenSelector() {
     $('reg-gen-selector-wrap').innerHTML = buildGenSelectorHTML('reg', selectedGens);
@@ -6370,11 +6440,13 @@ const Q = (function() {
           if (gensPreset) selectedGens = new Set(gensPreset.split('-').map(Number));
           else try { var s = JSON.parse(localStorage.getItem('namemall_settings')); selectedGens = new Set(s.gens || [1,2,3,4,5,6,7,8,9]); } catch(e) { selectedGens = new Set([1,2,3,4,5,6,7,8,9]); }
           initRegGenSelector();
+          updateQuizLabel();
         });
         return;
       }
     }
     saveSettings();
+    updateQuizLabel();
     if (currentTab === 'pokemon' && dataSources['pokemon']) {
       if (gensPreset) {
         gensPreset = gensSlot(selectedGens);
@@ -6388,23 +6460,39 @@ const Q = (function() {
   }
   initRegGenSelector();
 
-  // Themed quiz picker (settings): fills from themes.json and reloads into the chosen theme
-  (function initThemePicker() {
-    var sel = $('theme-picker');
-    if (!sel) return;
+  // Themed quiz cards (Quiz panel): fills from themes.json and reloads into the chosen theme
+  (function initThemeCards() {
+    var box = $('theme-cards');
+    if (!box) return;
+    function card(slug, icon, name, count, extra) {
+      var cur = (themeInfo ? themeInfo.slug : '') === slug;
+      return '<button type="button" class="quiz-card' + (extra ? ' ' + extra : '') + (cur ? ' active' : '') + '" data-slug="' + slug + '"' +
+        ' title="' + qEsc(name) + '" data-no-i18n><span class="qc-icon">' + icon + '</span><span class="qc-name">' + qEsc(name) + '</span>' +
+        (count ? '<span class="qc-count">' + count + '</span>' : '') + '</button>';
+    }
     loadThemes().then(function(list) {
       var specials = list.filter(function(x) { return !x.type; }), types = list.filter(function(x) { return x.type; });
-      function opts(arr) { return arr.map(function(x) {
-        return '<option value="' + x.slug + '">' + x.icon + ' ' + themeTitle(x) + ' (' + x.ids.length + ')</option>'; }).join(''); }
-      sel.innerHTML = '<option value="">📖 ' + t('Full Pokédex') + '</option>' +
-        '<optgroup label="' + t('Themes') + '">' + opts(specials) + '</optgroup>' +
-        '<optgroup label="' + t('By type') + '">' + opts(types) + '</optgroup>';
-      sel.value = themePreset && themeList.some(function(x) { return x.slug === themePreset; }) ? themePreset : '';
+      box.innerHTML = card('', '📖', t('Full Pokédex'), '', 'qc-full') +
+        '<div class="qc-head">' + qEsc(t('Themes')) + '</div>' +
+        specials.map(function(x) { return card(x.slug, x.icon, themeTitle(x), x.ids.length); }).join('');
+      var tbox = document.createElement('div');
+      tbox.className = 'quiz-cards types';
+      tbox.innerHTML = '<div class="qc-head">' + qEsc(t('By type')) + '</div>' +
+        types.map(function(x) {
+          var n = t(x.type);
+          if (n === x.type) n = x.type.charAt(0).toUpperCase() + x.type.slice(1);
+          return card(x.slug, x.icon, n, '');
+        }).join('');
+      box.after(tbox);
     }).catch(function() {});
-    sel.addEventListener('change', function() {
+    $('quiz-panel').addEventListener('click', function(e) {
+      var c = e.target.closest('.quiz-card');
+      if (!c) return;
+      var slug = c.dataset.slug;
+      if (slug === (themeInfo ? themeInfo.slug : '')) { closePanels(); return; }
       var u = new URL(location.href);
       ['theme', 'gens', 'hint'].forEach(function(k) { u.searchParams.delete(k); });
-      if (sel.value) u.searchParams.set('theme', sel.value);
+      if (slug) u.searchParams.set('theme', slug);
       u.hash = '';
       location.href = u.pathname + u.search;
     });
@@ -6442,7 +6530,7 @@ const Q = (function() {
   }
   $('btn-hint').addEventListener('click', function(e) {
     e.stopPropagation();
-    $('settings-panel').classList.remove('open');
+    closePanels('hint-menu');
     $('hint-menu').classList.toggle('open');
   });
   $('hint-menu').addEventListener('click', function(e) { e.stopPropagation(); });
@@ -6626,6 +6714,7 @@ const Q = (function() {
   syncTypeBgToggles();
   syncHoverToggles();
   $('mode-slider').querySelectorAll('button').forEach(function(b) { b.classList.toggle('active', b.dataset.order === orderMode); });
+  updateQuizLabel();
 
   if (localStorage.getItem('namemall_theme') === 'light') {
     document.body.classList.add('light');

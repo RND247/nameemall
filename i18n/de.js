@@ -410,5 +410,10 @@ window.NEA_UI = {
   "Replace the progress on this device with the transferred progress? What's saved here now will be overwritten.": "Den Fortschritt auf diesem Gerät durch den übertragenen ersetzen? Was hier gespeichert ist, wird überschrieben.",
   "Done! Reloading…": "Fertig! Wird neu geladen…",
   "Close": "Schließen",
-  "✓ Copied!": "✓ Kopiert!"
+  "✓ Copied!": "✓ Kopiert!",
+  "Choose quiz": "Quiz wählen",
+  "Appearance": "Darstellung",
+  "All gens": "Alle Generationen",
+  "Gen {range}": "Gen {range}",
+  "{count} gens": "{count} Generationen"
 };

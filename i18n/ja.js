@@ -436,5 +436,10 @@ window.NEA_UI = {
   "Replace the progress on this device with the transferred progress? What's saved here now will be overwritten.": "この端末の進行状況を引き継いだデータで置き換えますか?今この端末に保存されている内容は上書きされます。",
   "Done! Reloading…": "完了!再読み込みしています…",
   "Close": "閉じる",
-  "✓ Copied!": "✓ コピーしました!"
+  "✓ Copied!": "✓ コピーしました!",
+  "Choose quiz": "クイズを選ぶ",
+  "Appearance": "外観",
+  "All gens": "全世代",
+  "Gen {range}": "第{range}世代",
+  "{count} gens": "{count}世代"
 };

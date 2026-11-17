@@ -410,5 +410,10 @@ window.NEA_UI = {
   "Replace the progress on this device with the transferred progress? What's saved here now will be overwritten.": "要用轉移過來的進度取代這台裝置上的進度嗎?目前儲存在這裡的內容會被覆蓋。",
   "Done! Reloading…": "完成!重新載入中…",
   "Close": "關閉",
-  "✓ Copied!": "✓ 已複製!"
+  "✓ Copied!": "✓ 已複製!",
+  "Choose quiz": "選擇測驗",
+  "Appearance": "外觀",
+  "All gens": "全世代",
+  "Gen {range}": "第{range}世代",
+  "{count} gens": "{count} 個世代"
 };
