@@ -416,5 +416,16 @@ window.NEA_UI = {
   "All gens": "Alle Generationen",
   "Gen {range}": "Gen {range}",
   "{count} gens": "{count} Generationen",
-  "💬 Compare results on our Discord": "💬 Vergleiche deine Ergebnisse auf unserem Discord"
+  "💬 Compare results on our Discord": "💬 Vergleiche deine Ergebnisse auf unserem Discord",
+  "✓ Result copied! Paste it in #daily-results": "✓ Ergebnis kopiert! Füge es in #daily-results ein",
+  "💬 Show it off on Discord": "💬 Zeig es auf Discord",
+  "💬 No one to play with? Find a duel partner on Discord": "💬 Niemand zum Spielen? Finde einen Duellpartner auf Discord",
+  "✓ Image copied! Paste it in #achievements": "✓ Bild kopiert! Füge es in #achievements ein",
+  "📤 Share my achievements": "📤 Meine Erfolge teilen",
+  "Share": "Teilen",
+  "Unlocked {date}": "Freigeschaltet am {date}",
+  "{count} of {total} achievements": "{count} von {total} Erfolgen",
+  "Can you unlock it?": "Schaffst du das auch?",
+  "Every achievement unlocked!": "Alle Erfolge freigeschaltet!",
+  "Can you collect them all?": "Schaffst du sie alle?"
 };

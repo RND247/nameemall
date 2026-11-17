@@ -442,5 +442,16 @@ window.NEA_UI = {
   "All gens": "全世代",
   "Gen {range}": "第{range}世代",
   "{count} gens": "{count}世代",
-  "💬 Compare results on our Discord": "💬 Discordで結果を比べよう"
+  "💬 Compare results on our Discord": "💬 Discordで結果を比べよう",
+  "✓ Result copied! Paste it in #daily-results": "✓ 結果をコピーしました！#daily-results に貼り付けてね",
+  "💬 Show it off on Discord": "💬 Discordで自慢しよう",
+  "💬 No one to play with? Find a duel partner on Discord": "💬 対戦相手がいない？Discordで見つけよう",
+  "✓ Image copied! Paste it in #achievements": "✓ 画像をコピーしました！#achievements に貼り付けてね",
+  "📤 Share my achievements": "📤 実績をシェア",
+  "Share": "シェア",
+  "Unlocked {date}": "{date} に解除",
+  "{count} of {total} achievements": "実績 {count} / {total}",
+  "Can you unlock it?": "きみも解除できる？",
+  "Every achievement unlocked!": "すべての実績を解除！",
+  "Can you collect them all?": "全部集められる？"
 };

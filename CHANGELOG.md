@@ -5,6 +5,12 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.16.0
+
+- Share your achievements: every unlocked achievement now has a 📤 button that makes a picture card, and "Share my achievements" shows your whole collection
+- Show off in the new #achievements channel, and find opponents in #find-a-duel
+- "Compare results on our Discord" now copies your Daily result, ready to paste
+
 ## v1.15.1
 
 - NameEmAll has a Discord! Finish a Daily and tap "Compare results on our Discord" to join

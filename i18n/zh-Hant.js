@@ -416,5 +416,16 @@ window.NEA_UI = {
   "All gens": "全世代",
   "Gen {range}": "第{range}世代",
   "{count} gens": "{count} 個世代",
-  "💬 Compare results on our Discord": "💬 到我們的 Discord 比較成績"
+  "💬 Compare results on our Discord": "💬 到我們的 Discord 比較成績",
+  "✓ Result copied! Paste it in #daily-results": "✓ 已複製成績！貼到 #daily-results 吧",
+  "💬 Show it off on Discord": "💬 到 Discord 炫耀一下",
+  "💬 No one to play with? Find a duel partner on Discord": "💬 找不到人一起玩？到 Discord 找對戰夥伴",
+  "✓ Image copied! Paste it in #achievements": "✓ 已複製圖片！貼到 #achievements 吧",
+  "📤 Share my achievements": "📤 分享我的成就",
+  "Share": "分享",
+  "Unlocked {date}": "{date} 解鎖",
+  "{count} of {total} achievements": "成就 {count} / {total}",
+  "Can you unlock it?": "你也能解鎖嗎？",
+  "Every achievement unlocked!": "所有成就全部解鎖！",
+  "Can you collect them all?": "你能全部收集嗎？"
 };

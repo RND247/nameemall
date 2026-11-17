@@ -416,5 +416,16 @@ window.NEA_UI = {
   "All gens": "모든 세대",
   "Gen {range}": "{range}세대",
   "{count} gens": "{count}개 세대",
-  "💬 Compare results on our Discord": "💬 Discord에서 결과 비교하기"
+  "💬 Compare results on our Discord": "💬 Discord에서 결과 비교하기",
+  "✓ Result copied! Paste it in #daily-results": "✓ 결과를 복사했어요! #daily-results에 붙여넣으세요",
+  "💬 Show it off on Discord": "💬 Discord에서 자랑하기",
+  "💬 No one to play with? Find a duel partner on Discord": "💬 같이 할 사람이 없나요? Discord에서 대결 상대를 찾아보세요",
+  "✓ Image copied! Paste it in #achievements": "✓ 이미지를 복사했어요! #achievements에 붙여넣으세요",
+  "📤 Share my achievements": "📤 내 업적 공유",
+  "Share": "공유",
+  "Unlocked {date}": "{date} 달성",
+  "{count} of {total} achievements": "업적 {count} / {total}",
+  "Can you unlock it?": "당신도 달성할 수 있나요?",
+  "Every achievement unlocked!": "모든 업적 달성!",
+  "Can you collect them all?": "전부 모을 수 있나요?"
 };

@@ -726,6 +726,16 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .discord-link { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 6px; background: #5865F2; color: #fff; font-size: 0.78rem; font-weight: 700; text-decoration: none; transition: filter 0.15s; }
 .discord-link:hover { filter: brightness(1.1); }
 .discord-link[hidden] { display: none; }
+#overlay .discord-link { margin: 10px auto 0; }
+.multi-discord { display: table; margin: 22px auto 0; }
+.ach-actions { display: flex; justify-content: center; margin: 10px 0 4px; }
+.ach-card { position: relative; }
+.ach-share { position: absolute; top: 8px; right: 8px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); border-radius: 6px; font-size: 0.72rem; font-weight: 700; padding: 3px 7px; cursor: pointer; }
+.ach-share:hover { color: var(--text); border-color: #f7d02c; }
+.ach-card.unlocked .ach-body { padding-right: 34px; }
+.ach-share-modal { max-width: 440px; }
+.ach-share-preview { display: block; width: 100%; max-height: 52vh; object-fit: contain; border-radius: 10px; border: 1px solid var(--border); background: #0b0b16; margin: 6px 0 10px; min-height: 120px; }
+.ach-share-modal .discord-link { margin: 4px 0 10px; }
 .daily-lobby .dl-mode-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 0.74rem; }
 .daily-lobby .dl-mode-streak { color: #f59e0b; font-weight: 700; }
 .daily-lobby .dl-prev-toggle { margin-top: 18px; background: transparent; border: 1px solid var(--border); color: var(--text-dim); padding: 8px 18px; font-size: 0.8rem; }
@@ -1219,8 +1229,21 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="modal-best"></p>
     <p id="modal-chat" class="modal-chat" hidden></p>
     <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
+    <a class="discord-link" id="modal-discord" data-discord="pokedex_result" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener" hidden>💬 Show it off on Discord</a>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+  </div>
+</div>
+
+<div class="overlay" id="ach-share-overlay">
+  <div class="modal ach-share-modal">
+    <h2 id="ach-share-title">🏅 Share</h2>
+    <img class="ach-share-preview" id="ach-share-preview" alt="">
+    <div>
+      <button class="btn" id="ach-share-image">🖼️ Share Image</button>
+      <button class="btn" id="ach-share-close">Close</button>
+    </div>
+    <a class="discord-link" id="ach-share-discord" data-discord="achievement" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener">💬 Show it off on Discord</a>
   </div>
 </div>
 
@@ -1310,7 +1333,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   Data: <a href="https://pokeapi.co" target="_blank">PokéAPI</a>
   · Inspired by <a href="https://pkmnquiz.com" target="_blank">pkmnquiz.com</a>
   <br>
-  Feature requests & bugs? <a href="mailto:randayan10@gmail.com">randayan10@gmail.com</a>
+  Feature requests & bugs? <a href="mailto:randayan10@gmail.com">randayan10@gmail.com</a> · <a href="https://discord.gg/WJj2VYVxnz" data-discord="footer" target="_blank" rel="noopener" data-no-i18n>💬 Discord</a>
   <br>
   <a href="https://ko-fi.com/rand32491" target="_blank" class="donate-btn">☕ Support on Ko-fi</a>
 </footer>
@@ -2366,6 +2389,7 @@ const Q = (function() {
     $('modal-best').textContent = hsParts.join(' · ');
     displayHighscore();
     $('modal-image-btn').hidden = currentTab !== 'pokemon';
+    $('modal-discord').hidden = currentTab !== 'pokemon';
     var chatLine = '';
     if (currentTab === 'pokemon' && chatEnabled() && chat.claims.size) {
       var chatN = 0; chat.claims.forEach(function(i) { if (foundSet.has(i)) chatN++; });
@@ -3612,13 +3636,46 @@ const Q = (function() {
   var DAILY_SITE_URL = 'https://nameemall.com/';
   // Discord invite shown on the Daily results screen (empty = hidden). Only there, not on the
   // main screen or the kids page: Discord is for ages 13+.
-  var DISCORD_INVITE = 'https://discord.gg/zF6kCJEVGN';
+  // One permanent invite per channel, so each link lands people where the conversation is
+  var DISCORD = {
+    daily: 'https://discord.gg/zF6kCJEVGN',         // #daily-results
+    achievements: 'https://discord.gg/XqReMaV2N3',  // #achievements
+    duel: 'https://discord.gg/YGAxHbM8Mw',          // #find-a-duel
+    general: 'https://discord.gg/WJj2VYVxnz'        // #general
+  };
+  var DISCORD_INVITE = DISCORD.daily;
+  // Every Discord link carries data-discord="<where it was clicked>" for analytics
+  document.addEventListener('click', function(e) {
+    var a = e.target.closest && e.target.closest('a[data-discord]');
+    if (a) track('discord_click', { from: a.getAttribute('data-discord') });
+  });
+  // Swap a link's label for a moment (e.g. "Result copied!"), then put it back
+  function discordFlash(a, msg) {
+    if (!a.dataset.label) a.dataset.label = a.textContent;
+    a.textContent = msg;
+    clearTimeout(a._flash);
+    a._flash = setTimeout(function() { a.textContent = a.dataset.label; }, 6000);
+  }
+  // Copy a PNG (or a promise of one) to the clipboard; resolves true if it worked
+  function copyImageBlob(blob) {
+    try {
+      if (!navigator.clipboard || !navigator.clipboard.write || !window.ClipboardItem) return Promise.resolve(false);
+      return navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(function() { return true; }, function() { return false; });
+    } catch(e) { return Promise.resolve(false); }
+  }
   (function() {
     var a = document.getElementById('daily-discord');
     if (!a || !DISCORD_INVITE) return;
     a.href = DISCORD_INVITE;
     a.hidden = false;
-    a.addEventListener('click', function() { track('discord_click', { from: 'daily_result' }); });
+    // Invite links can't pre-fill a message, so copy the result first: joining lands in #daily-results, ready to paste
+    a.addEventListener('click', function() {
+      var result = dailyCurrentResult && dailyCurrentResult();
+      if (!result || !navigator.clipboard || !navigator.clipboard.writeText) return;
+      navigator.clipboard.writeText(dailyShareText(result)).then(function() {
+        discordFlash(a, t('✓ Result copied! Paste it in #daily-results'));
+      }).catch(function() {});
+    });
   })();
 
   var dailyState = { active: false, finished: false, mode: 'mini', dailyNum: 0, dateStr: '', unranked: false, archive: false, lastResult: null, archivePick: null, challenge: null };
@@ -5054,6 +5111,7 @@ const Q = (function() {
           '<button class="multi-card" data-multi-mode="coop"><span class="mc-icon">🤝</span><span class="mc-title">Co-Op</span>' +
             '<span class="mc-desc">Team up and complete the Pokédex together.</span></button>' +
         '</div>' +
+        '<a class="discord-link multi-discord" data-discord="multiplayer" href="' + DISCORD.duel + '" target="_blank" rel="noopener">💬 No one to play with? Find a duel partner on Discord</a>' +
       '</div>';
   }
 
@@ -5727,7 +5785,8 @@ const Q = (function() {
       '<h2>' + esc(t('🏅 Achievements')) + '</h2>' +
       '<div class="ach-summary">' + esc(t('{count} of {total} unlocked', { count: got, total: list.length })) + '</div>' +
       '<div class="ach-bar ach-bar-big"><span style="width:' + Math.round(got * 100 / list.length) + '%"></span></div>' +
-      '<p class="ach-note">' + esc(t('Achievements are saved in this browser.')) + '</p>';
+      '<p class="ach-note">' + esc(t('Achievements are saved in this browser.')) + '</p>' +
+      (got ? '<div class="ach-actions"><button class="btn" id="ach-share-all">' + esc(t('📤 Share my achievements')) + '</button></div>' : '');
     cats.forEach(function(cat) {
       var inCat = list.filter(function(a) { return a.cat === cat; });
       var catGot = inCat.filter(function(a) { return achUnlocked[a.id]; }).length;
@@ -5735,6 +5794,7 @@ const Q = (function() {
       inCat.forEach(function(a) {
         var done = !!achUnlocked[a.id];
         html += '<div class="ach-card' + (done ? ' unlocked' : '') + '">' +
+          (done ? '<button class="ach-share" data-ach-share="' + a.id + '" title="' + esc(t('Share')) + '" aria-label="' + esc(t('Share')) + '">📤</button>' : '') +
           '<div class="ach-icon">' + achIconHtml(a) + '</div><div class="ach-body">' +
           '<div class="ach-title">' + esc(achTitle(a)) + '</div>' +
           '<div class="ach-desc">' + esc(achDesc(a)) + '</div>';
@@ -5754,6 +5814,10 @@ const Q = (function() {
     html += '</div>';
     $('grid-wrap').innerHTML = html;
     $('ach-reset-btn').addEventListener('click', achReset);
+    if ($('ach-share-all')) $('ach-share-all').addEventListener('click', function() { achShareOpen(null); });
+    $('grid-wrap').querySelectorAll('[data-ach-share]').forEach(function(b) {
+      b.addEventListener('click', function() { achShareOpen(b.getAttribute('data-ach-share')); });
+    });
     $('ach-export-btn').addEventListener('click', transferShowExport);
     $('ach-import-btn').addEventListener('click', function() { transferShowImport(''); });
     try { localStorage.setItem('nea_ach_seen', String(got)); } catch(e) {}
@@ -6328,6 +6392,127 @@ const Q = (function() {
       return base.c;
     });
   }
+
+  // ── Achievement cards ──
+  function shareWrap(ctx, text, maxW) {
+    var words = String(text).split(' '), lines = [], line = '';
+    words.forEach(function(w) {
+      var test = line ? line + ' ' + w : w;
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
+    });
+    if (line) lines.push(line);
+    return lines;
+  }
+  function shareAchIcon(ctx, img, id, x, y, size, locked) {
+    if (!img) return;
+    var badge = /^region_(kanto|johto|hoenn|sinnoh|unova|kalos)$/.test(id);
+    var s = badge ? size * 0.7 : size, off = (size - s) / 2;
+    ctx.save();
+    ctx.imageSmoothingEnabled = badge;
+    if (locked) { ctx.globalAlpha = 0.22; try { ctx.filter = 'grayscale(1)'; } catch(e) {} }
+    ctx.drawImage(img, x + off, y + off, s, s);
+    ctx.restore();
+  }
+  function shareAchBar(ctx, y, got, total) {
+    var w = 640, x = (SHARE_W - w) / 2;
+    shareRoundRect(ctx, x, y, w, 22, 11); ctx.fillStyle = '#2a2a40'; ctx.fill();
+    if (got) {
+      var g = ctx.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, '#f7d02c'); g.addColorStop(1, '#e94560');
+      shareRoundRect(ctx, x, y, Math.max(22, w * got / total), 22, 11); ctx.fillStyle = g; ctx.fill();
+    }
+  }
+  function shareAchievementCard(id) {
+    var list = achList(), a = list.filter(function(x) { return x.id === id; })[0];
+    var got = list.filter(function(x) { return achUnlocked[x.id]; }).length;
+    var base = shareBase(t('🏅 Achievement unlocked')), ctx = base.ctx;
+    return shareLoadImg('img/ach/' + id + '.png').then(function(img) {
+      var cy = 520;
+      var glow = ctx.createRadialGradient(SHARE_W / 2, cy, 20, SHARE_W / 2, cy, 270);
+      glow.addColorStop(0, 'rgba(247,208,44,0.45)'); glow.addColorStop(1, 'rgba(247,208,44,0)');
+      ctx.fillStyle = glow; ctx.fillRect(0, cy - 280, SHARE_W, 560);
+      shareAchIcon(ctx, img, id, SHARE_W / 2 - 150, cy - 150, 300, false);
+      shareLine(ctx, achTitle(a), 790, 76, '800', '#f7d02c');
+      ctx.font = '500 40px ' + SHARE_FONT;
+      var y = 865;
+      shareWrap(ctx, achDesc(a), SHARE_W - 200).slice(0, 2).forEach(function(l) { shareLine(ctx, l, y, 40, '500', '#c8c8d8'); y += 54; });
+      if (achUnlocked[id]) {
+        var when = new Date(achUnlocked[id]).toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric', year: 'numeric' });
+        shareLine(ctx, t('Unlocked {date}', { date: when }), y + 20, 34, '600', '#9aa0ad');
+      }
+      shareLine(ctx, t('{count} of {total} achievements', { count: got, total: list.length }), 1070, 38, '700', '#e8e8f0');
+      shareAchBar(ctx, 1095, got, list.length);
+      shareLine(ctx, t('Can you unlock it?'), SHARE_H - 160, 46, '700', '#e8e8f0');
+      return base.c;
+    });
+  }
+  function shareAllAchievementsCard() {
+    var list = achList();
+    var got = list.filter(function(x) { return achUnlocked[x.id]; }).length;
+    var base = shareBase(t('🏅 Achievements')), ctx = base.ctx;
+    shareLine(ctx, got + ' / ' + list.length, 400, 170, '800', got === list.length ? '#22c55e' : '#f7d02c');
+    shareAchBar(ctx, 450, got, list.length);
+    return Promise.all(list.map(function(a) { return shareLoadImg('img/ach/' + a.id + '.png'); })).then(function(imgs) {
+      var cols = 8, size = 96, gap = 22, rows = Math.ceil(list.length / cols);
+      var x0 = (SHARE_W - (cols * size + (cols - 1) * gap)) / 2, y0 = 530;
+      // Unlocked first, so the card leads with what the player earned
+      var order = list.map(function(a, i) { return i; }).sort(function(i, j) { return (achUnlocked[list[j].id] ? 1 : 0) - (achUnlocked[list[i].id] ? 1 : 0) || i - j; });
+      order.forEach(function(i, k) {
+        var a = list[i], done = !!achUnlocked[a.id];
+        var x = x0 + (k % cols) * (size + gap), y = y0 + Math.floor(k / cols) * (size + gap);
+        shareRoundRect(ctx, x, y, size, size, 18);
+        ctx.fillStyle = done ? 'rgba(247,208,44,0.16)' : '#1c1c30'; ctx.fill();
+        if (done) { ctx.strokeStyle = 'rgba(247,208,44,0.6)'; ctx.lineWidth = 3; ctx.stroke(); }
+        shareAchIcon(ctx, imgs[i], a.id, x + 8, y + 8, size - 16, !done);
+      });
+      var bottom = y0 + rows * size + (rows - 1) * gap;
+      shareLine(ctx, got === list.length ? t('Every achievement unlocked!') : t('Can you collect them all?'), Math.max(bottom + 90, SHARE_H - 160), 46, '700', '#e8e8f0');
+      return base.c;
+    });
+  }
+  var achShareState = { blob: null, name: '', key: '' };
+  function achShareOpen(id) {
+    var list = achList(), a = id ? list.filter(function(x) { return x.id === id; })[0] : null;
+    if (id && !a) return;
+    var key = id || 'all';
+    achShareState = { blob: null, name: 'nameemall-achievement' + (id ? '-' + id : 's') + '.png', key: key };
+    $('ach-share-title').textContent = a ? '🏅 ' + achTitle(a) : t('🏅 Achievements');
+    var prev = $('ach-share-preview');
+    if (prev.src && prev.src.indexOf('blob:') === 0) URL.revokeObjectURL(prev.src);
+    prev.removeAttribute('src');
+    var imgBtn = $('ach-share-image'), dl = $('ach-share-discord');
+    imgBtn.disabled = true;
+    if (dl.dataset.label) { clearTimeout(dl._flash); dl.textContent = dl.dataset.label; }
+    $('ach-share-overlay').classList.add('active');
+    Promise.resolve(id ? shareAchievementCard(id) : shareAllAchievementsCard()).then(function(canvas) {
+      canvas.toBlob(function(blob) {
+        if (!blob || achShareState.key !== key) return;
+        achShareState.blob = blob;
+        prev.src = URL.createObjectURL(blob);
+        imgBtn.disabled = false;
+      }, 'image/png');
+    });
+  }
+  $('ach-share-image').addEventListener('click', function() {
+    if (!achShareState.blob) return;
+    shareDeliver(achShareState.blob, achShareState.name, t('Can you beat my score?') + ' ' + SHARE_URL, this,
+      achShareState.key === 'all' ? 'achievements_image' : 'achievement_image');
+  });
+  $('ach-share-close').addEventListener('click', function() { $('ach-share-overlay').classList.remove('active'); });
+  $('ach-share-overlay').addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); });
+  // Discord: copy the card first (where the browser allows it), then the invite opens #achievements
+  $('ach-share-discord').addEventListener('click', function() {
+    var a = this;
+    if (!achShareState.blob) return;
+    copyImageBlob(achShareState.blob).then(function(ok) {
+      if (ok) discordFlash(a, t('✓ Image copied! Paste it in #achievements'));
+    });
+  });
+  $('modal-discord').addEventListener('click', function() {
+    var a = this;
+    if (shareCache.key === sharePokedexKey() && shareCache.blob) {
+      copyImageBlob(shareCache.blob).then(function(ok) { if (ok) discordFlash(a, t('✓ Image copied! Paste it in #achievements')); });
+    }
+  });
 
   function sharePrepare(key, build) {
     shareCache = { key: key, blob: null };
