@@ -427,5 +427,7 @@ window.NEA_UI = {
   "{count} of {total} achievements": "成就 {count} / {total}",
   "Can you unlock it?": "你也能解鎖嗎？",
   "Every achievement unlocked!": "所有成就全部解鎖！",
-  "Can you collect them all?": "你能全部收集嗎？"
+  "Can you collect them all?": "你能全部收集嗎？",
+  "Room not found. The host may have left, or the code is wrong.": "找不到房間。房主可能已離開，或代碼有誤。",
+  "This room already has a second player.": "這個房間已經有第二位玩家了。",
 };

@@ -1362,6 +1362,15 @@ const Q = (function() {
     try { if (typeof gtag === 'function') gtag('event', name, params); } catch(e) {}
     achOnTrack(name, params);
   }
+  // One join attempt = at most one room_join (sent when the connection to the host really
+  // opens) and at most one room_join_fail (with the reason). Retries and the "busy" loop
+  // reuse the same log, so they never count twice.
+  function roomJoinLog(mode) {
+    var log = { ok: false, failed: false };
+    log.success = function() { if (log.ok) return; log.ok = true; track('room_join', { game_mode: mode }); };
+    log.fail = function(reason) { if (log.ok || log.failed) return; log.failed = true; track('room_join_fail', { game_mode: mode, reason: reason }); };
+    return log;
+  }
   function trackUserProps(props) {
     try { if (typeof gtag === 'function') gtag('set', 'user_properties', props); } catch(e) {}
   }
@@ -3145,12 +3154,37 @@ const Q = (function() {
     });
   }
 
-  function duelJoin(hostId) {
-    track('room_join', { game_mode: 'duel' });
+  var duelJoinLog = null;
+  // The join attempt ended without a connection: say why, free the guest id and offer the lobby again
+  function duelJoinFailed(msg) {
+    clearTimeout(duelConnTimeout);
+    if (duelPeer) { var deadPeer = duelPeer; duelPeer = null; try { deadPeer.destroy(); } catch(e) {} }
+    duelConn = null;
+    duelRoomId = null;
+    clearRoomSession();
+    clearRoomUrl();
+    var st = $('duel-status');
+    if (st) st.textContent = msg;
+    ['duel-join-section', 'duel-create-btn'].forEach(function(id) { var el = $(id); if (el) { el.style.display = ''; el.disabled = false; } });
+    ['.duel-settings', '.lobby-or-divider'].forEach(function(sel) { var el = document.querySelector(sel); if (el) el.style.display = ''; });
+  }
+
+  function duelJoin(hostId, attempt) {
+    attempt = attempt || 0;
+    if (!attempt) {
+      duelJoinLog = roomJoinLog('duel');
+      var firstLog = duelJoinLog;
+      // Still not connected after 45s: count it as a failed join (a late success still counts as a join)
+      setTimeout(function() {
+        if (firstLog === duelJoinLog && !firstLog.ok && duelRoomId === hostId && !duelActive) firstLog.fail('timeout');
+      }, 45000);
+    }
+    var log = duelJoinLog;
     duelRole = 'red';
     duelRoomId = hostId;
     $('duel-status').textContent = 'Connecting to signaling server…';
     duelPeer = new Peer(hostId + '-2', { config: duelIceConfig });
+    var thisPeer = duelPeer;
     duelPeer.on('open', function() {
       $('duel-status').textContent = 'Connected to server. Reaching host…';
       duelConn = duelPeer.connect(hostId, { reliable: true });
@@ -3160,6 +3194,7 @@ const Q = (function() {
       duelConn.on('open', function() {
         clearTimeout(duelConnTimeout);
         $('duel-status').textContent = 'Connected! Waiting for game to start…';
+        log.success();
         duelConn.send({ type: 'join' });
       });
       duelConn.on('data', duelOnMessage);
@@ -3174,15 +3209,31 @@ const Q = (function() {
     });
     duelPeer.on('error', function(err) {
       clearTimeout(duelConnTimeout);
-      if (err.type === 'peer-unavailable') return;
-      if (err.type === 'unavailable-id') {
-        $('duel-status').textContent = 'Room is busy. Retrying…';
-        setTimeout(function() { duelJoin(hostId); }, 2000);
+      if (duelActive || log.ok || duelRoomId !== hostId) return;
+      if (err.type === 'peer-unavailable') {
+        // Nobody is hosting this code: the host closed the tab, or the code was mistyped
+        log.fail('not_found');
+        duelJoinFailed(t('Room not found. The host may have left, or the code is wrong.'));
         return;
       }
+      if (err.type === 'unavailable-id') {
+        // Another guest is already in (or joining) this room
+        if (attempt >= 5) {
+          log.fail('busy');
+          duelJoinFailed(t('This room already has a second player.'));
+          return;
+        }
+        $('duel-status').textContent = 'Room is busy. Retrying…';
+        if (duelPeer === thisPeer) { duelPeer = null; try { thisPeer.destroy(); } catch(e) {} }
+        setTimeout(function() { if (duelRoomId === hostId && !duelActive) duelJoin(hostId, attempt + 1); }, 2000);
+        return;
+      }
+      log.fail(err.type || 'error');
       $('duel-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
     });
     duelPeer.on('disconnected', function() {
+      // A peer we gave up on (room not found / full) disconnects as it is destroyed: ignore it
+      if (thisPeer.destroyed || thisPeer !== duelPeer) return;
       if (!duelActive) {
         $('duel-status').textContent = 'Lost connection to server. Reconnecting…';
       }
@@ -4663,12 +4714,37 @@ const Q = (function() {
     });
   }
 
-  function coopJoin(hostId) {
-    track('room_join', { game_mode: 'coop' });
+  var coopJoinLog = null;
+  // The join attempt ended without a connection: say why, free the guest id and offer the lobby again
+  function coopJoinFailed(msg) {
+    clearTimeout(coopConnTimeout);
+    if (coopPeer) { var deadPeer = coopPeer; coopPeer = null; try { deadPeer.destroy(); } catch(e) {} }
+    coopConn = null;
+    coopRoomId = null;
+    clearRoomSession();
+    clearRoomUrl();
+    var st = $('coop-status');
+    if (st) st.textContent = msg;
+    ['coop-join-section', 'coop-create-btn'].forEach(function(id) { var el = $(id); if (el) { el.style.display = ''; el.disabled = false; } });
+    ['.duel-lobby .duel-settings', '.duel-lobby .lobby-or-divider'].forEach(function(sel) { var el = document.querySelector(sel); if (el) el.style.display = ''; });
+  }
+
+  function coopJoin(hostId, attempt) {
+    attempt = attempt || 0;
+    if (!attempt) {
+      coopJoinLog = roomJoinLog('coop');
+      var firstLog = coopJoinLog;
+      // Still not connected after 45s: count it as a failed join (a late success still counts as a join)
+      setTimeout(function() {
+        if (firstLog === coopJoinLog && !firstLog.ok && coopRoomId === hostId && !coopActive) firstLog.fail('timeout');
+      }, 45000);
+    }
+    var log = coopJoinLog;
     coopRole = 'guest';
     coopRoomId = hostId;
     $('coop-status').textContent = 'Connecting to signaling server…';
     coopPeer = new Peer(hostId + '-2', { config: duelIceConfig });
+    var thisPeer = coopPeer;
     coopPeer.on('open', function() {
       $('coop-status').textContent = 'Connected to server. Reaching host…';
       coopConn = coopPeer.connect(hostId, { reliable: true });
@@ -4678,6 +4754,7 @@ const Q = (function() {
       coopConn.on('open', function() {
         clearTimeout(coopConnTimeout);
         $('coop-status').textContent = 'Connected! Waiting for game to start…';
+        log.success();
         coopConn.send({ type: 'join' });
       });
       coopConn.on('data', coopOnMessage);
@@ -4692,15 +4769,31 @@ const Q = (function() {
     });
     coopPeer.on('error', function(err) {
       clearTimeout(coopConnTimeout);
-      if (err.type === 'peer-unavailable') return;
-      if (err.type === 'unavailable-id') {
-        $('coop-status').textContent = 'Room is busy. Retrying…';
-        setTimeout(function() { coopJoin(hostId); }, 2000);
+      if (coopActive || log.ok || coopRoomId !== hostId) return;
+      if (err.type === 'peer-unavailable') {
+        // Nobody is hosting this code: the host closed the tab, or the code was mistyped
+        log.fail('not_found');
+        coopJoinFailed(t('Room not found. The host may have left, or the code is wrong.'));
         return;
       }
+      if (err.type === 'unavailable-id') {
+        // Another guest is already in (or joining) this room
+        if (attempt >= 5) {
+          log.fail('busy');
+          coopJoinFailed(t('This room already has a second player.'));
+          return;
+        }
+        $('coop-status').textContent = 'Room is busy. Retrying…';
+        if (coopPeer === thisPeer) { coopPeer = null; try { thisPeer.destroy(); } catch(e) {} }
+        setTimeout(function() { if (coopRoomId === hostId && !coopActive) coopJoin(hostId, attempt + 1); }, 2000);
+        return;
+      }
+      log.fail(err.type || 'error');
       $('coop-status').textContent = t('Error: {msg}', { msg: err.type + ' - ' + (err.message || t('Try refreshing.')) });
     });
     coopPeer.on('disconnected', function() {
+      // A peer we gave up on (room not found / full) disconnects as it is destroyed: ignore it
+      if (thisPeer.destroyed || thisPeer !== coopPeer) return;
       if (!coopActive) {
         $('coop-status').textContent = 'Lost connection to server. Reconnecting…';
       }

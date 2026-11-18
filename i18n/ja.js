@@ -453,5 +453,7 @@ window.NEA_UI = {
   "{count} of {total} achievements": "実績 {count} / {total}",
   "Can you unlock it?": "きみも解除できる？",
   "Every achievement unlocked!": "すべての実績を解除！",
-  "Can you collect them all?": "全部集められる？"
+  "Can you collect them all?": "全部集められる？",
+  "Room not found. The host may have left, or the code is wrong.": "ルームが見つかりません。ホストが退出したか、コードが間違っています。",
+  "This room already has a second player.": "このルームにはすでに2人目のプレイヤーがいます。",
 };

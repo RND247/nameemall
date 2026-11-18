@@ -427,5 +427,7 @@ window.NEA_UI = {
   "{count} of {total} achievements": "업적 {count} / {total}",
   "Can you unlock it?": "당신도 달성할 수 있나요?",
   "Every achievement unlocked!": "모든 업적 달성!",
-  "Can you collect them all?": "전부 모을 수 있나요?"
+  "Can you collect them all?": "전부 모을 수 있나요?",
+  "Room not found. The host may have left, or the code is wrong.": "방을 찾을 수 없습니다. 호스트가 나갔거나 코드가 잘못되었습니다.",
+  "This room already has a second player.": "이 방에는 이미 두 번째 플레이어가 있습니다.",
 };

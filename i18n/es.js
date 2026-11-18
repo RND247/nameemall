@@ -427,5 +427,7 @@ window.NEA_UI = {
   "{count} of {total} achievements": "{count} de {total} logros",
   "Can you unlock it?": "¿Puedes desbloquearlo?",
   "Every achievement unlocked!": "¡Todos los logros desbloqueados!",
-  "Can you collect them all?": "¿Puedes conseguirlos todos?"
+  "Can you collect them all?": "¿Puedes conseguirlos todos?",
+  "Room not found. The host may have left, or the code is wrong.": "Sala no encontrada. Puede que el anfitrión se haya ido o que el código sea incorrecto.",
+  "This room already has a second player.": "Esta sala ya tiene un segundo jugador.",
 };
