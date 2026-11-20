@@ -323,8 +323,10 @@ body.creator-v .cc-top li { gap: 4px; }
 /* Combo meter (Creator Mode with celebrations): always on screen, counts names that come within
    5 seconds of each other; the bar is the time left to keep the combo going. Every 5 = a new color. */
 .combo-meter { display: none; }
-body.creator-combo .combo-meter { display: flex; position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 90; pointer-events: none;
-  flex-direction: column; align-items: center; gap: 5px; padding: 8px 18px 9px; min-width: 132px; border-radius: 16px;
+body.creator-combo .input-row { flex-wrap: nowrap; }
+body.creator-combo #input-box { width: auto; flex: 0 1 760px; min-width: 0; }
+body.creator-combo .combo-meter { display: flex; flex: 0 0 auto; position: relative; pointer-events: none;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 8px 16px 9px; min-width: 120px; border-radius: 14px;
   background: rgba(15,15,26,0.78); border: 2px solid var(--cm-col, #4b5563); box-shadow: 0 6px 22px rgba(0,0,0,0.35), 0 0 18px color-mix(in srgb, var(--cm-col, #4b5563) 35%, transparent);
   transition: border-color .3s, box-shadow .3s, opacity .4s; }
 .combo-meter.idle { opacity: .45; box-shadow: 0 6px 22px rgba(0,0,0,0.3); }
@@ -347,12 +349,14 @@ body.creator-combo .combo-meter { display: flex; position: fixed; left: 50%; bot
 /* Tier up: a pop and a ring that flies out */
 .combo-meter.tierup { animation: cmPop .5s cubic-bezier(.2,1.6,.4,1); }
 .combo-meter.t5.tierup { animation: cmPop .5s cubic-bezier(.2,1.6,.4,1), cmRainbow 2.4s linear infinite; }
-@keyframes cmPop { 0% { transform: translateX(-50%) scale(1); } 35% { transform: translateX(-50%) scale(1.28); } 100% { transform: translateX(-50%) scale(1); } }
-.cm-ring { position: fixed; left: 50%; border: 3px solid var(--cm-col); border-radius: 20px; pointer-events: none; z-index: 89; animation: cmRing .7s ease-out forwards; }
-@keyframes cmRing { from { transform: translateX(-50%) scale(1); opacity: .9; } to { transform: translateX(-50%) scale(1.9, 2.6); opacity: 0; } }
-.cm-tier-label { position: fixed; left: 50%; z-index: 91; pointer-events: none; font-weight: 900; font-size: 1rem; letter-spacing: 1px; color: var(--cm-col); text-shadow: 0 2px 8px rgba(0,0,0,.6); animation: cmFloat 1.1s ease-out forwards; white-space: nowrap; }
+@keyframes cmPop { 0% { transform: scale(1); } 35% { transform: scale(1.22); } 100% { transform: scale(1); } }
+.cm-ring { position: fixed; border: 3px solid var(--cm-col); border-radius: 16px; pointer-events: none; z-index: 189; animation: cmRing .7s ease-out forwards; }
+@keyframes cmRing { from { transform: scale(1); opacity: .9; } to { transform: scale(1.7, 2.2); opacity: 0; } }
+.cm-tier-label { position: fixed; z-index: 191; pointer-events: none; font-weight: 900; font-size: 1rem; letter-spacing: 1px; color: var(--cm-col); text-shadow: 0 2px 8px rgba(0,0,0,.6); animation: cmFloat 1.1s ease-out forwards; white-space: nowrap; }
 @keyframes cmFloat { from { transform: translate(-50%, 0); opacity: 0; } 20% { opacity: 1; } to { transform: translate(-50%, -34px); opacity: 0; } }
-body.creator-combo .toast-stack { bottom: 96px; }
+body.creator-v.creator-combo .combo-meter { min-width: 84px; padding: 6px 10px 7px; }
+body.creator-v.creator-combo .combo-meter .cm-label { display: none; }
+body.creator-v.creator-combo #input-box { font-size: 1.4rem; }
 @media (prefers-reduced-motion: reduce) { .combo-meter, .combo-meter .cm-n, .cm-tier-label { animation: none !important; } .cm-ring { display: none; } }
 /* Combo: a small pill at the bottom, clear of the Spotlight and the name box */
 .creator-banner.small { top: auto; bottom: 22px; transform: translateX(-50%); padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(245,158,11,0.5); background: rgba(15,15,26,0.72); box-shadow: 0 4px 16px rgba(0,0,0,0.3); animation: comboIn 0.3s ease-out, fadeOut 0.4s ease 1.5s forwards; }
@@ -1127,10 +1131,6 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <button class="tab-btn" data-tab="achievements" title="Achievements">🏅 <span class="tab-label">Achievements</span></button>
 </nav>
 
-<div class="combo-meter idle" id="combo-meter" aria-hidden="true">
-  <div class="cm-row"><span class="cm-fire">🔥</span><span class="cm-label" id="cm-label">Combo</span><span class="cm-n" id="cm-n">0</span></div>
-  <div class="cm-bar"><span id="cm-fill"></span></div>
-</div>
 <div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
 <header>
   <div class="panel-backdrop" id="panel-backdrop"></div>
@@ -1152,6 +1152,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
   <div class="input-row">
     <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
+    <div class="combo-meter idle" id="combo-meter" aria-hidden="true">
+      <div class="cm-row"><span class="cm-fire">🔥</span><span class="cm-label" id="cm-label">Combo</span><span class="cm-n" id="cm-n">0</span></div>
+      <div class="cm-bar"><span id="cm-fill"></span></div>
+    </div>
   </div>
   <div class="howto" id="howto" hidden>
     <span>👋 How to play: type any Pokémon name in the box. Correct names pop onto the board, no need to press Enter.</span>
@@ -1411,6 +1415,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
       <button class="creator-orient" data-orient="v"><span class="co-shape co-v"></span><b>Vertical</b><small>9:16 · TikTok, Shorts, Reels</small></button>
     </div>
     <div class="setting-row" id="set-creator-celebrate"><span class="setting-label">Celebrations and milestones</span><div class="toggle-switch" id="tog-creator-celebrate"></div></div>
+    <div class="setting-row" id="set-creator-combo"><span class="setting-label">Combo meter beside the name box</span><div class="toggle-switch" id="tog-creator-combo"></div></div>
     <div class="setting-row" id="set-creator-spot"><span class="setting-label">Spotlight the last Pokémon named</span><div class="toggle-switch" id="tog-creator-spot"></div></div>
     <div class="settings-section-label">Twitch Chat Plays (optional)</div>
     <div class="creator-twitch">
@@ -6583,7 +6588,7 @@ const Q = (function() {
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
-  var creatorCfg = { on: false, orient: 'h', celebrate: true, spotlight: true, twitch: '', chatMode: 'coop' };
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, spotlight: true, twitch: '', chatMode: 'coop' };
   try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
   var creatorUrl = null;
   try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
@@ -6598,8 +6603,8 @@ const Q = (function() {
     b.classList.toggle('creator-v', on && creatorCfg.orient === 'v');
     b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v');
     b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
-    b.classList.toggle('creator-combo', on && creatorCfg.celebrate);
-    if (!(on && creatorCfg.celebrate)) comboReset();
+    b.classList.toggle('creator-combo', on && creatorCfg.combo);
+    if (!(on && creatorCfg.combo)) comboReset();
     b.classList.toggle('spot-regular', !on && spotlightEnabled);
     if (on ? !creatorCfg.spotlight : !spotlightEnabled) $('creator-spot').innerHTML = '';
     creatorUpdateNav();
@@ -6614,6 +6619,7 @@ const Q = (function() {
   function creatorSetupRender() {
     document.querySelectorAll('.creator-orient').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.orient === creatorCfg.orient); });
     $('tog-creator-celebrate').classList.toggle('on', creatorCfg.celebrate);
+    $('tog-creator-combo').classList.toggle('on', creatorCfg.combo);
     $('tog-creator-spot').classList.toggle('on', creatorCfg.spotlight);
     document.querySelectorAll('[data-chat-mode]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.chatMode === creatorCfg.chatMode); });
   }
@@ -6648,10 +6654,12 @@ const Q = (function() {
   }
   function creatorOnNamed(matches, by) {
     if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]], by);
-    if (!creatorCfg.on || !creatorCfg.celebrate) return;
+    if (!creatorCfg.on) return;
     var now = Date.now();
     creatorCombo.n = now - creatorCombo.last < 5000 ? creatorCombo.n + matches.length : matches.length;
     creatorCombo.last = now;
+    comboShow(creatorCombo.n, matches.length);
+    if (!creatorCfg.celebrate) return;
     var n = foundSet.size, prev = n - matches.length, total = items.length;
     if (n >= total) return; // the finish has its own celebration
     var crossed = function(m) { return prev < m && n >= m; };
@@ -6661,7 +6669,6 @@ const Q = (function() {
       if (hit) { creatorBanner(t('🎉 {count} Pokémon!', { count: hit }), t('{left} to go', { left: total - n }), 'big'); return; }
       if (crossed(Math.ceil(total / 2))) { creatorBanner(t('Halfway there!'), n + ' / ' + total, 'big'); return; }
     }
-    comboShow(creatorCombo.n, matches.length);
   }
   // ── Live combo meter ──
   var COMBO_WINDOW = 5000, comboTimer = null;
@@ -6693,6 +6700,7 @@ const Q = (function() {
     lab.className = 'cm-tier-label';
     lab.style.setProperty('--cm-col', col);
     lab.style.top = (r.top - 30) + 'px';
+    lab.style.left = (r.left + r.width / 2) + 'px';
     lab.textContent = t(COMBO_TIERS[tier]);
     document.body.appendChild(lab);
     setTimeout(function() { lab.remove(); }, 1200);
@@ -6700,7 +6708,7 @@ const Q = (function() {
     var ring = document.createElement('div');
     ring.className = 'cm-ring';
     ring.style.setProperty('--cm-col', col);
-    ring.style.top = r.top + 'px'; ring.style.width = r.width + 'px'; ring.style.height = r.height + 'px';
+    ring.style.top = r.top + 'px'; ring.style.left = r.left + 'px'; ring.style.width = r.width + 'px'; ring.style.height = r.height + 'px';
     document.body.appendChild(ring);
     setTimeout(function() { ring.remove(); }, 800);
     for (var k = 0; k < 14; k++) {
@@ -6734,6 +6742,7 @@ const Q = (function() {
     btn.addEventListener('click', function() { creatorCfg.orient = btn.dataset.orient; creatorSetupRender(); });
   });
   $('set-creator-celebrate').addEventListener('click', function() { creatorCfg.celebrate = !creatorCfg.celebrate; creatorSetupRender(); });
+  $('set-creator-combo').addEventListener('click', function() { creatorCfg.combo = !creatorCfg.combo; creatorSetupRender(); });
   $('set-creator-spot').addEventListener('click', function() { creatorCfg.spotlight = !creatorCfg.spotlight; creatorSetupRender(); });
   $('set-creator').addEventListener('click', creatorOpenSetup);
   $('tog-spot').classList.toggle('on', spotlightEnabled);
@@ -6761,7 +6770,7 @@ const Q = (function() {
     if (channel) track('chat_plays', { action: 'connect', mode: creatorCfg.chatMode });
     $('creator-overlay').classList.remove('active');
     track('creator_mode', { action: 'start', orientation: creatorCfg.orient === 'v' ? 'vertical' : 'horizontal',
-                            celebrations: creatorCfg.celebrate, spotlight: creatorCfg.spotlight });
+                            celebrations: creatorCfg.celebrate, combo: creatorCfg.combo, spotlight: creatorCfg.spotlight });
     window.scrollTo(0, 0);
     $input.focus();
   });

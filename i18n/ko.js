@@ -448,4 +448,5 @@ window.NEA_UI = {
   "🌀 Legendary!": "🌀 전설급!",
   "💎 Mythical!": "💎 환상급!",
   "🌈 Ultra combo!": "🌈 울트라 콤보!",
+  "Combo meter beside the name box": "입력창 옆 콤보 미터",
 };

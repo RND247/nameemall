@@ -448,4 +448,5 @@ window.NEA_UI = {
   "🌀 Legendary!": "🌀 ¡Legendario!",
   "💎 Mythical!": "💎 ¡Singular!",
   "🌈 Ultra combo!": "🌈 ¡Ultra combo!",
+  "Combo meter beside the name box": "Contador de combo junto a la casilla",
 };

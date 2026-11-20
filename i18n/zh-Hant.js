@@ -448,4 +448,5 @@ window.NEA_UI = {
   "🌀 Legendary!": "🌀 傳說級！",
   "💎 Mythical!": "💎 幻之級！",
   "🌈 Ultra combo!": "🌈 究極連擊！",
+  "Combo meter beside the name box": "輸入框旁的連擊計量表",
 };
