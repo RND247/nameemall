@@ -2109,6 +2109,8 @@ const Q = (function() {
 
   function renderGrid() {
     const wrap = $('grid-wrap');
+    // A fresh, empty board (Reset, new generations, a themed quiz, Play Again...) starts without a Spotlight
+    if (foundSet.size === 0) $('creator-spot').innerHTML = '';
     if (currentTab === 'mandarin') {
       wrap.innerHTML = '<div class="grid mandarin-grid" id="grid"></div>';
       const grid = $('grid');
@@ -2759,6 +2761,7 @@ const Q = (function() {
       }
       dailyState.active = false;
       stopTimer(); timerRunning = false;
+      $('creator-spot').innerHTML = '';
       dailyExitToLobby();
       return;
     }
