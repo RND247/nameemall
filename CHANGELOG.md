@@ -5,6 +5,11 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.17.0
+
+- Achievements now open in a window on top of your game, so you can check your progress mid-game without ending it. Close it with ✕, Esc or a tap outside
+- Joining a Duel or Co-Op room that has closed or is already full now tells you so, instead of waiting forever
+
 ## v1.16.0
 
 - Share your achievements: every unlocked achievement now has a 📤 button that makes a picture card, and "Share my achievements" shows your whole collection
