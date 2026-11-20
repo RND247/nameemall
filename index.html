@@ -5593,7 +5593,7 @@ const Q = (function() {
     }
   });
   document.addEventListener('keydown', function(e) {
-    if (paused && !disconnectWaiting && e.key !== 'F5' && !e.ctrlKey && !e.metaKey) {
+    if (paused && !disconnectWaiting && !achIsOpen() && e.key !== 'F5' && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
       if (currentTab === 'duel' || currentTab === 'coop') {
         multiTogglePause(currentTab);
@@ -5881,10 +5881,20 @@ const Q = (function() {
 
   function achIsOpen() { return $('ach-overlay').classList.contains('active'); }
   var achPrevFocus = null;
+  var achPausedGame = false;
   function achOpen() {
     if (achIsOpen()) return;
     closePanels();
     achPrevFocus = document.activeElement;
+    // Solo games (Full Pokédex, Daily) pause while the window is open, same as the ⏸ button.
+    // Duel and Co-Op keep running: pausing there would also stop the other player.
+    if ((currentTab === 'pokemon' || currentTab === 'daily') && timerRunning && !paused && !givenUp) {
+      achPausedGame = true;
+      paused = true;
+      stopTimer();
+      $input.disabled = true;
+      setPauseBtn(true);
+    }
     achShowPage();
     $('ach-overlay').classList.add('active');
     document.body.classList.add('ach-open');
@@ -5896,6 +5906,15 @@ const Q = (function() {
     if (!achIsOpen()) return;
     $('ach-overlay').classList.remove('active');
     document.body.classList.remove('ach-open');
+    if (achPausedGame) {
+      achPausedGame = false;
+      if (paused) {
+        paused = false;
+        startTimer();
+        $input.disabled = false;
+        setPauseBtn(false);
+      }
+    }
     // Back to the game: put the cursor back where it was (usually the name box)
     if (achPrevFocus && achPrevFocus.focus && document.contains(achPrevFocus)) { try { achPrevFocus.focus(); } catch(e) {} }
     achPrevFocus = null;
