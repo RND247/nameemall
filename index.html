@@ -246,6 +246,7 @@ body.creator #input-box { font-size: 2rem; padding: 14px 24px; width: min(760px,
 body.creator #action-bar { opacity: 0.3; transition: opacity 0.2s; }
 body.creator #action-bar:hover, body.creator #action-bar:focus-within { opacity: 1; }
 body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe):not(.toast-spell) { display: none; }
+body.creator-no-evo .toast-stack .evo-toast { display: none; }
 body.creator .creator-nav { display: flex; position: absolute; top: 8px; right: 12px; gap: 6px; opacity: 0.25; transition: opacity 0.2s; z-index: 3; }
 body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacity: 1; }
 /* Nothing on stream that isn't the game: no install prompt */
@@ -1416,6 +1417,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     </div>
     <div class="setting-row" id="set-creator-celebrate"><span class="setting-label">Celebrations and milestones</span><div class="toggle-switch" id="tog-creator-celebrate"></div></div>
     <div class="setting-row" id="set-creator-combo"><span class="setting-label">Combo meter beside the name box</span><div class="toggle-switch" id="tog-creator-combo"></div></div>
+    <div class="setting-row" id="set-creator-evo"><span class="setting-label">Evolution line notices</span><div class="toggle-switch" id="tog-creator-evo"></div></div>
     <div class="setting-row" id="set-creator-spot"><span class="setting-label">Spotlight the last Pokémon named</span><div class="toggle-switch" id="tog-creator-spot"></div></div>
     <div class="settings-section-label">Twitch Chat Plays (optional)</div>
     <div class="creator-twitch">
@@ -2433,7 +2435,7 @@ const Q = (function() {
     }
 
     var el = document.createElement('div');
-    el.className = 'toast family-toast';
+    el.className = 'toast family-toast evo-toast';
     var label = document.createElement('div');
     label.className = 'family-label';
     label.textContent = 'Evolution Complete!';
@@ -6588,7 +6590,7 @@ const Q = (function() {
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
-  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, spotlight: true, twitch: '', chatMode: 'coop' };
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, evo: true, spotlight: true, twitch: '', chatMode: 'coop' };
   try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
   var creatorUrl = null;
   try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
@@ -6604,6 +6606,7 @@ const Q = (function() {
     b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v');
     b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
     b.classList.toggle('creator-combo', on && creatorCfg.combo);
+    b.classList.toggle('creator-no-evo', on && !creatorCfg.evo);
     if (!(on && creatorCfg.combo)) comboReset();
     b.classList.toggle('spot-regular', !on && spotlightEnabled);
     if (on ? !creatorCfg.spotlight : !spotlightEnabled) $('creator-spot').innerHTML = '';
@@ -6620,6 +6623,7 @@ const Q = (function() {
     document.querySelectorAll('.creator-orient').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.orient === creatorCfg.orient); });
     $('tog-creator-celebrate').classList.toggle('on', creatorCfg.celebrate);
     $('tog-creator-combo').classList.toggle('on', creatorCfg.combo);
+    $('tog-creator-evo').classList.toggle('on', creatorCfg.evo);
     $('tog-creator-spot').classList.toggle('on', creatorCfg.spotlight);
     document.querySelectorAll('[data-chat-mode]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.chatMode === creatorCfg.chatMode); });
   }
@@ -6743,6 +6747,7 @@ const Q = (function() {
   });
   $('set-creator-celebrate').addEventListener('click', function() { creatorCfg.celebrate = !creatorCfg.celebrate; creatorSetupRender(); });
   $('set-creator-combo').addEventListener('click', function() { creatorCfg.combo = !creatorCfg.combo; creatorSetupRender(); });
+  $('set-creator-evo').addEventListener('click', function() { creatorCfg.evo = !creatorCfg.evo; creatorSetupRender(); });
   $('set-creator-spot').addEventListener('click', function() { creatorCfg.spotlight = !creatorCfg.spotlight; creatorSetupRender(); });
   $('set-creator').addEventListener('click', creatorOpenSetup);
   $('tog-spot').classList.toggle('on', spotlightEnabled);
@@ -6770,7 +6775,7 @@ const Q = (function() {
     if (channel) track('chat_plays', { action: 'connect', mode: creatorCfg.chatMode });
     $('creator-overlay').classList.remove('active');
     track('creator_mode', { action: 'start', orientation: creatorCfg.orient === 'v' ? 'vertical' : 'horizontal',
-                            celebrations: creatorCfg.celebrate, combo: creatorCfg.combo, spotlight: creatorCfg.spotlight });
+                            celebrations: creatorCfg.celebrate, combo: creatorCfg.combo, evo_notices: creatorCfg.evo, spotlight: creatorCfg.spotlight });
     window.scrollTo(0, 0);
     $input.focus();
   });

@@ -449,4 +449,5 @@ window.NEA_UI = {
   "💎 Mythical!": "💎 幻之級！",
   "🌈 Ultra combo!": "🌈 究極連擊！",
   "Combo meter beside the name box": "輸入框旁的連擊計量表",
+  "Evolution line notices": "進化線完成通知",
 };

@@ -475,4 +475,5 @@ window.NEA_UI = {
   "💎 Mythical!": "💎 幻級！",
   "🌈 Ultra combo!": "🌈 ウルトラコンボ！",
   "Combo meter beside the name box": "入力欄の横にコンボメーター",
+  "Evolution line notices": "進化ライン完成の通知",
 };

@@ -449,4 +449,5 @@ window.NEA_UI = {
   "💎 Mythical!": "💎 환상급!",
   "🌈 Ultra combo!": "🌈 울트라 콤보!",
   "Combo meter beside the name box": "입력창 옆 콤보 미터",
+  "Evolution line notices": "진화 라인 알림",
 };

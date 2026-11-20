@@ -449,4 +449,5 @@ window.NEA_UI = {
   "💎 Mythical!": "💎 ¡Singular!",
   "🌈 Ultra combo!": "🌈 ¡Ultra combo!",
   "Combo meter beside the name box": "Contador de combo junto a la casilla",
+  "Evolution line notices": "Avisos de líneas evolutivas",
 };
