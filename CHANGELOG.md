@@ -5,6 +5,10 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.19.0
+
+- Creator Mode: a live combo meter now sits at the bottom of the screen. Name Pokémon within 5 seconds of each other to keep it going, and watch the bar drain. Every 5 in a row it changes color with a burst, all the way up to a rainbow 🌈 Ultra combo at 25
+
 ## v1.18.0
 
 - New: skins! Each Collections achievement unlocks a look for the whole game, starting with Eeveelutions: Eevee's family in your header, a glow in its colors and sparkles every time you name a Pokémon

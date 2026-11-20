@@ -442,4 +442,10 @@ window.NEA_UI = {
   "Try it on": "적용해 보기",
   "Later": "나중에",
   "✨ New skin unlocked! Pick it in ⚙️ Settings": "✨ 새 스킨 해금! ⚙️ 설정에서 고르세요",
+  "Combo": "콤보",
+  "🔥 On fire!": "🔥 불붙었다!",
+  "⚡ Unstoppable!": "⚡ 멈출 수 없어!",
+  "🌀 Legendary!": "🌀 전설급!",
+  "💎 Mythical!": "💎 환상급!",
+  "🌈 Ultra combo!": "🌈 울트라 콤보!",
 };

@@ -318,6 +318,40 @@ body.creator-v .cc-top li { gap: 4px; }
 .creator-banner { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); z-index: 998; pointer-events: none; text-align: center; padding: 18px 34px; border-radius: 18px; background: rgba(15,15,26,0.88); border: 3px solid #f7d02c; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: bannerIn 0.4s cubic-bezier(.2,1.4,.4,1), fadeOut 0.5s ease 2.1s forwards; max-width: min(92vw, 640px); }
 .creator-banner .cb-title { font-size: 2.6rem; font-weight: 900; color: #f7d02c; line-height: 1.1; }
 .creator-banner .cb-sub { font-size: 1.2rem; font-weight: 700; color: #e8e8f0; margin-top: 6px; }
+/* Combo meter (Creator Mode with celebrations): always on screen, counts names that come within
+   5 seconds of each other; the bar is the time left to keep the combo going. Every 5 = a new color. */
+.combo-meter { display: none; }
+body.creator-combo .combo-meter { display: flex; position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 90; pointer-events: none;
+  flex-direction: column; align-items: center; gap: 5px; padding: 8px 18px 9px; min-width: 132px; border-radius: 16px;
+  background: rgba(15,15,26,0.78); border: 2px solid var(--cm-col, #4b5563); box-shadow: 0 6px 22px rgba(0,0,0,0.35), 0 0 18px color-mix(in srgb, var(--cm-col, #4b5563) 35%, transparent);
+  transition: border-color .3s, box-shadow .3s, opacity .4s; }
+.combo-meter.idle { opacity: .45; box-shadow: 0 6px 22px rgba(0,0,0,0.3); }
+.combo-meter .cm-row { display: flex; align-items: baseline; gap: 4px; font-weight: 900; color: var(--cm-col, #9ca3af); line-height: 1; transition: color .3s; }
+.combo-meter .cm-fire { font-size: 1.15rem; }
+.combo-meter .cm-label { font-size: .72rem; letter-spacing: 1.5px; text-transform: uppercase; color: #e8e8f0; opacity: .8; margin-right: 2px; }
+.combo-meter .cm-n { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.combo-meter .cm-bar { width: 100%; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.12); overflow: hidden; }
+.combo-meter .cm-bar span { display: block; height: 100%; width: 0; border-radius: 3px; background: var(--cm-col, #9ca3af); }
+.combo-meter.bump .cm-n { animation: cmBump .25s ease-out; }
+@keyframes cmBump { 40% { transform: scale(1.3); } }
+.combo-meter.t1 { --cm-col: #f59e0b; }
+.combo-meter.t2 { --cm-col: #ef4444; }
+.combo-meter.t3 { --cm-col: #d946ef; }
+.combo-meter.t4 { --cm-col: #38bdf8; }
+.combo-meter.t5 { --cm-col: #facc15; animation: cmRainbow 2.4s linear infinite; }
+.combo-meter.t5 .cm-row { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,.6); }
+.combo-meter.t5 .cm-bar span { background: linear-gradient(90deg, #f59e0b, #ef4444, #d946ef, #38bdf8, #22c55e, #facc15); }
+@keyframes cmRainbow { 0%,100% { border-color: #ef4444; } 20% { border-color: #f59e0b; } 40% { border-color: #facc15; } 60% { border-color: #22c55e; } 80% { border-color: #38bdf8; } 90% { border-color: #d946ef; } }
+/* Tier up: a pop and a ring that flies out */
+.combo-meter.tierup { animation: cmPop .5s cubic-bezier(.2,1.6,.4,1); }
+.combo-meter.t5.tierup { animation: cmPop .5s cubic-bezier(.2,1.6,.4,1), cmRainbow 2.4s linear infinite; }
+@keyframes cmPop { 0% { transform: translateX(-50%) scale(1); } 35% { transform: translateX(-50%) scale(1.28); } 100% { transform: translateX(-50%) scale(1); } }
+.cm-ring { position: fixed; left: 50%; border: 3px solid var(--cm-col); border-radius: 20px; pointer-events: none; z-index: 89; animation: cmRing .7s ease-out forwards; }
+@keyframes cmRing { from { transform: translateX(-50%) scale(1); opacity: .9; } to { transform: translateX(-50%) scale(1.9, 2.6); opacity: 0; } }
+.cm-tier-label { position: fixed; left: 50%; z-index: 91; pointer-events: none; font-weight: 900; font-size: 1rem; letter-spacing: 1px; color: var(--cm-col); text-shadow: 0 2px 8px rgba(0,0,0,.6); animation: cmFloat 1.1s ease-out forwards; white-space: nowrap; }
+@keyframes cmFloat { from { transform: translate(-50%, 0); opacity: 0; } 20% { opacity: 1; } to { transform: translate(-50%, -34px); opacity: 0; } }
+body.creator-combo .toast-stack { bottom: 96px; }
+@media (prefers-reduced-motion: reduce) { .combo-meter, .combo-meter .cm-n, .cm-tier-label { animation: none !important; } .cm-ring { display: none; } }
 /* Combo: a small pill at the bottom, clear of the Spotlight and the name box */
 .creator-banner.small { top: auto; bottom: 22px; transform: translateX(-50%); padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(245,158,11,0.5); background: rgba(15,15,26,0.72); box-shadow: 0 4px 16px rgba(0,0,0,0.3); animation: comboIn 0.3s ease-out, fadeOut 0.4s ease 1.5s forwards; }
 .creator-banner.small .cb-title { font-size: 1.05rem; font-weight: 800; color: #f59e0b; }
@@ -1091,6 +1125,10 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <button class="tab-btn" data-tab="achievements" title="Achievements">🏅 <span class="tab-label">Achievements</span></button>
 </nav>
 
+<div class="combo-meter idle" id="combo-meter" aria-hidden="true">
+  <div class="cm-row"><span class="cm-fire">🔥</span><span class="cm-label" id="cm-label">Combo</span><span class="cm-n" id="cm-n">0</span></div>
+  <div class="cm-bar"><span id="cm-fill"></span></div>
+</div>
 <div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
 <header>
   <div class="panel-backdrop" id="panel-backdrop"></div>
@@ -6558,6 +6596,8 @@ const Q = (function() {
     b.classList.toggle('creator-v', on && creatorCfg.orient === 'v');
     b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v');
     b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
+    b.classList.toggle('creator-combo', on && creatorCfg.celebrate);
+    if (!(on && creatorCfg.celebrate)) comboReset();
     b.classList.toggle('spot-regular', !on && spotlightEnabled);
     if (on ? !creatorCfg.spotlight : !spotlightEnabled) $('creator-spot').innerHTML = '';
     creatorUpdateNav();
@@ -6619,9 +6659,68 @@ const Q = (function() {
       if (hit) { creatorBanner(t('🎉 {count} Pokémon!', { count: hit }), t('{left} to go', { left: total - n }), 'big'); return; }
       if (crossed(Math.ceil(total / 2))) { creatorBanner(t('Halfway there!'), n + ' / ' + total, 'big'); return; }
     }
-    if (creatorCombo.n >= 5 && Math.floor(creatorCombo.n / 5) > Math.floor((creatorCombo.n - matches.length) / 5)) {
-      creatorBanner(t('🔥 Combo x{count}', { count: creatorCombo.n }), '', 'small');
+    comboShow(creatorCombo.n, matches.length);
+  }
+  // ── Live combo meter ──
+  var COMBO_WINDOW = 5000, comboTimer = null;
+  var COMBO_TIERS = ['', '🔥 On fire!', '⚡ Unstoppable!', '🌀 Legendary!', '💎 Mythical!', '🌈 Ultra combo!'];
+  function comboTier(n) { return Math.min(5, Math.floor(n / 5)); }
+  function comboShow(n, added) {
+    var m = $('combo-meter');
+    if (!m || !document.body.classList.contains('creator-combo')) return;
+    var tier = comboTier(n), prevTier = comboTier(n - added);
+    m.classList.remove('idle', 't0', 't1', 't2', 't3', 't4', 't5', 'bump');
+    m.classList.add('t' + tier);
+    $('cm-n').textContent = n;
+    void m.offsetWidth;
+    m.classList.add('bump');
+    // The bar drains over the 5 seconds you have to name the next one
+    var fill = $('cm-fill');
+    fill.style.transition = 'none'; fill.style.width = '100%';
+    void fill.offsetWidth;
+    fill.style.transition = 'width ' + COMBO_WINDOW + 'ms linear'; fill.style.width = '0%';
+    clearTimeout(comboTimer);
+    comboTimer = setTimeout(comboReset, COMBO_WINDOW);
+    if (tier > prevTier && tier > 0) comboTierUp(m, tier);
+  }
+  function comboTierUp(m, tier) {
+    m.classList.remove('tierup'); void m.offsetWidth; m.classList.add('tierup');
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var r = m.getBoundingClientRect(), col = getComputedStyle(m).getPropertyValue('--cm-col');
+    var lab = document.createElement('div');
+    lab.className = 'cm-tier-label';
+    lab.style.setProperty('--cm-col', col);
+    lab.style.top = (r.top - 30) + 'px';
+    lab.textContent = t(COMBO_TIERS[tier]);
+    document.body.appendChild(lab);
+    setTimeout(function() { lab.remove(); }, 1200);
+    if (calm) return;
+    var ring = document.createElement('div');
+    ring.className = 'cm-ring';
+    ring.style.setProperty('--cm-col', col);
+    ring.style.top = r.top + 'px'; ring.style.width = r.width + 'px'; ring.style.height = r.height + 'px';
+    document.body.appendChild(ring);
+    setTimeout(function() { ring.remove(); }, 800);
+    for (var k = 0; k < 14; k++) {
+      var p = document.createElement('span');
+      var ang = Math.PI + (k / 13) * Math.PI, d = 50 + Math.random() * 50;
+      p.className = 'skin-spark';
+      p.style.left = (r.left + r.width / 2) + 'px'; p.style.top = (r.top + 6) + 'px';
+      p.style.background = tier === 5 ? ['#ef4444', '#f59e0b', '#facc15', '#22c55e', '#38bdf8', '#d946ef'][k % 6] : col;
+      p.style.setProperty('--dx', (Math.cos(ang) * d).toFixed(1) + 'px');
+      p.style.setProperty('--dy', (Math.sin(ang) * d).toFixed(1) + 'px');
+      document.body.appendChild(p);
+      setTimeout(function(el) { el.remove(); }.bind(null, p), 700);
     }
+  }
+  function comboReset() {
+    clearTimeout(comboTimer);
+    var m = $('combo-meter');
+    if (!m) return;
+    m.classList.remove('t1', 't2', 't3', 't4', 't5', 'tierup', 'bump');
+    m.classList.add('idle');
+    $('cm-n').textContent = '0';
+    var fill = $('cm-fill'); fill.style.transition = 'none'; fill.style.width = '0%';
   }
   function creatorFinish() {
     if (!creatorCelebrating()) return;

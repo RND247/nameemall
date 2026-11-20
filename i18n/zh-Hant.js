@@ -442,4 +442,10 @@ window.NEA_UI = {
   "Try it on": "試穿看看",
   "Later": "稍後",
   "✨ New skin unlocked! Pick it in ⚙️ Settings": "✨ 解鎖新造型！到 ⚙️ 設定裡選擇",
+  "Combo": "連擊",
+  "🔥 On fire!": "🔥 手感火熱！",
+  "⚡ Unstoppable!": "⚡ 勢不可擋！",
+  "🌀 Legendary!": "🌀 傳說級！",
+  "💎 Mythical!": "💎 幻之級！",
+  "🌈 Ultra combo!": "🌈 究極連擊！",
 };

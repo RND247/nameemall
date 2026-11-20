@@ -468,4 +468,10 @@ window.NEA_UI = {
   "Try it on": "着せてみる",
   "Later": "あとで",
   "✨ New skin unlocked! Pick it in ⚙️ Settings": "✨ 新しいスキンを解放！ ⚙️ 設定で選べます",
+  "Combo": "コンボ",
+  "🔥 On fire!": "🔥 絶好調！",
+  "⚡ Unstoppable!": "⚡ 止まらない！",
+  "🌀 Legendary!": "🌀 伝説級！",
+  "💎 Mythical!": "💎 幻級！",
+  "🌈 Ultra combo!": "🌈 ウルトラコンボ！",
 };

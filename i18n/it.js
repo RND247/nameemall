@@ -442,4 +442,10 @@ window.NEA_UI = {
   "Try it on": "Provala",
   "Later": "Più tardi",
   "✨ New skin unlocked! Pick it in ⚙️ Settings": "✨ Nuova skin sbloccata! Sceglila in ⚙️ Impostazioni",
+  "Combo": "Combo",
+  "🔥 On fire!": "🔥 In fiamme!",
+  "⚡ Unstoppable!": "⚡ Inarrestabile!",
+  "🌀 Legendary!": "🌀 Leggendario!",
+  "💎 Mythical!": "💎 Mitico!",
+  "🌈 Ultra combo!": "🌈 Ultra combo!",
 };
