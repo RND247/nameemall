@@ -5,6 +5,12 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.18.0
+
+- New: skins! Each Collections achievement unlocks a look for the whole game, starting with Eeveelutions: Eevee's family in your header, a glow in its colors and sparkles every time you name a Pokémon
+- 7 skins to collect: Eeveelutions, Starters, Legendary Birds, Creation Trio, Fossils, Mythicals and Ultra Beasts. Pick yours in ⚙️ Settings, where locked ones show how close you are
+- The Spotlight Pokémon no longer has a shadow behind it
+
 ## v1.17.0
 
 - Achievements now open in a window on top of your game, so you can check your progress mid-game without ending it. Close it with ✕, Esc or a tap outside

@@ -93,6 +93,89 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .ach-close { pointer-events: auto; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font-size: 1rem; cursor: pointer; }
 .ach-close:hover { border-color: var(--accent); }
 body.ach-open { overflow: hidden; }
+/* ── Skins (unlocked by the Collections achievements) ── */
+body.skin-on { --accent: var(--sk-accent); --border: rgba(255,255,255,0.08); }
+body.skin-on:not(.light) { --bg: #110c1c; background: #110c1c; }
+body.skin-on.light { --border: rgba(30,20,60,0.12); --accent: color-mix(in srgb, var(--sk-accent) 68%, #000); }
+.skin-aurora { position: fixed; inset: -15%; z-index: -1; pointer-events: none; opacity: .5; }
+body.light .skin-aurora { opacity: .32; }
+.skin-aurora i { position: absolute; width: 46vw; height: 46vw; border-radius: 50%; animation: skin-drift 26s ease-in-out infinite alternate; will-change: transform; }
+@keyframes skin-drift { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(6vw,-4vh) scale(1.15); } 100% { transform: translate(-5vw,5vh) scale(.95); } }
+body.skin-on header { background: rgba(17,12,28,0.55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+body.skin-on .tab-bar { background: rgba(17,12,28,0.6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+body.skin-on.light header, body.skin-on.light .tab-bar { background: rgba(255,255,255,0.6); }
+.skin-hero { position: absolute; right: 18px; bottom: 4px; display: flex; align-items: flex-end; pointer-events: none; }
+.skin-hero img { width: 62px; height: 62px; margin-left: -18px; image-rendering: pixelated; filter: drop-shadow(0 6px 6px rgba(0,0,0,.45)); animation: skin-bob 3.2s ease-in-out infinite; }
+.skin-hero img.mascot { width: 84px; height: 84px; z-index: 1; }
+@keyframes skin-bob { 50% { transform: translateY(-5px); } }
+@media (max-width: 1180px) { .skin-hero { display: none; } }
+body.creator .skin-hero { display: none; }
+body.skin-on .title .accent { background: linear-gradient(90deg, var(--sk3), var(--sk2), var(--sk6), var(--sk7), var(--sk1), var(--sk4), var(--sk8), var(--sk3)); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: skin-flow 8s linear infinite; }
+@keyframes skin-flow { to { background-position: 300% 0; } }
+body.skin-on #input-box { border: 2px solid transparent; background: linear-gradient(var(--input-bg), var(--input-bg)) padding-box, linear-gradient(90deg, var(--sk3), var(--sk2), var(--sk6), var(--sk7), var(--sk1), var(--sk4), var(--sk8)) border-box; }
+body.skin-on .card.unrevealed { background: rgba(255,255,255,0.035); border-color: rgba(255,255,255,0.06); }
+body.skin-on.light .card.unrevealed { background: rgba(255,255,255,0.5); border-color: rgba(30,20,60,0.08); }
+body.skin-on .card.unrevealed .poke-placeholder { opacity: .5; font-weight: 800; }
+body.skin-on.light .card.unrevealed .poke-placeholder { opacity: .7; }
+body.skin-on .card.unrevealed:nth-child(9n+1) .poke-placeholder { color: var(--sk0); }
+body.skin-on .card.unrevealed:nth-child(9n+2) .poke-placeholder { color: var(--sk1); }
+body.skin-on .card.unrevealed:nth-child(9n+3) .poke-placeholder { color: var(--sk2); }
+body.skin-on .card.unrevealed:nth-child(9n+4) .poke-placeholder { color: var(--sk3); }
+body.skin-on .card.unrevealed:nth-child(9n+5) .poke-placeholder { color: var(--sk4); }
+body.skin-on .card.unrevealed:nth-child(9n+6) .poke-placeholder { color: var(--sk5); }
+body.skin-on .card.unrevealed:nth-child(9n+7) .poke-placeholder { color: var(--sk6); }
+body.skin-on .card.unrevealed:nth-child(9n+8) .poke-placeholder { color: var(--sk7); }
+body.skin-on .card.unrevealed:nth-child(9n+9) .poke-placeholder { color: var(--sk8); }
+/* Named cards shimmer through the skin colors (solo modes only: Duel and Co-Op colors mean players) */
+body.skin-on[data-tab="pokemon"] .card.found:not(.chat-claim):not(.last-revealed),
+body.skin-on[data-tab="daily"] .card.found:not(.chat-claim):not(.last-revealed) { border-width: 2px; animation: skin-shimmer 6.75s linear infinite; }
+body.skin-on .card.found:nth-child(3n+2) { animation-delay: -2.25s; }
+body.skin-on .card.found:nth-child(3n+3) { animation-delay: -4.5s; }
+@keyframes skin-shimmer {
+  0%, 100% { border-color: var(--sk3); box-shadow: 0 0 10px color-mix(in srgb, var(--sk3) 45%, transparent); }
+  25% { border-color: var(--sk2); box-shadow: 0 0 10px color-mix(in srgb, var(--sk2) 45%, transparent); }
+  50% { border-color: var(--sk1); box-shadow: 0 0 10px color-mix(in srgb, var(--sk1) 45%, transparent); }
+  75% { border-color: var(--sk4); box-shadow: 0 0 10px color-mix(in srgb, var(--sk4) 45%, transparent); }
+}
+.skin-spark { position: fixed; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; pointer-events: none; z-index: 150; animation: skin-spark .65s ease-out forwards; }
+@keyframes skin-spark { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
+/* Picker */
+.skin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 4px 12px 6px; }
+.skin-chip { position: relative; height: 70px; border-radius: 12px; border: 2px solid var(--border); overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; padding: 6px 8px; text-align: left; font: inherit; background: var(--bg-card); }
+.skin-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.skin-chip .bgp { position: absolute; inset: 0; }
+.skin-chip img { position: absolute; right: -6px; bottom: -8px; width: 68px; height: 68px; image-rendering: pixelated; filter: drop-shadow(0 4px 4px rgba(0,0,0,.5)); }
+.skin-chip .nm { position: relative; font-size: .68rem; font-weight: 800; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.8); line-height: 1.15; max-width: 64%; }
+.skin-chip.classic .nm { color: var(--text); text-shadow: none; }
+.skin-chip.sel { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+.skin-chip.sel::before { content: "✓"; position: absolute; top: 5px; left: 7px; z-index: 1; font-size: .65rem; font-weight: 900; color: #fff; background: var(--accent); border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+.skin-chip.locked .bgp { filter: grayscale(.85) brightness(.5); }
+.skin-chip.locked img { filter: brightness(0) drop-shadow(0 0 1px rgba(255,255,255,.4)); opacity: .7; }
+.skin-chip .lk { position: absolute; top: 5px; right: 7px; font-size: .7rem; }
+.skin-chip .pg { position: relative; height: 4px; background: rgba(255,255,255,.18); border-radius: 2px; margin-top: 4px; width: 60%; }
+.skin-chip .pg span { display: block; height: 100%; border-radius: 2px; background: var(--chip-accent, #f0a050); }
+.skin-chip .pt { position: relative; font-size: .58rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+.skin-hint { font-size: .7rem; color: var(--text-dim); padding: 0 12px 8px; min-height: 1em; line-height: 1.35; }
+/* Unlock reveal */
+.skin-unlock { position: fixed; inset: 0; z-index: 300; background: rgba(5,3,10,.82); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.skin-unlock .box { position: relative; width: 100%; max-width: 420px; border-radius: 20px; overflow: hidden; text-align: center; padding: 30px 22px 24px; background: #150f22; border: 1px solid rgba(255,255,255,.1); box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.skin-unlock .glow { position: absolute; inset: 0; }
+.skin-unlock .kick { position: relative; font-size: .7rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.skin-unlock h2 { position: relative; font-size: 1.7rem; margin: 6px 0 2px; color: #fff; }
+.skin-unlock .why { position: relative; font-size: .8rem; color: rgba(255,255,255,.7); }
+.skin-unlock .row { position: relative; display: flex; justify-content: center; align-items: flex-end; margin: 18px 0 14px; height: 96px; }
+.skin-unlock .row img { width: 60px; height: 60px; margin: 0 -11px; image-rendering: pixelated; filter: drop-shadow(0 6px 6px rgba(0,0,0,.5)); animation: skin-bob 3s ease-in-out infinite; }
+.skin-unlock .row img.mascot { width: 96px; height: 96px; z-index: 1; }
+.skin-unlock .more { position: relative; font-size: .75rem; color: rgba(255,255,255,.6); margin: -4px 0 12px; }
+.skin-unlock .btns { position: relative; display: flex; gap: 8px; justify-content: center; }
+.skin-unlock .try { color: #fff; border: 0; font: inherit; font-weight: 800; padding: 10px 22px; border-radius: 10px; font-size: .9rem; cursor: pointer; }
+.skin-unlock .later { background: transparent; color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.25); font: inherit; padding: 10px 18px; border-radius: 10px; font-size: .9rem; cursor: pointer; }
+.ach-toast-skin { font-size: .72rem; color: var(--text-dim); margin-top: 4px; }
+@media (max-width: 600px) { .skin-unlock .row img { width: 44px; height: 44px; margin: 0 -9px; } .skin-unlock .row img.mascot { width: 76px; height: 76px; } }
+@media (prefers-reduced-motion: reduce) {
+  .skin-aurora i, body.skin-on .card.found, .skin-hero img, body.skin-on .title .accent, .skin-unlock .row img { animation: none !important; }
+}
+
 @media (max-width: 600px) {
   .ach-overlay { padding: 0; align-items: flex-end; }
   .ach-sheet { max-height: 92vh; border-radius: 16px 16px 0 0; padding: 0 10px 8px; }
@@ -168,7 +251,7 @@ body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacit
 .creator-nav button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 .creator-nav button.active { border-color: var(--accent); }
 body.creator.creator-spot-on .creator-spot:not(:empty) { display: flex; align-items: center; gap: 12px; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); max-width: 260px; }
-.creator-spot img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); }
+.creator-spot img { width: 96px; height: 96px; image-rendering: pixelated; }
 .creator-spot .cs-name { font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1.15; word-break: break-word; }
 .creator-spot .cs-num { font-size: 0.95rem; font-weight: 700; color: var(--text-dim); }
 .creator-spot.pop { animation: creatorPop 0.35s ease-out; }
@@ -1084,6 +1167,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
             <button id="btn-light">☀️ Light</button>
           </div>
         </div>
+        <div id="skin-section"></div>
         <div class="settings-divider"></div>
         <div class="settings-section-label">For creators</div>
         <div class="setting-row-slider"><button class="settings-wide-btn" id="set-creator">🎥 Creator Mode</button></div>
@@ -5274,6 +5358,7 @@ const Q = (function() {
     $input.disabled = false;
     document.querySelector('.stats').style.display = '';
     currentTab = tab;
+    document.body.dataset.tab = tab;
     track('tab_view', { tab: tab });
     var about = $('about-section'); if (about) about.open = (tab === 'daily');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === navTabFor(tab)));
@@ -5832,6 +5917,8 @@ const Q = (function() {
     });
     achUpdateBadge();
     if (achIsOpen()) achShowPage();
+    skinRenderPicker();
+    setTimeout(skinMaybeReveal, 900);
   }
   function achToast(a) {
     var el = document.createElement('div');
@@ -5840,6 +5927,12 @@ const Q = (function() {
     el.querySelector('.family-label').textContent = t('🏅 Achievement unlocked');
     el.querySelector('.ach-toast-icon').innerHTML = achIconHtml(a);
     el.querySelector('.ach-toast-title').textContent = achTitle(a);
+    if (a.id.indexOf('set_') === 0 && skinById(a.id.slice(4))) {
+      var sk = document.createElement('div');
+      sk.className = 'ach-toast-skin';
+      sk.textContent = t('✨ New skin unlocked! Pick it in ⚙️ Settings');
+      el.appendChild(sk);
+    }
     $toasts.appendChild(el);
     setTimeout(function() { el.remove(); }, 5000);
   }
@@ -5852,6 +5945,7 @@ const Q = (function() {
   }
 
   function achOnNamed(matches) {
+    skinSparkle(matches);
     if (!achReady) return;
     matches.forEach(function(i) { if (items[i]) achDex.add(items[i].id); });
     var now = Date.now();
@@ -5877,6 +5971,7 @@ const Q = (function() {
     }
     else if (name !== 'daily_end') changed = false;
     if (changed) setTimeout(function() { achCheck(false); }, 400);
+    if (name === 'game_end' || name === 'daily_end' || name === 'room_end') setTimeout(skinMaybeReveal, 1800);
   }
 
   function achIsOpen() { return $('ach-overlay').classList.contains('active'); }
@@ -5901,6 +5996,8 @@ const Q = (function() {
     $('ach-overlay').querySelector('.ach-sheet').scrollTop = 0;
     $('ach-close').focus();
     track('tab_view', { tab: 'achievements' });
+    // The game is paused now, a good moment for a skin reveal waiting since mid-game
+    setTimeout(skinMaybeReveal, 350);
   }
   function achClose() {
     if (!achIsOpen()) return;
@@ -5976,6 +6073,175 @@ const Q = (function() {
     achClose();
   });
 
+
+  // ── Skins: each Collections achievement unlocks a look for the whole game ──
+  // col: 9 colors (aurora blobs, the "?" mosaic, the shimmer on named cards); line: sprites for the
+  // header and the unlock screen, mascot in the middle. Saved as nea_skin, so device transfer carries it.
+  var SKIN_SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
+  var SKINS = [
+    { id: 'eevee', name: 'Eeveelutions', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
+      col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
+    { id: 'starters', name: 'Starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
+      col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
+    { id: 'birds', name: 'Legendary Birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
+      col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
+    { id: 'creation', name: 'Creation Trio', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
+      col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
+    { id: 'fossils', name: 'Fossils', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
+      col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
+    { id: 'mythical', name: 'Mythicals', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
+      col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
+    { id: 'ultra', name: 'Ultra Beasts', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
+      col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] }
+  ];
+  var SKIN_SPOTS = [[2, 4], [55, 0], [78, 38], [30, 55], [-6, 62], [62, 70], [40, 20], [85, 5], [12, 30]];
+  function skinById(id) { for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) return SKINS[i]; return null; }
+  function skinUnlocked(s) { return !!achUnlocked['set_' + s.id]; }
+  function skinCalm() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
+  function skinImg(id, mascot, delay) {
+    return '<img src="' + SKIN_SPRITE + id + '.png" alt=""' + (mascot ? ' class="mascot"' : '') + ' style="animation-delay:-' + delay + 's" loading="lazy">';
+  }
+  function skinThumbBg(s) {
+    return 'radial-gradient(circle at 20% 20%,' + s.col[3] + ',transparent 60%),radial-gradient(circle at 80% 30%,' + s.col[1] + ',transparent 60%),' +
+      'radial-gradient(circle at 50% 100%,' + s.col[4] + ',transparent 70%),#151020';
+  }
+  var skinCurrent = null;
+  try { skinCurrent = localStorage.getItem('nea_skin'); } catch(e) {}
+  var skinSeen = [];
+  try { skinSeen = JSON.parse(localStorage.getItem('nea_skin_seen')) || []; } catch(e) {}
+
+  function skinApply(id) {
+    var s = id ? skinById(id) : null;
+    if (s && !skinUnlocked(s)) s = null;
+    skinCurrent = s ? s.id : null;
+    try { if (s) localStorage.setItem('nea_skin', s.id); else localStorage.removeItem('nea_skin'); } catch(e) {}
+    var b = document.body;
+    b.classList.toggle('skin-on', !!s);
+    ['skin-aurora', 'skin-hero'].forEach(function(x) { var el = $(x); if (el) el.remove(); });
+    if (s) {
+      s.col.forEach(function(c, i) { b.style.setProperty('--sk' + i, c); });
+      b.style.setProperty('--sk-accent', s.accent);
+      var au = document.createElement('div');
+      au.id = 'skin-aurora'; au.className = 'skin-aurora'; au.setAttribute('aria-hidden', 'true');
+      au.innerHTML = s.col.map(function(c, i) {
+        return '<i style="left:' + SKIN_SPOTS[i][0] + '%;top:' + SKIN_SPOTS[i][1] + '%;background:radial-gradient(circle,' + c + ' 0%,transparent 65%);animation-delay:-' + (i * 3) + 's"></i>';
+      }).join('');
+      b.insertBefore(au, b.firstChild);
+      var hero = document.createElement('div');
+      hero.id = 'skin-hero'; hero.className = 'skin-hero'; hero.setAttribute('aria-hidden', 'true');
+      hero.innerHTML = s.line.map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.35).toFixed(2)); }).join('');
+      document.querySelector('header').appendChild(hero);
+    } else {
+      for (var i = 0; i < 9; i++) b.style.removeProperty('--sk' + i);
+      b.style.removeProperty('--sk-accent');
+    }
+    skinRenderPicker();
+  }
+
+  function skinRenderPicker() {
+    var box = $('skin-section');
+    if (!box) return;
+    var prog = {};
+    achList().forEach(function(a) { if (a.id.indexOf('set_') === 0) prog[a.id.slice(4)] = a; });
+    var got = SKINS.filter(skinUnlocked).length;
+    var esc = function(x) { var d = document.createElement('div'); d.textContent = x; return d.innerHTML; };
+    var html = '<div class="settings-section-label" style="margin-top:8px">' + esc(t('Skin · {count} of {total} unlocked', { count: got, total: SKINS.length })) + '</div><div class="skin-grid">' +
+      '<button type="button" class="skin-chip classic' + (skinCurrent ? '' : ' sel') + '" data-skin=""><span class="nm">' + esc(t('Classic')) + '</span></button>';
+    SKINS.forEach(function(s) {
+      var open = skinUnlocked(s), a = prog[s.id];
+      html += '<button type="button" class="skin-chip' + (open ? '' : ' locked') + (skinCurrent === s.id ? ' sel' : '') + '" data-skin="' + s.id + '" style="--chip-accent:' + s.accent + '">' +
+        '<span class="bgp" style="background:' + skinThumbBg(s) + '"></span>' +
+        '<img src="' + SKIN_SPRITE + s.mascot + '.png" alt="" loading="lazy">' +
+        (open ? '' : '<span class="lk">🔒</span>') +
+        '<span><span class="nm">' + esc(t(s.name)) + '</span>' +
+        (!open && a ? '<span class="pg"><span style="width:' + Math.round(a.p[0] * 100 / a.p[1]) + '%"></span></span>' +
+          '<span class="pt">' + esc(t('{count} / {total} named', { count: a.p[0], total: a.p[1] })) + '</span>' : '') +
+        '</span></button>';
+    });
+    html += '</div><div class="skin-hint" id="skin-hint"></div>';
+    box.innerHTML = html;
+  }
+  $('skin-section').addEventListener('click', function(e) {
+    var chip = e.target.closest('[data-skin]');
+    if (!chip) return;
+    var id = chip.getAttribute('data-skin');
+    var s = id ? skinById(id) : null;
+    if (s && !skinUnlocked(s)) {
+      var a = achList().filter(function(x) { return x.id === 'set_' + id; })[0];
+      $('skin-hint').textContent = t('🔒 To unlock: {desc}', { desc: a ? achDesc(a) : '' });
+      return;
+    }
+    if ((s ? s.id : null) === skinCurrent) return;
+    skinApply(id);
+    track('skin_change', { skin: id || 'classic', from: 'settings' });
+  });
+
+  function skinSparkle(matches) {
+    if (!skinCurrent || skinCalm()) return;
+    var s = skinById(skinCurrent);
+    if (!s) return;
+    matches.forEach(function(idx, m) {
+      var c = $('c' + idx);
+      if (!c) return;
+      var r = c.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
+      for (var k = 0; k < 12; k++) {
+        var p = document.createElement('span');
+        var ang = (k / 12) * Math.PI * 2 + Math.random() * 0.5, d = 26 + Math.random() * 34;
+        p.className = 'skin-spark';
+        p.style.left = (r.left + r.width / 2) + 'px';
+        p.style.top = (r.top + r.height / 2) + 'px';
+        p.style.background = s.col[(k + m) % s.col.length];
+        p.style.setProperty('--dx', (Math.cos(ang) * d).toFixed(1) + 'px');
+        p.style.setProperty('--dy', (Math.sin(ang) * d).toFixed(1) + 'px');
+        document.body.appendChild(p);
+        setTimeout(function(el) { el.remove(); }.bind(null, p), 700);
+      }
+    });
+  }
+
+  // The big reveal waits for a natural break, never in the middle of a timed game
+  function skinBusy() {
+    return (timerRunning && !paused) || duelActive || coopActive || !!document.querySelector('.skin-unlock, .nea-confirm');
+  }
+  function skinMaybeReveal() {
+    var fresh = SKINS.filter(function(s) { return skinUnlocked(s) && skinSeen.indexOf(s.id) < 0; });
+    if (!fresh.length || skinBusy()) return;
+    fresh.forEach(function(s) { skinSeen.push(s.id); });
+    try { localStorage.setItem('nea_skin_seen', JSON.stringify(skinSeen)); } catch(e) {}
+    skinShowReveal(fresh[0], fresh.length - 1);
+  }
+  function skinShowReveal(s, more) {
+    var a = achList().filter(function(x) { return x.id === 'set_' + s.id; })[0];
+    var u = document.createElement('div');
+    u.className = 'skin-unlock';
+    u.setAttribute('role', 'dialog'); u.setAttribute('aria-modal', 'true');
+    u.innerHTML = '<div class="box"><div class="glow"></div><div class="kick"></div><h2></h2><div class="why"></div>' +
+      '<div class="row">' + s.line.map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.33).toFixed(2)); }).join('') + '</div>' +
+      (more > 0 ? '<div class="more"></div>' : '') +
+      '<div class="btns"><button type="button" class="try"></button><button type="button" class="later"></button></div></div>';
+    u.querySelector('.glow').style.background = 'radial-gradient(circle at 30% 20%,' + s.col[3] + '55,transparent 45%),radial-gradient(circle at 75% 25%,' + s.col[1] + '55,transparent 45%),' +
+      'radial-gradient(circle at 50% 85%,' + s.col[4] + '44,transparent 50%),radial-gradient(circle at 15% 85%,' + s.col[6] + '33,transparent 40%)';
+    u.querySelector('.kick').textContent = t('✨ New skin unlocked');
+    u.querySelector('.kick').style.color = s.accent;
+    u.querySelector('h2').textContent = t(s.name);
+    u.querySelector('.why').textContent = a ? achDesc(a) : '';
+    if (more > 0) u.querySelector('.more').textContent = t('+{count} more skins unlocked', { count: more });
+    var tryBtn = u.querySelector('.try'), later = u.querySelector('.later');
+    tryBtn.textContent = t('Try it on');
+    tryBtn.style.background = 'linear-gradient(90deg,' + s.col[3] + ',' + s.col[4] + ',' + s.col[1] + ')';
+    later.textContent = t('Later');
+    var prevFocus = document.activeElement;
+    function close() { u.remove(); document.removeEventListener('keydown', onKey, true); if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch(e) {} }
+    function onKey(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
+    tryBtn.addEventListener('click', function() { skinApply(s.id); track('skin_change', { skin: s.id, from: 'unlock' }); close(); });
+    later.addEventListener('click', close);
+    u.addEventListener('click', function(e) { if (e.target === u) close(); });
+    document.addEventListener('keydown', onKey, true);
+    document.body.appendChild(u);
+    tryBtn.focus();
+  }
+
   function achReset(confirmed) {
     if (confirmed !== true) {
       neaConfirm(t('Reset all achievements? Your progress starts over from now. This can\'t be undone.')).then(function(ok) { if (ok) achReset(true); });
@@ -5994,10 +6260,15 @@ const Q = (function() {
     try { localStorage.setItem('nea_ach_reset', JSON.stringify(snap)); localStorage.setItem('nea_ach_seen', '0'); } catch(e) {}
     achSaveAll();
     track('achievements_reset', {});
+    try { localStorage.removeItem('nea_skin_seen'); } catch(e) {}
+    skinSeen = [];
+    skinApply(skinCurrent);
     achShowPage();
   }
 
   achReady = true;
+  skinApply(skinCurrent);
+  setTimeout(skinMaybeReveal, 2500);
   // Pick up progress from before achievements existed (saved Full Pokédex game, past dailies), quietly
   // (only once, so a reset isn't undone by the saved game on the next visit)
   setTimeout(function() {
