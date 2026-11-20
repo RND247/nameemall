@@ -248,6 +248,8 @@ body.creator #action-bar:hover, body.creator #action-bar:focus-within { opacity:
 body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe):not(.toast-spell) { display: none; }
 body.creator .creator-nav { display: flex; position: absolute; top: 8px; right: 12px; gap: 6px; opacity: 0.25; transition: opacity 0.2s; z-index: 3; }
 body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacity: 1; }
+/* Nothing on stream that isn't the game: no install prompt */
+body.creator #set-install { display: none !important; }
 .creator-nav button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 .creator-nav button.active { border-color: var(--accent); }
 body.creator.creator-spot-on .creator-spot:not(:empty) { display: flex; align-items: center; gap: 12px; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); max-width: 260px; }
