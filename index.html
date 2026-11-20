@@ -7115,6 +7115,8 @@ const Q = (function() {
   }
   function togglePanel(id) {
     var open = !$(id).classList.contains('open');
+    // Skin progress changes as you play: recount it every time Settings opens
+    if (open && id === 'settings-panel') skinRenderPicker();
     closePanels(id);
     $(id).classList.toggle('open', open);
     document.body.classList.toggle('panel-open', open);
