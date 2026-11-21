@@ -34,7 +34,7 @@
     <p>Makes a vertical 1080×1920 "Can you name all 5?" video from a Daily Mini, ready for TikTok, YouTube Shorts and Instagram Reels. It uses <b>yesterday's</b> Daily by default, so it never spoils today's.</p>
     <label for="day">Daily number</label>
     <input type="number" id="day" min="1">
-    <div><button id="go">🎬 Render video</button></div>
+    <div><button id="go">🎬 Render video</button> <button id="week" style="background:#5b8cff">🗓️ Render the next 7 days</button></div>
     <div class="status" id="status"></div>
     <div id="out"></div>
     <label for="cap">Caption to paste</label>
@@ -309,8 +309,16 @@
     var mime = pickMime();
     if (!mime) { $('status').textContent = 'This browser can’t record video. Try Chrome or Safari.'; return; }
     $('go').disabled = true; $('out').innerHTML = '';
-    var ac = new (window.AudioContext || window.webkitAudioContext)();
-    await ac.resume();
+    // One AudioContext for the whole session: browsers only start audio from a real click,
+    // and a context that is already running keeps working for the next renders (the weekly batch)
+    if (!window.__videoAC) window.__videoAC = new (window.AudioContext || window.webkitAudioContext)();
+    var ac = window.__videoAC;
+    await Promise.race([ac.resume(), new Promise(function (r) { setTimeout(r, 1500); })]);
+    if (ac.state !== 'running') {
+      $('status').textContent = 'The browser blocked the sound. Click Render once more.';
+      $('go').disabled = false;
+      return null;
+    }
     var dest = ac.createMediaStreamDestination();
     var stream = new MediaStream(canvas.captureStream(FPS).getVideoTracks().concat(dest.stream.getAudioTracks()));
     var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000, audioBitsPerSecond: 128000 });
@@ -332,7 +340,6 @@
       })();
     });
     rec.stop(); await done;
-    ac.close();
     var ext = mime.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
     var blob = new Blob(chunks, { type: mime.split(';')[0] });
     var url = URL.createObjectURL(blob);
@@ -342,10 +349,31 @@
     $('status').textContent = 'Done! ' + TOTAL.toFixed(1) + ' seconds, 1080×1920, with ticks and ' + criesOk + '/' + N + ' cries.';
     $('go').disabled = false;
     window.__lastVideo = { blob: blob, name: a.download };
+    return a;
+  }
+
+  // A week at once, for TikTok's scheduler: today's Daily and the next 6, each downloaded when done
+  async function renderWeek() {
+    var first = currentDay(), made = [];
+    $('week').disabled = true;
+    for (var d = first; d < first + 7; d++) {
+      $('day').value = d;
+      await preview();
+      var a = await render();
+      if (!a) break;
+      a.click();
+      made.push('#' + d + ' → post ' + dateForDay(d + 1));
+      await new Promise(function (r) { setTimeout(r, 1500); });
+    }
+    $('week').disabled = false;
+    $('status').textContent = made.length === 7
+      ? 'Week ready (7 files in Downloads). Schedule each one for its date at 12:00 UTC or later: ' + made.join(', ')
+      : 'Stopped after ' + made.length + ' of 7. ' + $('status').textContent;
   }
 
   $('day').addEventListener('change', function () { preview(); });
   $('go').addEventListener('click', function () { render(); });
+  $('week').addEventListener('click', function () { renderWeek(); });
   window.__videoFrame = function (t) { if (state) frame(t, state); };
   preview();
 })();
