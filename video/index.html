@@ -41,7 +41,7 @@
     <textarea id="cap" readonly></textarea>
     <ul class="tips">
       <li>Keep this tab in front while it renders (about 30 seconds). Browsers pause hidden tabs.</li>
-      <li>The video is silent on purpose: add a trending sound in the TikTok / Reels / Shorts app.</li>
+      <li>Sound is built in: countdown ticks, a chime and each Pokémon's cry on the reveal. You can still layer a trending sound on top in the app at low volume.</li>
       <li>Post once a day. Same time each day helps.</li>
     </ul>
   </div>
@@ -51,6 +51,7 @@
   'use strict';
   var EPOCH_MS = Date.UTC(2026, 3, 30);          // Daily #1 = 2026-04-30, same as the game
   var SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
+  var CRY = 'https://cdn.jsdelivr.net/gh/PokeAPI/cries@main/cries/pokemon/latest/';
   var W = 1080, H = 1920, FPS = 30;
   var INTRO = 2.2, GUESS = 3.0, REVEAL = 1.6, OUTRO = 3.4, N = 5;
   var TOTAL = INTRO + N * (GUESS + REVEAL) + OUTRO;
@@ -233,12 +234,16 @@
     if (!pokemon) pokemon = await fetch('/pokemon.json').then(function (r) { return r.json(); });
     var mons = dailyPick(pokemon, dateForDay(day), 'mini', N);
     var sprites = (await Promise.all(mons.map(function (m) { return loadImg(m.id); }))).map(trim);
+    // Cries: the query skips the game's opaque cached copy so the bytes are readable
+    var cryBufs = await Promise.all(mons.map(function (m) {
+      return fetch(CRY + m.id + '.ogg?video').then(function (r) { return r.ok ? r.arrayBuffer() : null; }).catch(function () { return null; });
+    }));
     var rates = null;
     try {
       var st = await fetch('https://api.nameemall.com/v1/daily/stats?day=' + day + '&mode=mini').then(function (r) { return r.json(); });
       if (st && st.players >= MIN_PLAYERS_FOR_STATS && st.found_rates) rates = st.found_rates;
     } catch (e) { /* the video works without stats */ }
-    return { day: day, mons: mons, sprites: sprites, rates: rates };
+    return { day: day, mons: mons, sprites: sprites, rates: rates, cryBufs: cryBufs };
   }
 
   async function preview() {
@@ -252,8 +257,46 @@
       (state.rates ? '' : '  (fewer than ' + MIN_PLAYERS_FOR_STATS + ' players, so no % shown)');
   }
 
+  // ── Sound: a tick each countdown second, a chime + the Pokémon's cry on each reveal ──
+  function tone(ac, out, at, freq, dur, type, vol) {
+    var o = ac.createOscillator(), g = ac.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(freq, at);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(vol || 0.3, at + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+    o.connect(g); g.connect(out); o.start(at); o.stop(at + dur + 0.05);
+  }
+  function tick(ac, out, at, last) { tone(ac, out, at, last ? 1320 : 990, 0.09, 'square', 0.12); }
+  function chime(ac, out, at) { tone(ac, out, at, 880, 0.35, 'triangle', 0.35); tone(ac, out, at + 0.09, 1318.5, 0.5, 'triangle', 0.3); }
+  async function schedule(ac, out, start, st) {
+    var cries = await Promise.all((st.cryBufs || []).map(function (b) {
+      return b ? ac.decodeAudioData(b.slice(0)).catch(function () { return null; }) : null;
+    }));
+    tone(ac, out, start + 0.05, 523.25, 0.25, 'triangle', 0.25);           // intro pop
+    tone(ac, out, start + 0.18, 783.99, 0.35, 'triangle', 0.22);
+    var slot = GUESS + REVEAL;
+    for (var i = 0; i < N; i++) {
+      var g0 = start + INTRO + i * slot;
+      for (var k = 0; k < 3; k++) tick(ac, out, g0 + k, false);
+      var rv = g0 + GUESS;
+      chime(ac, out, rv);
+      if (cries[i]) {
+        var src = ac.createBufferSource(), cg = ac.createGain();
+        src.buffer = cries[i]; cg.gain.value = 0.55;
+        src.connect(cg); cg.connect(out);
+        src.start(rv + 0.12);
+        cg.gain.setValueAtTime(0.55, rv + REVEAL - 0.05);
+        cg.gain.linearRampToValueAtTime(0.0001, rv + REVEAL + 0.25);       // never runs into the next countdown
+        src.stop(rv + REVEAL + 0.3);
+      }
+    }
+    var ot = start + INTRO + N * slot;                                     // outro fanfare
+    [523.25, 659.25, 783.99, 1046.5].forEach(function (f, j) { tone(ac, out, ot + j * 0.11, f, 0.45, 'triangle', 0.22); });
+    return cries.filter(Boolean).length;
+  }
+
   function pickMime() {
-    var opts = ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+    var opts = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/webm;codecs=vp9,opus', 'video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     for (var i = 0; i < opts.length; i++) if (window.MediaRecorder && MediaRecorder.isTypeSupported(opts[i])) return opts[i];
     return null;
   }
@@ -264,13 +307,20 @@
     var mime = pickMime();
     if (!mime) { $('status').textContent = 'This browser can’t record video. Try Chrome or Safari.'; return; }
     $('go').disabled = true; $('out').innerHTML = '';
-    var stream = canvas.captureStream(FPS);
-    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
+    var ac = new (window.AudioContext || window.webkitAudioContext)();
+    await ac.resume();
+    var dest = ac.createMediaStreamDestination();
+    var stream = new MediaStream(canvas.captureStream(FPS).getVideoTracks().concat(dest.stream.getAudioTracks()));
+    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000, audioBitsPerSecond: 128000 });
     var chunks = [];
     rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     var done = new Promise(function (res) { rec.onstop = res; });
+    var aStart = ac.currentTime + 0.25;
+    var criesOk = await schedule(ac, dest, aStart, state);
+    frame(0, state);
     rec.start(250);
-    var t0 = performance.now();
+    while (ac.currentTime < aStart) await new Promise(function (r) { setTimeout(r, 5); });
+    var t0 = performance.now() - (ac.currentTime - aStart) * 1000;
     await new Promise(function (resolve) {
       (function tick() {
         var t = (performance.now() - t0) / 1000;
@@ -280,13 +330,14 @@
       })();
     });
     rec.stop(); await done;
+    ac.close();
     var ext = mime.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
     var blob = new Blob(chunks, { type: mime.split(';')[0] });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a'); a.className = 'dl'; a.href = url; a.download = 'nameemall-daily-' + state.day + '.' + ext;
     a.textContent = '⬇ Download video (' + ext.toUpperCase() + ', ' + (blob.size / 1048576).toFixed(1) + ' MB)';
     $('out').appendChild(a);
-    $('status').textContent = 'Done! ' + TOTAL.toFixed(1) + ' seconds, 1080×1920.';
+    $('status').textContent = 'Done! ' + TOTAL.toFixed(1) + ' seconds, 1080×1920, with ticks and ' + criesOk + '/' + N + ' cries.';
     $('go').disabled = false;
     window.__lastVideo = { blob: blob, name: a.download };
   }
