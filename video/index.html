@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>NameEmAll · Daily video maker</title>
+<style>
+  :root { --bg: #0f0f1a; --bg2: #161625; --border: #2a2a40; --text: #e8e8f0; --dim: #8b8fa3; --accent: #e94560; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  main { max-width: 880px; margin: 0 auto; padding: 24px 16px 60px; display: grid; grid-template-columns: 300px 1fr; gap: 28px; }
+  @media (max-width: 720px) { main { grid-template-columns: 1fr; } }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  h1 span { color: var(--accent); }
+  p { color: var(--dim); font-size: .88rem; line-height: 1.5; margin: 6px 0 14px; }
+  canvas { width: 300px; height: 533px; border-radius: 14px; border: 1px solid var(--border); background: #000; display: block; }
+  label { display: block; font-size: .78rem; color: var(--dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 6px; }
+  input[type=number] { width: 120px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font-size: 1rem; }
+  button, .dl { display: inline-block; margin-top: 16px; padding: 11px 20px; border-radius: 10px; border: 0; font-weight: 800; font-size: .95rem; cursor: pointer; text-decoration: none; }
+  button { background: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  .dl { background: #22c55e; color: #06210f; }
+  .status { margin-top: 12px; font-size: .85rem; color: var(--dim); min-height: 1.2em; }
+  textarea { width: 100%; height: 110px; margin-top: 6px; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); font: inherit; font-size: .85rem; }
+  .tips { font-size: .8rem; color: var(--dim); line-height: 1.6; margin-top: 18px; padding-left: 18px; }
+</style>
+</head>
+<body>
+<main>
+  <canvas id="c" width="1080" height="1920"></canvas>
+  <div>
+    <h1>Name<span>'Em All</span> · Daily video maker</h1>
+    <p>Makes a vertical 1080×1920 "Can you name all 5?" video from a Daily Mini, ready for TikTok, YouTube Shorts and Instagram Reels. It uses <b>yesterday's</b> Daily by default, so it never spoils today's.</p>
+    <label for="day">Daily number</label>
+    <input type="number" id="day" min="1">
+    <div><button id="go">🎬 Render video</button></div>
+    <div class="status" id="status"></div>
+    <div id="out"></div>
+    <label for="cap">Caption to paste</label>
+    <textarea id="cap" readonly></textarea>
+    <ul class="tips">
+      <li>Keep this tab in front while it renders (about 30 seconds). Browsers pause hidden tabs.</li>
+      <li>The video is silent on purpose: add a trending sound in the TikTok / Reels / Shorts app.</li>
+      <li>Post once a day. Same time each day helps.</li>
+    </ul>
+  </div>
+</main>
+<script>
+(function () {
+  'use strict';
+  var EPOCH_MS = Date.UTC(2026, 3, 30);          // Daily #1 = 2026-04-30, same as the game
+  var SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
+  var W = 1080, H = 1920, FPS = 30;
+  var INTRO = 2.2, GUESS = 3.0, REVEAL = 1.6, OUTRO = 3.4, N = 5;
+  var TOTAL = INTRO + N * (GUESS + REVEAL) + OUTRO;
+  var MIN_PLAYERS_FOR_STATS = 20;
+
+  var canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+  var $ = function (id) { return document.getElementById(id); };
+
+  function currentDay() { return Math.floor((Date.now() - EPOCH_MS) / 86400000) + 1; }
+  function dateForDay(n) { return new Date(EPOCH_MS + (n - 1) * 86400000).toISOString().slice(0, 10); }
+
+  // ── Same picking as the game (index.html dailySeedFor / mulberry32 / dailyShuffle) ──
+  function mulberry32(seed) {
+    return function () {
+      seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function dailySeedFor(dateStr, mode) {
+    var str = dateStr + ':' + mode, s = 0;
+    for (var i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) | 0;
+    return s >>> 0;
+  }
+  function dailyPick(pokemon, dateStr, mode, size) {
+    var pool = pokemon.filter(function (p) { return p.id <= 1025; });
+    var rng = mulberry32(dailySeedFor(dateStr, mode));
+    var idx = pool.map(function (_, i) { return i; });
+    for (var i = idx.length - 1; i > 0; i--) { var j = Math.floor(rng() * (i + 1)); var t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+    return idx.slice(0, size).sort(function (a, b) { return a - b; }).map(function (i) { return pool[i]; });
+  }
+
+  function loadImg(id) {
+    return new Promise(function (res, rej) {
+      var im = new Image(); im.crossOrigin = 'anonymous';
+      im.onload = function () { res(im); }; im.onerror = rej;
+      im.src = SPRITE + id + '.png?video';   // the query skips the game's opaque cached copy
+    });
+  }
+  // Tight bounding box of the visible pixels, so every Pokémon is centered and scaled the same way
+  function trim(im) {
+    var c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+    var x = c.getContext('2d'); x.drawImage(im, 0, 0);
+    var d = x.getImageData(0, 0, c.width, c.height).data, x0 = c.width, y0 = c.height, x1 = 0, y1 = 0;
+    for (var y = 0; y < c.height; y++) for (var i = 0; i < c.width; i++) {
+      if (d[(y * c.width + i) * 4 + 3] > 10) { if (i < x0) x0 = i; if (y < y0) y0 = y; if (i > x1) x1 = i; if (y > y1) y1 = y; }
+    }
+    if (x1 < x0) return { im: c, sil: c, w: c.width, h: c.height };
+    var w = x1 - x0 + 1, h = y1 - y0 + 1;
+    var col = document.createElement('canvas'); col.width = w; col.height = h;
+    col.getContext('2d').drawImage(c, x0, y0, w, h, 0, 0, w, h);
+    var sil = document.createElement('canvas'); sil.width = w; sil.height = h;
+    var s = sil.getContext('2d'); s.drawImage(col, 0, 0); s.globalCompositeOperation = 'source-in'; s.fillStyle = '#141428'; s.fillRect(0, 0, w, h);
+    return { im: col, sil: sil, w: w, h: h };
+  }
+
+  // ── Drawing ──
+  var FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+  function text(str, x, y, size, weight, color, align) {
+    ctx.font = (weight || 800) + ' ' + size + 'px ' + FONT;
+    ctx.fillStyle = color || '#fff'; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(str, x, y);
+  }
+  function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function ease(t) { return t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3); }
+
+  function background(t) {
+    ctx.fillStyle = '#0f0f1a'; ctx.fillRect(0, 0, W, H);
+    var blobs = [[180, 260, '#e94560'], [920, 520, '#5b8cff'], [240, 1560, '#e070ff'], [880, 1760, '#ffd23f']];
+    blobs.forEach(function (b, i) {
+      var dx = Math.sin(t * 0.5 + i) * 40, dy = Math.cos(t * 0.4 + i) * 40;
+      var g = ctx.createRadialGradient(b[0] + dx, b[1] + dy, 0, b[0] + dx, b[1] + dy, 620);
+      g.addColorStop(0, b[2] + '55'); g.addColorStop(1, b[2] + '00');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    });
+  }
+  function logo(y, scale) {
+    scale = scale || 1;
+    ctx.font = '900 ' + (78 * scale) + 'px ' + FONT; ctx.textBaseline = 'middle';
+    var a = 'Name', b = "'Em All", wa = ctx.measureText(a).width, wb = ctx.measureText(b).width, x = (W - wa - wb) / 2;
+    ctx.textAlign = 'left'; ctx.fillStyle = '#fff'; ctx.fillText(a, x, y); ctx.fillStyle = '#e94560'; ctx.fillText(b, x + wa, y);
+  }
+  function header(state) {
+    logo(170);
+    text('Daily #' + state.day + ' · Can you name all 5?', W / 2, 262, 46, 800, '#e8e8f0');
+  }
+  function footer() {
+    rr(140, 1500, 800, 104, 52); ctx.fillStyle = 'rgba(255,255,255,0.08)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 3; ctx.stroke();
+    text('▶ Play free at nameemall.com', W / 2, 1552, 44, 800, '#fff');
+  }
+  function dots(active, revealed) {
+    for (var i = 0; i < N; i++) {
+      var x = W / 2 + (i - 2) * 56, y = 1410;
+      ctx.beginPath(); ctx.arc(x, y, i === active ? 15 : 11, 0, Math.PI * 2);
+      ctx.fillStyle = i < revealed ? '#22c55e' : i === active ? '#fff' : 'rgba(255,255,255,0.25)'; ctx.fill();
+    }
+  }
+  function stage(cx, cy, r, glow) {
+    var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    g.addColorStop(0, glow ? '#fff7c2' : '#dfe8ff'); g.addColorStop(0.55, glow ? '#ffd23f' : '#8fb0ff'); g.addColorStop(1, glow ? 'rgba(255,210,63,0)' : 'rgba(91,140,255,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+  }
+  function drawMon(sp, which, cx, cy, maxSize, alpha) {
+    var s = Math.floor(maxSize / Math.max(sp.w, sp.h)), w = sp.w * s, h = sp.h * s;
+    ctx.save(); ctx.globalAlpha = alpha == null ? 1 : alpha; ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(which === 'sil' ? sp.sil : sp.im, Math.round(cx - w / 2), Math.round(cy - h / 2), w, h);
+    ctx.restore();
+  }
+
+  function frame(t, state) {
+    background(t);
+    var cx = W / 2, cy = 820;
+    if (t < INTRO) {
+      var k = ease(t / 0.6);
+      logo(560, 1.25);
+      text('Daily #' + state.day, W / 2, 700, 54, 800, '#f0a050');
+      ctx.save(); ctx.globalAlpha = k;
+      text('Can you name', W / 2, 900, 96, 900, '#fff');
+      text('all 5 Pokémon? 👀', W / 2, 1020, 96, 900, '#fff');
+      text('From their shadow only', W / 2, 1160, 48, 700, '#8b8fa3');
+      ctx.restore();
+      footer();
+      return;
+    }
+    var u = t - INTRO, slot = GUESS + REVEAL, i = Math.floor(u / slot);
+    if (i < N) {
+      var local = u - i * slot, sp = state.sprites[i], mon = state.mons[i];
+      header(state);
+      if (local < GUESS) {
+        stage(cx, cy, 470, false);
+        var pop = ease(local / 0.35);
+        drawMon(sp, 'sil', cx, cy, 620 * (0.85 + 0.15 * pop), pop);
+        var left = Math.ceil(GUESS - local);
+        // Countdown ring
+        var frac = 1 - (local / GUESS);
+        ctx.beginPath(); ctx.arc(cx, 1240, 62, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac);
+        ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.stroke();
+        text(String(left), cx, 1244, 72, 900, '#fff');
+        text('Who’s that Pokémon?', cx, 1336, 44, 800, '#e8e8f0');
+        dots(i, i);
+      } else {
+        var r = (local - GUESS) / REVEAL, flash = 1 - ease(r / 0.35);
+        stage(cx, cy, 470, true);
+        drawMon(sp, 'col', cx, cy, 620 * (1 + 0.06 * Math.sin(Math.min(1, r * 2) * Math.PI)), 1);
+        if (flash > 0) { ctx.fillStyle = 'rgba(255,255,255,' + (0.7 * flash) + ')'; ctx.fillRect(0, 0, W, H); }
+        text(mon.n, cx, 1244, mon.n.length > 12 ? 76 : 92, 900, '#fff');
+        var sub = '#' + String(mon.id).padStart(3, '0');
+        if (state.rates && state.rates[i] != null) sub += '  ·  ' + state.rates[i] + '% of players named it';
+        text(sub, cx, 1336, 40, 700, '#ffd23f');
+        dots(i, i + 1);
+      }
+      footer();
+      return;
+    }
+    // Outro
+    var o = t - INTRO - N * slot, k2 = ease(o / 0.5);
+    logo(470, 1.1);
+    ctx.save(); ctx.globalAlpha = k2;
+    text('How many did you get?', W / 2, 660, 76, 900, '#fff');
+    text('Comment your score 👇', W / 2, 760, 56, 800, '#ffd23f');
+    state.sprites.forEach(function (sp, j) { drawMon(sp, 'col', W / 2 + (j - 2) * 190, 980, 170, 1); });
+    text("Today's Daily is live", W / 2, 1200, 62, 900, '#fff');
+    text('5 new Pokémon every day', W / 2, 1284, 46, 700, '#8b8fa3');
+    ctx.restore();
+    footer();
+  }
+
+  // ── Setup ──
+  var state = null, pokemon = null;
+  $('day').value = currentDay() - 1;
+
+  function caption(st) {
+    return "Can you name all 5? 👀 Yesterday's NameEmAll Daily (#" + st.day + "). Comment your score! " +
+      "Today's 5 are live, free at nameemall.com\n\n#pokemon #whosthatpokemon #pokemonquiz #pokemontrivia #pokemonfan";
+  }
+
+  async function prepare(day) {
+    if (!pokemon) pokemon = await fetch('/pokemon.json').then(function (r) { return r.json(); });
+    var mons = dailyPick(pokemon, dateForDay(day), 'mini', N);
+    var sprites = (await Promise.all(mons.map(function (m) { return loadImg(m.id); }))).map(trim);
+    var rates = null;
+    try {
+      var st = await fetch('https://api.nameemall.com/v1/daily/stats?day=' + day + '&mode=mini').then(function (r) { return r.json(); });
+      if (st && st.players >= MIN_PLAYERS_FOR_STATS && st.found_rates) rates = st.found_rates;
+    } catch (e) { /* the video works without stats */ }
+    return { day: day, mons: mons, sprites: sprites, rates: rates };
+  }
+
+  async function preview() {
+    var day = parseInt($('day').value, 10);
+    if (!(day >= 1 && day < currentDay())) { $('status').textContent = 'Pick a past Daily (today’s would spoil it).'; return; }
+    $('status').textContent = 'Loading Daily #' + day + '…';
+    state = await prepare(day);
+    frame(INTRO + 0.5, state);
+    $('cap').value = caption(state);
+    $('status').textContent = 'Daily #' + day + ': ' + state.mons.map(function (m) { return m.n; }).join(', ') +
+      (state.rates ? '' : '  (fewer than ' + MIN_PLAYERS_FOR_STATS + ' players, so no % shown)');
+  }
+
+  function pickMime() {
+    var opts = ['video/mp4;codecs=avc1.42E01E', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
+    for (var i = 0; i < opts.length; i++) if (window.MediaRecorder && MediaRecorder.isTypeSupported(opts[i])) return opts[i];
+    return null;
+  }
+
+  async function render() {
+    if (!state || state.day !== parseInt($('day').value, 10)) await preview();
+    if (!state) return;
+    var mime = pickMime();
+    if (!mime) { $('status').textContent = 'This browser can’t record video. Try Chrome or Safari.'; return; }
+    $('go').disabled = true; $('out').innerHTML = '';
+    var stream = canvas.captureStream(FPS);
+    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
+    var chunks = [];
+    rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+    var done = new Promise(function (res) { rec.onstop = res; });
+    rec.start(250);
+    var t0 = performance.now();
+    await new Promise(function (resolve) {
+      (function tick() {
+        var t = (performance.now() - t0) / 1000;
+        frame(Math.min(t, TOTAL), state);
+        $('status').textContent = 'Rendering… ' + Math.min(100, Math.round(t / TOTAL * 100)) + '%  (keep this tab in front)';
+        if (t < TOTAL + 0.2) requestAnimationFrame(tick); else resolve();
+      })();
+    });
+    rec.stop(); await done;
+    var ext = mime.indexOf('mp4') >= 0 ? 'mp4' : 'webm';
+    var blob = new Blob(chunks, { type: mime.split(';')[0] });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.className = 'dl'; a.href = url; a.download = 'nameemall-daily-' + state.day + '.' + ext;
+    a.textContent = '⬇ Download video (' + ext.toUpperCase() + ', ' + (blob.size / 1048576).toFixed(1) + ' MB)';
+    $('out').appendChild(a);
+    $('status').textContent = 'Done! ' + TOTAL.toFixed(1) + ' seconds, 1080×1920.';
+    $('go').disabled = false;
+    window.__lastVideo = { blob: blob, name: a.download };
+  }
+
+  $('day').addEventListener('change', function () { preview(); });
+  $('go').addEventListener('click', function () { render(); });
+  window.__videoFrame = function (t) { if (state) frame(t, state); };
+  preview();
+})();
+</script>
+</body>
+</html>

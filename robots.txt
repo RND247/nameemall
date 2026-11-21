@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /video/
 
 Sitemap: https://nameemall.com/sitemap.xml
