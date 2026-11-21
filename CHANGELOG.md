@@ -5,6 +5,13 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.20.0
+
+- Your Full Pokédex run now waits for you: switch to the Daily or Multiplayer and come back to find it paused right where you left it
+- When a run ends, a "Start a new run" button takes the place of the name box
+- The browser's Back button and #daily links now switch views properly
+- Typed a near miss like "gyrados" and pressed Enter? A tip now points you to the ✏️ Spelling Assistant
+
 ## v1.19.0
 
 - Creator Mode: a live combo meter now sits at the bottom of the screen. Name Pokémon within 5 seconds of each other to keep it going, and watch the bar drain. Every 5 in a row it changes color with a burst, all the way up to a rainbow 🌈 Ultra combo at 25

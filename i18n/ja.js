@@ -476,4 +476,7 @@ window.NEA_UI = {
   "🌈 Ultra combo!": "🌈 ウルトラコンボ！",
   "Combo meter beside the name box": "入力欄の横にコンボメーター",
   "Evolution line notices": "進化ライン完成の通知",
+  "▶ Start a new run": "▶ 新しく始める",
+  "▶ Your run is right where you left it: {count} / {total}": "▶ 中断したところから続きです: {count} / {total}",
+  "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ おしい！ 💡 ヒントのスペル補助をオンにすると、つづりが近い名前も正解になります",
 };

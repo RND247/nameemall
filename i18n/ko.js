@@ -450,4 +450,7 @@ window.NEA_UI = {
   "🌈 Ultra combo!": "🌈 울트라 콤보!",
   "Combo meter beside the name box": "입력창 옆 콤보 미터",
   "Evolution line notices": "진화 라인 알림",
+  "▶ Start a new run": "▶ 새 게임 시작",
+  "▶ Your run is right where you left it: {count} / {total}": "▶ 멈춘 곳에서 이어집니다: {count} / {total}",
+  "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 아깝다! 💡 힌트에서 철자 도우미를 켜면 비슷한 철자도 정답으로 인정돼요",
 };

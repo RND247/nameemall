@@ -450,4 +450,7 @@ window.NEA_UI = {
   "🌈 Ultra combo!": "🌈 ¡Ultra combo!",
   "Combo meter beside the name box": "Contador de combo junto a la casilla",
   "Evolution line notices": "Avisos de líneas evolutivas",
+  "▶ Start a new run": "▶ Empezar una partida nueva",
+  "▶ Your run is right where you left it: {count} / {total}": "▶ Tu partida sigue donde la dejaste: {count} / {total}",
+  "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ ¡Casi! Activa la ayuda ortográfica en 💡 Pista para aceptar nombres casi correctos",
 };

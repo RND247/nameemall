@@ -82,6 +82,12 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans
 .lang-row { margin-bottom: 10px; }
 .quiz-links { margin-bottom: 10px; line-height: 1.8; }
 .fan-note { margin-bottom: 8px; font-size: 0.68rem; opacity: 0.75; }
+/* Ended Full Pokédex run: a button to start over where the name box was */
+#btn-new-run { display: none; }
+body.run-ended[data-tab="pokemon"] #input-box { display: none !important; }
+body.run-ended[data-tab="pokemon"] #btn-new-run { display: inline-flex; align-items: center; gap: 6px; font-size: 1rem; padding: 9px 22px; background: var(--accent); border-color: var(--accent); color: #fff; }
+body.creator.run-ended[data-tab="pokemon"] #btn-new-run { font-size: 1.6rem; padding: 14px 32px; border-radius: 14px; }
+.toast.toast-resume { border-color: var(--green); }
 /* ── Achievements ── */
 .tab-btn { position: relative; }
 .tab-btn.has-new::after { content: ''; position: absolute; top: 8px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -1152,6 +1158,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     </div>
   </div>
   <div class="input-row">
+    <button type="button" class="btn new-run-btn" id="btn-new-run">▶ Start a new run</button>
     <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
     <div class="combo-meter idle" id="combo-meter" aria-hidden="true">
       <div class="cm-row"><span class="cm-fire">🔥</span><span class="cm-label" id="cm-label">Combo</span><span class="cm-n" id="cm-n">0</span></div>
@@ -1797,7 +1804,7 @@ const Q = (function() {
       stopTimer();
       creatorFinish();
       if (isDailyTab) dailyComplete(true);
-      else showModal(true);
+      else { syncRunEnded(); showModal(true); }
     }
   }
 
@@ -2509,7 +2516,12 @@ const Q = (function() {
     setTimeout(() => el.remove(), 4500);
   }
 
+  function syncRunEnded() {
+    var ended = currentTab === 'pokemon' && items.length > 0 && (givenUp || foundSet.size === items.length);
+    document.body.classList.toggle('run-ended', ended);
+  }
   function updateUI() {
+    syncRunEnded();
     $foundCount.textContent = foundSet.size;
     if (currentTab === 'pokemon') {
       for (const region of REGION_ORDER) {
@@ -2750,6 +2762,7 @@ const Q = (function() {
                        pct: pctOf(foundSet.size, items.length), time_sec: Math.floor(elapsedMs / 1000) });
     for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
     save();
+    syncRunEnded();
     showModal(false);
   }
 
@@ -5373,13 +5386,20 @@ const Q = (function() {
       !(currentTab === 'pokemon' || currentTab === 'daily');
   }
 
+  var pokeResumeNote = false;
+  function pokeResumeToast() {
+    var el = document.createElement('div');
+    el.className = 'toast toast-resume';
+    el.textContent = t('▶ Your run is right where you left it: {count} / {total}', { count: foundSet.size, total: items.length });
+    $toasts.appendChild(el);
+    setTimeout(function() { el.remove(); }, 4000);
+  }
   function switchTab(tab, confirmed) {
     if (tab === 'achievements') { achOpen(); return; }
     if (tab === currentTab && items.length) return;
     if (confirmed !== true) {
-      var leaveMsg = currentTab === 'pokemon' && foundSet.size > 0 && !givenUp
-          ? t('Leaving will end the current game. All remaining Pokémon will be revealed. Continue?')
-        : currentTab === 'daily' && dailyState.active && foundSet.size > 0
+      // A Full Pokédex run is saved and waits for you (see below), so only the Daily and rooms ask first
+      var leaveMsg = currentTab === 'daily' && dailyState.active && foundSet.size > 0
           ? t('Leaving will end your daily challenge. Continue?')
         : (currentTab === 'duel' && duelActive) || (currentTab === 'coop' && coopActive)
           ? t('You\'ll disconnect from the room. The other player can wait for you to reconnect.')
@@ -5390,10 +5410,10 @@ const Q = (function() {
       }
     }
     if (currentTab === 'pokemon' && foundSet.size > 0 && !givenUp) {
-      givenUp = true; stopTimer(); $input.disabled = true;
-      for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
+      // Pause and keep the run: the clock stops and the board is saved, ready for when you come back
+      stopTimer();
       save();
-      showModal(false);
+      pokeResumeNote = true;
     }
     if (currentTab === 'daily' && dailyState.active && foundSet.size > 0) {
       dailyComplete(false, 'left');
@@ -5573,12 +5593,14 @@ const Q = (function() {
           }
         }
       }
+      if (currentTab === 'pokemon' && pokeResumeNote && !givenUp && foundSet.size < items.length) pokeResumeToast();
       // A finished game comes back as its final board; the results were already shown when it ended
       if (givenUp) {
         $input.disabled = true;
         for (let i = 0; i < items.length; i++) { if (!foundSet.has(i)) revealCard(i, true); }
       }
     }
+    pokeResumeNote = false;
     updateUI(); displayHighscore();
     if (!givenUp) $input.focus();
   }
@@ -5655,8 +5677,20 @@ const Q = (function() {
     }
   });
 
+  var spellNudges = 0;
   $input.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { this.value = ''; }
+    if (e.key !== 'Enter' || currentTab !== 'pokemon' || spellHints || givenUp || spellNudges >= 3) return;
+    var typed = this.value.trim();
+    if (typed.length < 4 || findAllMatches(typed).length) return;
+    if (spellFind(typed) == null) return;
+    spellNudges++;
+    var el = document.createElement('div');
+    el.className = 'toast toast-spell';
+    el.textContent = t('✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses');
+    $toasts.appendChild(el);
+    setTimeout(function() { el.remove(); }, 5000);
+    track('spell_nudge', {});
   });
 
   document.addEventListener('keydown', function(e) {
@@ -5667,6 +5701,7 @@ const Q = (function() {
   // ── Button wiring ──
 
   $('btn-give-up').addEventListener('click', giveUp);
+  $('btn-new-run').addEventListener('click', function() { track('new_run', { from: givenUp ? 'gave_up' : 'completed' }); reset(true); });
   $('btn-reset').addEventListener('click', reset);
 
   var paused = false;
@@ -6057,6 +6092,8 @@ const Q = (function() {
     if (!achIsOpen()) return;
     $('ach-overlay').classList.remove('active');
     document.body.classList.remove('ach-open');
+    if (location.hash === '#achievements' && window.history.replaceState)
+      window.history.replaceState({}, '', location.pathname + location.search + (currentTab === 'pokemon' ? '' : '#' + currentTab));
     if (achPausedGame) {
       achPausedGame = false;
       if (paused) {
@@ -7486,6 +7523,20 @@ const Q = (function() {
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
+  // Back/Forward and #links opened in this tab go through the same view switch as the tabs
+  function routeFromUrl() {
+    var h = location.hash.replace(/^#/, '');
+    var tab = /^daily/.test(h) ? 'daily' : ['duel', 'coop', 'multi', 'achievements'].indexOf(h) >= 0 ? h : h === '' ? 'pokemon' : null;
+    if (!tab) return;
+    if (tab === 'achievements') { achOpen(); return; }
+    if (achIsOpen()) achClose();
+    if (tab === currentTab || (tab === 'multi' && (currentTab === 'duel' || currentTab === 'coop'))) return;
+    // Show the current view's address until the switch really happens (a confirm may cancel it)
+    if (window.history.replaceState) window.history.replaceState({}, '', location.pathname + location.search + (currentTab === 'pokemon' ? '' : '#' + currentTab));
+    switchTab(tab);
+  }
+  window.addEventListener('hashchange', routeFromUrl);
+  window.addEventListener('popstate', routeFromUrl);
   // Re-check the "How to play" hint whenever the name box appears, disappears or is locked
   new MutationObserver(updateHowto).observe($input, { attributes: true, attributeFilter: ['style', 'disabled'] });
   $('grid-wrap').addEventListener('click', function(e) {
