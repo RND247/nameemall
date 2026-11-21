@@ -248,13 +248,15 @@
 
   async function preview() {
     var day = parseInt($('day').value, 10);
-    if (!(day >= 1 && day < currentDay())) { $('status').textContent = 'Pick a past Daily (today’s would spoil it).'; return; }
+    if (!(day >= 1)) { $('status').textContent = 'Pick a Daily number.'; return; }
     $('status').textContent = 'Loading Daily #' + day + '…';
     state = await prepare(day);
     frame(INTRO + 0.5, state);
     $('cap').value = caption(state);
     $('status').textContent = 'Daily #' + day + ': ' + state.mons.map(function (m) { return m.n; }).join(', ') +
-      (state.rates ? '' : '  (fewer than ' + MIN_PLAYERS_FOR_STATS + ' players, so no % shown)');
+      (state.rates ? '' : '  (fewer than ' + MIN_PLAYERS_FOR_STATS + ' players, so no % shown)') +
+      // Made ahead for scheduling: it must only go live once every time zone has finished that Daily
+      (day >= currentDay() ? '  ⚠ Daily #' + day + ' isn’t over yet: schedule it for ' + dateForDay(day + 1) + ' 12:00 UTC or later.' : '');
   }
 
   // ── Sound: a tick each countdown second, a chime + the Pokémon's cry on each reveal ──
