@@ -30,9 +30,11 @@
 <link rel="alternate" hreflang="de" href="https://nameemall.com/?lang=de">
 <link rel="alternate" hreflang="es" href="https://nameemall.com/?lang=es">
 <link rel="alternate" hreflang="it" href="https://nameemall.com/?lang=it">
+<link rel="alternate" hreflang="zh-Hans" href="https://nameemall.com/?lang=zh-Hans">
+<link rel="alternate" hreflang="he" href="https://nameemall.com/?lang=he">
 <link rel="alternate" hreflang="x-default" href="https://nameemall.com/">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/"}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/", "description": "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.", "applicationCategory": "GameApplication", "genre": ["Quiz", "Trivia"], "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "inLanguage": ["en", "ja", "zh-Hant", "ko", "fr", "de", "es", "it"], "image": "https://nameemall.com/og-image.png"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "NameEmAll", "alternateName": ["Name'Em All", "Name Em All", "Name 'Em All"], "url": "https://nameemall.com/", "description": "Can you name all 1025 Pokémon? Free Pokémon quiz with a Daily challenge, real-time Duels and Co-Op. Type every name from Bulbasaur to Pecharunt.", "applicationCategory": "GameApplication", "genre": ["Quiz", "Trivia"], "operatingSystem": "Any (web browser)", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "inLanguage": ["en", "ja", "zh-Hant", "zh-Hans", "ko", "fr", "de", "es", "it", "he"], "image": "https://nameemall.com/og-image.png"}</script>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0f0f1a">
 <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
@@ -874,6 +876,11 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .kofi-nudge { display: block; width: fit-content; margin: 10px auto 0; font-size: 0.74rem; color: var(--text-dim, #9aa0aa); text-decoration: none; opacity: 0.85; }
 .kofi-nudge:hover { color: #ff5e5b; opacity: 1; text-decoration: underline; }
 .kofi-nudge[hidden] { display: none; }
+/* Right-to-left (Hebrew): the logo, scores and times keep left-to-right order */
+[dir="rtl"] h1.title { direction: ltr; }
+[dir="rtl"] h1.title .sub { unicode-bidi: isolate; }
+[dir="rtl"] .stats > span:first-child, [dir="rtl"] .timer-val, [dir="rtl"] .big,
+[dir="rtl"] .poke-name, [dir="rtl"] .poke-gen { direction: ltr; unicode-bidi: isolate; }
 #overlay .discord-link { margin: 10px auto 0; }
 .multi-discord { display: table; margin: 22px auto 0; }
 .ach-actions { display: flex; justify-content: center; margin: 10px 0 4px; }
@@ -953,8 +960,8 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 // two files are loaded: i18n/<lang>.js (UI text) and names/<lang>.js (Pokémon, regions, types).
 (function() {
   var SUPPORTED = {
-    en: 'English', ja: '日本語 (Beta)', 'zh-Hant': '繁體中文 (Beta)', ko: '한국어 (Beta)',
-    fr: 'Français (Beta)', de: 'Deutsch (Beta)', es: 'Español (Beta)', it: 'Italiano (Beta)'
+    en: 'English', ja: '日本語 (Beta)', 'zh-Hant': '繁體中文 (Beta)', 'zh-Hans': '简体中文 (Beta)', ko: '한국어 (Beta)',
+    fr: 'Français (Beta)', de: 'Deutsch (Beta)', es: 'Español (Beta)', it: 'Italiano (Beta)', he: 'עברית (Beta)'
   };
   var lang = 'en';
   try { lang = localStorage.getItem('nea_lang') || 'en'; } catch(e) {}
@@ -976,7 +983,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 // strings built with numbers or names go through t() with {placeholders}.
 (function() {
   var lang = window.NEA_LANG;
-  var LOCALES = { ja: 'ja-JP', 'zh-Hant': 'zh-TW', ko: 'ko-KR', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT' };
+  var LOCALES = { ja: 'ja-JP', 'zh-Hant': 'zh-TW', 'zh-Hans': 'zh-CN', ko: 'ko-KR', fr: 'fr-FR', de: 'de-DE', es: 'es-ES', it: 'it-IT', he: 'he-IL' };
   var dict = {};
   if (lang !== 'en') {
     var names = window.NEA_NAMES || {};
@@ -987,6 +994,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   }
   window.NEA_LOCALE = LOCALES[lang];
   document.documentElement.lang = lang;
+  document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
 
   // Search engines: each language has its own address (?lang=xx), title and description
   var SITE = 'https://nameemall.com/';
@@ -1162,7 +1170,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   </div>
   <div class="input-row">
     <button type="button" class="btn new-run-btn" id="btn-new-run">▶ Start a new run</button>
-    <input type="text" id="input-box" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
+    <input type="text" id="input-box" dir="auto" placeholder="Type a Pokémon name…" autocomplete="off" autofocus spellcheck="false" />
     <div class="combo-meter idle" id="combo-meter" aria-hidden="true">
       <div class="cm-row"><span class="cm-fire">🔥</span><span class="cm-label" id="cm-label">Combo</span><span class="cm-n" id="cm-n">0</span></div>
       <div class="cm-bar"><span id="cm-fill"></span></div>
@@ -1489,7 +1497,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <summary><h2 id="about-title">About NameEmAll</h2></summary>
   <p>NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.</p>
   <p>Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.</p>
-  <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a></p>
+  <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=zh-Hans" hreflang="zh-Hans" data-no-i18n>简体中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a> · <a href="https://nameemall.com/?lang=he" hreflang="he" data-no-i18n>עברית</a></p>
 </details>
 <footer>
   <div class="lang-row"><label for="lang-select">🌐 <span>Language</span></label> <select id="lang-select" class="lang-select" aria-label="Language"></select></div>
@@ -1685,12 +1693,23 @@ const Q = (function() {
     s = s.toLowerCase().trim();
     s = s.replace(/[\u3041-\u3096]/g, function(c) { return String.fromCharCode(c.charCodeAt(0) + 0x60); });
     if (s.normalize) s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').normalize('NFC');
+    // Hebrew: ignore vowel points, geresh/apostrophes after a letter (צ'/צ) and final-letter forms
+    if (/[\u05d0-\u05ea]/.test(s)) {
+      s = s.replace(/[\u0591-\u05c7]/g, '').replace(/([\u05d0-\u05ea])['\u05f3\u2019`\u05f4"]/g, '$1')
+        .replace(/[ךםןףץ]/g, function(c) { return 'כמנפצ'['ךםןףץ'.indexOf(c)]; });
+    }
     return s;
   }
   // "How it sounds" key for the Spelling Assistant. Input must already be normalizeAnswer()-ed.
   // Latin names: letters that sound alike are merged. Kana: long marks and small tsu ignored. Hangul/Chinese: none.
   function soundKey(s) {
     if (/[가-힯㐀-鿿]/.test(s)) return null;
+    // Hebrew: keep the first letter, drop the vowel letters after it, merge ט/ת and כ/ק
+    if (/[\u05d0-\u05ea]/.test(s)) {
+      var h = s.replace(/[^\u05d0-\u05ea]/g, '');
+      h = (h.charAt(0) + h.slice(1).replace(/[אהעוי]/g, '')).replace(/ט/g, 'ת').replace(/כ/g, 'ק').replace(/(.)\1+/g, '$1');
+      return h.length >= 3 ? h : null;
+    }
     if (/[゠-ヿ]/.test(s)) {
       var k = s.replace(/[^゠-ヿ]/g, '').replace(/[ーッ・]/g, '').replace(/ヴ/g, 'ブ');
       return k.length >= 3 ? k : null;
@@ -1766,7 +1785,8 @@ const Q = (function() {
         for (var b = a + 1; b < sorted.length && sorted[b].startsWith(k); b++) {
           var k2 = sorted[b];
           var sameMon = keyToIndices[k].some(function(i) { return keyToIndices[k2].indexOf(i) !== -1; });
-          var sharedLang = Object.keys(keyLangs[k]).some(function(l) { return keyLangs[k2][l]; });
+          // Hebrew spellings are unofficial and lenient, so a Hebrew prefix of another Pokémon waits too
+          var sharedLang = Object.keys(keyLangs[k]).some(function(l) { return l !== 'he' && keyLangs[k2][l]; });
           if (!sameMon && !sharedLang) { ambiguousKeys.add(k); break; }
         }
       }
@@ -7199,7 +7219,7 @@ const Q = (function() {
   // Language menu: the footer <select> owns the switching logic (including the Daily confirm)
   (function initLangMenu() {
     var list = $('lang-list'), sel = $('lang-select');
-    var code = NEA_LANG === 'zh-Hant' ? '繁中' : NEA_LANG.split('-')[0].toUpperCase();
+    var code = { 'zh-Hant': '繁中', 'zh-Hans': '简中', he: 'עב' }[NEA_LANG] || NEA_LANG.split('-')[0].toUpperCase();
     $('lang-btn-code').textContent = code;
     list.innerHTML = Object.keys(NEA_LANGS).map(function(c) {
       return '<button type="button" data-lang="' + c + '" data-no-i18n' + (c === NEA_LANG ? ' class="active"' : '') + '>' +
