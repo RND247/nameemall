@@ -52,6 +52,8 @@
   var EPOCH_MS = Date.UTC(2026, 3, 30);          // Daily #1 = 2026-04-30, same as the game
   var SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
   var CRY = 'https://cdn.jsdelivr.net/gh/PokeAPI/cries@main/cries/pokemon/latest/';
+  // ?small: ~2.4 Mbps so each file stays under 10 MB (TikTok re-encodes to well below this anyway)
+  var VBR = /[?&]small\b/.test(location.search) ? 2400000 : 6000000;
   var SPRITE_RAW = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
   var CRY_RAW = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
   var W = 1080, H = 1920, FPS = 30;
@@ -328,7 +330,7 @@
     }
     var dest = ac.createMediaStreamDestination();
     var stream = new MediaStream(canvas.captureStream(FPS).getVideoTracks().concat(dest.stream.getAudioTracks()));
-    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000, audioBitsPerSecond: 128000 });
+    var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VBR, audioBitsPerSecond: 128000 });
     var chunks = [];
     rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     var done = new Promise(function (res) { rec.onstop = res; });
