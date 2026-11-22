@@ -181,9 +181,9 @@ def main(csv_dir: str, only=None) -> None:
         print(f"\n{problems} language(s) need attention (see above)")
 
 
-# Hebrew has no official Pokémon names: the English names are shown, and the hand-written
-# Hebrew spellings in names_src/he.txt (one line per Pokédex number, alternatives split by |)
-# are accepted as answers. Types and regions are translated here.
+# Hebrew has no official Pokémon names: the hand-written Hebrew spellings in names_src/he.txt
+# (one line per Pokédex number, alternatives split by |; the first is the one shown) are accepted
+# as answers alongside English. Types and regions are translated here.
 HE_TYPES = {"normal": "נורמלי", "fire": "אש", "water": "מים", "grass": "דשא", "electric": "חשמל",
             "ice": "קרח", "fighting": "לחימה", "poison": "רעל", "ground": "אדמה", "flying": "מעופף",
             "psychic": "על-חושי", "bug": "חרק", "rock": "סלע", "ghost": "רוח רפאים", "dragon": "דרקון",
@@ -201,7 +201,7 @@ def build_hebrew(pokemon, en_keys) -> int:
         accepted = []
         for sp in line.split("|"):
             accepted += [v for v in variants(sp.strip(), "he") if v not in accepted]
-        names[str(p["id"])] = [p["n"]] + accepted
+        names[str(p["id"])] = [accepted[0]] + accepted  # shown in Hebrew: the first spelling
         for v in accepted:
             he_keys.setdefault(normalize(v), set()).add(p["id"])
     problems = 0

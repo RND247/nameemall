@@ -879,8 +879,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 /* Right-to-left (Hebrew): the logo, scores and times keep left-to-right order */
 [dir="rtl"] h1.title { direction: ltr; }
 [dir="rtl"] h1.title .sub { unicode-bidi: isolate; }
-[dir="rtl"] .stats > span:first-child, [dir="rtl"] .timer-val, [dir="rtl"] .big,
-[dir="rtl"] .poke-name, [dir="rtl"] .poke-gen { direction: ltr; unicode-bidi: isolate; }
+[dir="rtl"] .stats > span:first-child, [dir="rtl"] .timer-val, [dir="rtl"] .big { direction: ltr; unicode-bidi: isolate; }
 #overlay .discord-link { margin: 10px auto 0; }
 .multi-discord { display: table; margin: 22px auto 0; }
 .ach-actions { display: flex; justify-content: center; margin: 10px 0 4px; }
@@ -5701,7 +5700,7 @@ const Q = (function() {
       onNamed(matches, null);
       this.value = '';
     } else if (val.length > 0) {
-      if (currentTab === 'pokemon') spellSchedule(val);
+      if (currentTab === 'pokemon' || (currentTab === 'daily' && heAutoSpell(val))) spellSchedule(val);
       var q = normalizeAnswer(val);
       var dupeIndices = keyToIndices[q];
       if (dupeIndices && dupeIndices.length > 0 && dupeIndices.every(function(i) { return foundSet.has(i); })) {
@@ -5726,7 +5725,7 @@ const Q = (function() {
     if (e.key === 'Escape') { this.value = ''; }
     if (e.key !== 'Enter' || currentTab !== 'pokemon' || spellHints || givenUp || spellNudges >= 3) return;
     var typed = this.value.trim();
-    if (typed.length < 4 || findAllMatches(typed).length) return;
+    if (typed.length < 4 || heAutoSpell(typed) || findAllMatches(typed).length) return;
     if (spellFind(typed) == null) return;
     spellNudges++;
     var el = document.createElement('div');
@@ -7420,19 +7419,24 @@ const Q = (function() {
     });
     return best <= cap ? pick(cands) : null;
   }
+  // Hebrew spellings are unofficial and vary, so names typed in Hebrew letters always get the
+  // Spelling Assistant, without marking the game as played with hints
+  function heAutoSpell(val) { return NEA_LANG === 'he' && /[\u05d0-\u05ea]/.test(val); }
   function spellSchedule(val) {
     clearTimeout(spellTimer);
-    if (!spellHints || currentTab !== 'pokemon' || givenUp) return;
+    var auto = heAutoSpell(val);
+    var tabOk = function() { return currentTab === 'pokemon' || (auto && currentTab === 'daily'); };
+    if (!(spellHints || auto) || !tabOk() || givenUp) return;
     var typed = val;
     spellTimer = setTimeout(function() {
-      if ($input.value.trim() !== typed || !spellHints || currentTab !== 'pokemon' || givenUp || paused || $input.disabled) return;
+      if ($input.value.trim() !== typed || !(spellHints || auto) || !tabOk() || givenUp || paused || $input.disabled) return;
       var idx = spellFind(typed);
       if (idx == null) return;
-      markHint('spell');
+      if (!auto) markHint('spell');
       onNamed([idx], null);
       $input.value = '';
       spellToast(typed, items[idx]);
-      track('spelling_assist', { game_mode: 'pokemon' });
+      track('spelling_assist', { game_mode: currentTab, auto_hebrew: auto ? 1 : undefined });
     }, 900);
   }
   function spellToast(typed, w) {

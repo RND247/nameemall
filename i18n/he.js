@@ -1,5 +1,5 @@
 // Hebrew UI strings (Beta). Keys are the exact English UI text.
-// The page switches to right-to-left in Hebrew. Pokémon show their English names; Hebrew spellings are also accepted (names/he.js).
+// The page switches to right-to-left in Hebrew. Pokémon names are shown in Hebrew (names/he.js); English names are accepted too.
 window.NEA_UI = {
   "Regular Mode": "מצב רגיל",
   "🗓️ Daily": "🗓️ יומי",
