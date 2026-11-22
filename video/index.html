@@ -52,6 +52,8 @@
   var EPOCH_MS = Date.UTC(2026, 3, 30);          // Daily #1 = 2026-04-30, same as the game
   var SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
   var CRY = 'https://cdn.jsdelivr.net/gh/PokeAPI/cries@main/cries/pokemon/latest/';
+  var SPRITE_RAW = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+  var CRY_RAW = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/';
   var W = 1080, H = 1920, FPS = 30;
   var INTRO = 2.2, GUESS = 3.0, REVEAL = 1.6, OUTRO = 3.4, N = 5;
   var TOTAL = INTRO + N * (GUESS + REVEAL) + OUTRO;
@@ -88,7 +90,10 @@
   function loadImg(id) {
     return new Promise(function (res, rej) {
       var im = new Image(); im.crossOrigin = 'anonymous';
-      im.onload = function () { res(im); }; im.onerror = rej;
+      // jsDelivr sometimes refuses a single file (403), so fall back to GitHub's raw host
+      var tried = false;
+      im.onload = function () { res(im); };
+      im.onerror = function () { if (tried) return rej(new Error('Sprite #' + id + ' failed to load')); tried = true; im.src = SPRITE_RAW + id + '.png'; };
       im.src = SPRITE + id + '.png?video';   // the query skips the game's opaque cached copy
     });
   }
@@ -236,7 +241,8 @@
     var sprites = (await Promise.all(mons.map(function (m) { return loadImg(m.id); }))).map(trim);
     // Cries: the query skips the game's opaque cached copy so the bytes are readable
     var cryBufs = await Promise.all(mons.map(function (m) {
-      return fetch(CRY + m.id + '.ogg?video').then(function (r) { return r.ok ? r.arrayBuffer() : null; }).catch(function () { return null; });
+      var get = function (u) { return fetch(u).then(function (r) { return r.ok ? r.arrayBuffer() : null; }).catch(function () { return null; }); };
+      return get(CRY + m.id + '.ogg?video').then(function (b) { return b || get(CRY_RAW + m.id + '.ogg'); });
     }));
     var rates = null;
     try {
@@ -250,7 +256,8 @@
     var day = parseInt($('day').value, 10);
     if (!(day >= 1)) { $('status').textContent = 'Pick a Daily number.'; return; }
     $('status').textContent = 'Loading Daily #' + day + '…';
-    state = await prepare(day);
+    try { state = await prepare(day); }
+    catch (e) { $('status').textContent = 'Could not load Daily #' + day + ': ' + (e && e.message || e) + '. Try again in a minute.'; throw e; }
     frame(INTRO + 0.5, state);
     $('cap').value = caption(state);
     $('status').textContent = 'Daily #' + day + ': ' + state.mons.map(function (m) { return m.n; }).join(', ') +
@@ -358,8 +365,8 @@
     $('week').disabled = true;
     for (var d = first; d < first + 7; d++) {
       $('day').value = d;
-      await preview();
-      var a = await render();
+      var a = null;
+      try { await preview(); a = await render(); } catch (e) { /* preview() already says why */ }
       if (!a) break;
       a.click();
       made.push('#' + d + ' → post ' + dateForDay(d + 1));
@@ -371,11 +378,11 @@
       : 'Stopped after ' + made.length + ' of 7. ' + $('status').textContent;
   }
 
-  $('day').addEventListener('change', function () { preview(); });
-  $('go').addEventListener('click', function () { render(); });
+  $('day').addEventListener('change', function () { preview().catch(function () {}); });
+  $('go').addEventListener('click', function () { render().catch(function () { $('go').disabled = false; }); });
   $('week').addEventListener('click', function () { renderWeek(); });
   window.__videoFrame = function (t) { if (state) frame(t, state); };
-  preview();
+  preview().catch(function () {});
 })();
 </script>
 </body>
