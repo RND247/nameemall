@@ -871,6 +871,9 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .discord-link { display: inline-block; margin-top: 10px; padding: 6px 14px; border-radius: 6px; background: #5865F2; color: #fff; font-size: 0.78rem; font-weight: 700; text-decoration: none; transition: filter 0.15s; }
 .discord-link:hover { filter: brightness(1.1); }
 .discord-link[hidden] { display: none; }
+.kofi-nudge { display: block; width: fit-content; margin: 10px auto 0; font-size: 0.74rem; color: var(--text-dim, #9aa0aa); text-decoration: none; opacity: 0.85; }
+.kofi-nudge:hover { color: #ff5e5b; opacity: 1; text-decoration: underline; }
+.kofi-nudge[hidden] { display: none; }
 #overlay .discord-link { margin: 10px auto 0; }
 .multi-discord { display: table; margin: 22px auto 0; }
 .ach-actions { display: flex; justify-content: center; margin: 10px 0 4px; }
@@ -1381,6 +1384,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     <p id="modal-chat" class="modal-chat" hidden></p>
     <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
     <a class="discord-link" id="modal-discord" data-discord="pokedex_result" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener" hidden>💬 Show it off on Discord</a>
+    <a class="kofi-nudge" id="modal-kofi" data-kofi="pokedex_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
     <button class="btn" onclick="Q.closeModal()">Close</button>
     <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
   </div>
@@ -1462,6 +1466,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
     </div>
     <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
     <a class="discord-link" id="daily-discord" hidden target="_blank" rel="noopener">💬 Compare results on our Discord</a>
+    <a class="kofi-nudge" id="daily-kofi" data-kofi="daily_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
     <div class="daily-share-row" style="margin-top:14px;">
       <button class="btn" id="daily-result-close">👀 See Board</button>
       <button class="btn" id="daily-result-lobby">← Back to Daily</button>
@@ -2566,6 +2571,7 @@ const Q = (function() {
     displayHighscore();
     $('modal-image-btn').hidden = currentTab !== 'pokemon';
     $('modal-discord').hidden = currentTab !== 'pokemon';
+    kofiNudge('modal-kofi', currentTab === 'pokemon' && count > 0);
     var chatLine = '';
     if (currentTab === 'pokemon' && chatEnabled() && chat.claims.size) {
       var chatN = 0; chat.claims.forEach(function(i) { if (foundSet.has(i)) chatN++; });
@@ -3903,6 +3909,22 @@ const Q = (function() {
 
   function dailyModeCfg(mode) { return DAILY_MODES[mode] || DAILY_MODES.mini; }
 
+  // One quiet Ko-fi line on a finished run: at most once a day, never in Creator Mode (keeps streams clean)
+  function kofiNudge(id, show) {
+    var a = $(id); if (!a) return;
+    a.hidden = true;
+    if (!show || document.body.classList.contains('creator')) return;
+    var today = dailyTodayStr();
+    try {
+      if (localStorage.getItem('nea_kofi_day') === today) return;
+      localStorage.setItem('nea_kofi_day', today);
+    } catch(e) { return; }
+    a.hidden = false;
+    track('kofi_nudge_shown', { placement: a.dataset.kofi });
+  }
+  document.querySelectorAll('[data-kofi]').forEach(function(a) {
+    a.addEventListener('click', function() { track('kofi_click', { placement: a.dataset.kofi }); });
+  });
   function dailyTodayStr(d) {
     d = d || new Date();
     var y = d.getFullYear();
@@ -4557,6 +4579,7 @@ const Q = (function() {
     dailyUpdateStreakBadge();
     dailySetDoneBar(true);
     dailyShowResult(result, !!won);
+    kofiNudge('daily-kofi', true);
   }
 
   function dailyShowResult(result, justWon) {
@@ -4587,6 +4610,7 @@ const Q = (function() {
     $('daily-name-input').value = dailyGetPlayerName();
 
     $('daily-result-grid').textContent = dailyBuildShareGrid(result);
+    kofiNudge('daily-kofi', false); // re-opened results never show it; dailyComplete does
 
     dailyStartCountdown('daily-result-countdown');
     $('daily-result-overlay').classList.add('active');
