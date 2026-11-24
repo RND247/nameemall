@@ -5,6 +5,19 @@ version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
 
+## v1.21.12
+
+- Every skin has been redesigned from scratch. Each one now has its own background, its own tiles, its own animation when you name a Pokémon, and a signature moment:
+- 🪨 Fossils: stone slabs crack open, and finished regions glow amber
+- 🪶 Legendary Birds: a feather wipes the frost off, and quick streaks bring lightning, embers and ice
+- 🌀 Ultra Beasts: neon tiles glitch in, and the wormhole pulses on combos
+- ⏳ Creation Trio: cards collapse into a singularity, and space-time warps every 100 names
+- 🫧 Mythicals: bubbles pop, found cards turn holo, and mythicals get a rainbow outline
+- 📓 Starters: leaves, embers or bubbles by type, and a gold stamp on every finished starter line
+- ✨ Eeveelutions: an evolution flash in the matching color, and a parade when you name all 9
+- 🍬 New Rare Candy skin, a thank-you for Ko-fi supporters: "+1 Lv" on every name and a Level up banner every 100
+- Also new: 简体中文 and עברית (Hebrew, fully right-to-left), so NameEmAll now speaks 10 languages
+
 ## v1.20.0
 
 - Your Full Pokédex run now waits for you: switch to the Daily or Multiplayer and come back to find it paused right where you left it
