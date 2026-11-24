@@ -6479,7 +6479,7 @@ const Q = (function() {
     el.querySelector('.family-label').textContent = t('🏅 Achievement unlocked');
     el.querySelector('.ach-toast-icon').innerHTML = achIconHtml(a);
     el.querySelector('.ach-toast-title').textContent = achTitle(a);
-    if (a.id.indexOf('set_') === 0 && skinById(a.id.slice(4))) {
+    if (a.id.indexOf('set_') === 0 && skinById(a.id.slice(4)) && (duelActive || coopActive)) {
       var sk = document.createElement('div');
       sk.className = 'ach-toast-skin';
       sk.textContent = t('✨ New skin unlocked! Pick it in ⚙️ Settings');
@@ -7124,9 +7124,10 @@ const Q = (function() {
     });
   }
 
-  // The big reveal waits for a natural break, never in the middle of a timed game
+  // The big reveal shows the moment a skin unlocks. Solo games pause behind it.
+  // Duel and Co-Op wait for the end: pausing there would also stop the other player.
   function skinBusy() {
-    return (timerRunning && !paused) || duelActive || coopActive || !!document.querySelector('.skin-unlock, .nea-confirm');
+    return duelActive || coopActive || !!document.querySelector('.skin-unlock, .nea-confirm');
   }
   function skinMaybeReveal() {
     var fresh = SKINS.filter(function(s) { return skinUnlocked(s) && skinSeen.indexOf(s.id) < 0; });
@@ -7156,7 +7157,24 @@ const Q = (function() {
     tryBtn.style.background = 'linear-gradient(90deg,' + s.col[3] + ',' + s.col[4] + ',' + s.col[1] + ')';
     later.textContent = t('Later');
     var prevFocus = document.activeElement;
-    function close() { u.remove(); document.removeEventListener('keydown', onKey, true); if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch(e) {} }
+    var pausedGame = false;
+    if (timerRunning && !paused && !givenUp) {
+      pausedGame = true;
+      paused = true;
+      stopTimer();
+      $input.disabled = true;
+      setPauseBtn(true);
+    }
+    function close() {
+      u.remove(); document.removeEventListener('keydown', onKey, true);
+      if (pausedGame && paused) {
+        paused = false;
+        startTimer();
+        $input.disabled = false;
+        setPauseBtn(false);
+      }
+      if (prevFocus && prevFocus.focus) try { prevFocus.focus(); } catch(e) {}
+    }
     function onKey(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
     tryBtn.addEventListener('click', function() { skinApply(s.id); track('skin_change', { skin: s.id, from: 'unlock' }); close(); });
     later.addEventListener('click', close);
