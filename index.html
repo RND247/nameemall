@@ -8030,6 +8030,18 @@ const Q = (function() {
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && document.querySelector('.settings-panel.open')) closePanels();
   });
+  // Typing anywhere goes to the name box: after clicking Settings or a button, just keep typing.
+  // Focusing during keydown lets the browser put the character into the box.
+  document.addEventListener('keydown', function(e) {
+    if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+    if (e.key.length !== 1 && e.key !== 'Backspace') return;
+    if (document.activeElement === $input || $input.disabled || paused || !$input.offsetParent) return;
+    var tgt = e.target;
+    if (tgt && (tgt.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tgt.tagName))) return;
+    if (document.querySelector('.skin-unlock, .nea-confirm, [class*="overlay"].active') || achIsOpen()) return;
+    closePanels();
+    $input.focus();
+  });
 
   // Language menu: the footer <select> owns the switching logic (including the Daily confirm)
   (function initLangMenu() {
