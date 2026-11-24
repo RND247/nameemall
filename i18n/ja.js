@@ -479,4 +479,9 @@ window.NEA_UI = {
   "▶ Start a new run": "▶ 新しく始める",
   "▶ Your run is right where you left it: {count} / {total}": "▶ 中断したところから続きです: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ おしい！ 💡 ヒントのスペル補助をオンにすると、つづりが近い名前も正解になります",
+  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "楽しめましたか？ Ko-fiでNameEmAllを応援する ☕",
+  "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "クリアおめでとう！ NameEmAllを楽しんでもらえたなら、Ko-fiでふしぎなアメを1つ。無料で続けるための力になります ☕",
+  "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAllは広告なしの無料ゲームで、一人で作っています。楽しんでいただけたら、Ko-fiで応援してください ☕",
+  "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ サポーター一覧：最初の一人になりませんか？ Ko-fiで応援するときに名前を残すと、ここに掲載されます。",
+  "☕ Thank you to our supporters: {names}": "☕ 応援してくださった皆さん、ありがとうございます：{names}",
 };

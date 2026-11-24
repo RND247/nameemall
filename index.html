@@ -876,6 +876,11 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .kofi-nudge { display: block; width: fit-content; margin: 10px auto 0; font-size: 0.74rem; color: var(--text-dim, #9aa0aa); text-decoration: none; opacity: 0.85; }
 .kofi-nudge:hover { color: #ff5e5b; opacity: 1; text-decoration: underline; }
 .kofi-nudge[hidden] { display: none; }
+.kofi-nudge.special { font-size: 0.85rem; color: #ff8a80; opacity: 1; max-width: 340px; text-align: center; line-height: 1.4; }
+.ach-kofi { margin: 18px auto 4px; text-align: center; }
+.supporters { font-size: 0.85rem; }
+.supporters a { color: inherit; }
+body.creator .kofi-nudge { display: none !important; }
 /* Right-to-left (Hebrew): the logo, scores and times keep left-to-right order */
 [dir="rtl"] h1.title { direction: ltr; }
 [dir="rtl"] h1.title .sub { unicode-bidi: isolate; }
@@ -1496,6 +1501,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <summary><h2 id="about-title">About NameEmAll</h2></summary>
   <p>NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.</p>
   <p>Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.</p>
+  <p class="supporters" id="supporters"></p>
   <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=zh-Hans" hreflang="zh-Hans" data-no-i18n>简体中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a> · <a href="https://nameemall.com/?lang=he" hreflang="he" data-no-i18n>עברית</a></p>
 </details>
 <footer>
@@ -1507,7 +1513,7 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
   <br>
   Feature requests & bugs? <a href="mailto:randayan10@gmail.com">randayan10@gmail.com</a> · <a href="https://discord.gg/WJj2VYVxnz" data-discord="footer" target="_blank" rel="noopener" data-no-i18n>💬 Discord</a>
   <br>
-  <a href="https://ko-fi.com/rand32491" target="_blank" class="donate-btn">☕ Support on Ko-fi</a>
+  <a href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" class="donate-btn" data-kofi="footer">☕ Support on Ko-fi</a>
 </footer>
 
 <script>
@@ -2590,7 +2596,7 @@ const Q = (function() {
     displayHighscore();
     $('modal-image-btn').hidden = currentTab !== 'pokemon';
     $('modal-discord').hidden = currentTab !== 'pokemon';
-    kofiNudge('modal-kofi', currentTab === 'pokemon' && count > 0);
+    kofiNudge('modal-kofi', currentTab === 'pokemon' && count > 0, won && items.length >= 100);
     var chatLine = '';
     if (currentTab === 'pokemon' && chatEnabled() && chat.claims.size) {
       var chatN = 0; chat.claims.forEach(function(i) { if (foundSet.has(i)) chatN++; });
@@ -3928,22 +3934,42 @@ const Q = (function() {
 
   function dailyModeCfg(mode) { return DAILY_MODES[mode] || DAILY_MODES.mini; }
 
-  // One quiet Ko-fi line on a finished run: at most once a day, never in Creator Mode (keeps streams clean)
-  function kofiNudge(id, show) {
+  // One quiet Ko-fi line on a finished run: at most once a day, never in Creator Mode (keeps streams clean).
+  // A finished run of 100+ Pokémon (a whole generation or the full Pokédex) is the player's peak moment:
+  // there the ask is warmer and skips the daily cap, since it happens rarely.
+  var KOFI_TEXT = 'Enjoyed it? Support NameEmAll on Ko-fi ☕';
+  var KOFI_SPECIAL = 'You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕';
+  function kofiNudge(id, show, special) {
     var a = $(id); if (!a) return;
     a.hidden = true;
     if (!show || document.body.classList.contains('creator')) return;
     var today = dailyTodayStr();
     try {
-      if (localStorage.getItem('nea_kofi_day') === today) return;
+      if (!special && localStorage.getItem('nea_kofi_day') === today) return;
       localStorage.setItem('nea_kofi_day', today);
-    } catch(e) { return; }
+    } catch(e) { if (!special) return; }
+    a.textContent = t(special ? KOFI_SPECIAL : KOFI_TEXT);
+    a.classList.toggle('special', !!special);
     a.hidden = false;
-    track('kofi_nudge_shown', { placement: a.dataset.kofi });
+    track('kofi_nudge_shown', { placement: a.dataset.kofi + (special ? '_complete' : '') });
   }
-  document.querySelectorAll('[data-kofi]').forEach(function(a) {
-    a.addEventListener('click', function() { track('kofi_click', { placement: a.dataset.kofi }); });
-  });
+  function kofiTrackClicks(root) {
+    root.querySelectorAll('[data-kofi]').forEach(function(a) {
+      a.addEventListener('click', function() {
+        track('kofi_click', { placement: a.dataset.kofi + (a.classList.contains('special') ? '_complete' : '') });
+      });
+    });
+  }
+  kofiTrackClicks(document);
+
+  // Supporters wall in About. Names are added by hand, only with the supporter's OK on Ko-fi.
+  var SUPPORTERS = [];
+  (function() {
+    var el = $('supporters'); if (!el) return;
+    el.textContent = SUPPORTERS.length
+      ? t('☕ Thank you to our supporters: {names}', { names: SUPPORTERS.join(', ') })
+      : t('☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.');
+  })();
   function dailyTodayStr(d) {
     d = d || new Date();
     var y = d.getFullYear();
@@ -6183,12 +6209,15 @@ const Q = (function() {
       });
       html += '</div>';
     });
+    html += '<a class="kofi-nudge ach-kofi" data-kofi="achievements" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener">' +
+      esc(t('NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕')) + '</a>';
     html += '<div class="ach-transfer"><button class="btn" id="ach-export-btn">' + esc(t('📲 Move to another device')) + '</button>' +
       '<button class="btn" id="ach-import-btn">' + esc(t('📥 Enter a transfer code')) + '</button></div>';
     html += '<div class="ach-reset"><button class="btn" id="ach-reset-btn">' + esc(t('🗑️ Reset achievements')) + '</button></div>';
     html += '</div>';
     $('ach-body').innerHTML = html;
     $('ach-reset-btn').addEventListener('click', achReset);
+    kofiTrackClicks($('ach-body'));
     if ($('ach-share-all')) $('ach-share-all').addEventListener('click', function() { achShareOpen(null); });
     $('ach-body').querySelectorAll('[data-ach-share]').forEach(function(b) {
       b.addEventListener('click', function() { achShareOpen(b.getAttribute('data-ach-share')); });

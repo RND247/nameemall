@@ -453,4 +453,9 @@ window.NEA_UI = {
   "▶ Start a new run": "▶ Nouvelle partie",
   "▶ Your run is right where you left it: {count} / {total}": "▶ Ta partie t'attendait : {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ Presque ! Active l'aide à l'orthographe dans 💡 Indice pour accepter les noms presque justes",
+  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "Ça t'a plu ? Soutiens NameEmAll sur Ko-fi ☕",
+  "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "Tu l'as fini ! Si NameEmAll t'a amusé, un Super Bonbon sur Ko-fi aide à le garder gratuit ☕",
+  "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll est gratuit, sans pub, et fait par une seule personne. Ça te plaît ? Soutiens-le sur Ko-fi ☕",
+  "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ Mur des soutiens : sois le premier ! Laisse un nom avec ton soutien sur Ko-fi et il apparaîtra ici.",
+  "☕ Thank you to our supporters: {names}": "☕ Merci à nos soutiens : {names}",
 };

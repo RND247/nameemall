@@ -440,5 +440,9 @@ window.NEA_UI = {
   "▶ Start a new run": "▶ להתחיל ריצה חדשה",
   "▶ Your run is right where you left it: {count} / {total}": "▶ הריצה שלכם מחכה בדיוק איפה שעצרתם: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ כמעט! הפעילו את העזרה באיות תחת 💡 רמז כדי לקבל שמות כמעט נכונים",
-  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "נהניתם? תמכו ב-NameEmAll ב-Ko-fi ☕"
+  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "נהניתם? תמכו ב-NameEmAll ב-Ko-fi ☕",
+  "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "סיימתם! אם נהניתם מ-NameEmAll, סוכריה נדירה ב-Ko-fi עוזרת לשמור עליו חינמי ☕",
+  "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll חינמי, בלי פרסומות, ונבנה על ידי אדם אחד. נהנים? תמכו בו ב-Ko-fi ☕",
+  "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ קיר התומכים: היו הראשונים! השאירו שם כשאתם תומכים ב-Ko-fi והוא יופיע כאן.",
+  "☕ Thank you to our supporters: {names}": "☕ תודה לתומכים שלנו: {names}",
 };

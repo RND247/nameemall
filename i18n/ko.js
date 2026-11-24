@@ -453,4 +453,9 @@ window.NEA_UI = {
   "▶ Start a new run": "▶ 새 게임 시작",
   "▶ Your run is right where you left it: {count} / {total}": "▶ 멈춘 곳에서 이어집니다: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 아깝다! 💡 힌트에서 철자 도우미를 켜면 비슷한 철자도 정답으로 인정돼요",
+  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "재미있었나요? Ko-fi에서 NameEmAll을 후원해 주세요 ☕",
+  "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "완주했어요! NameEmAll이 즐거웠다면 Ko-fi에서 이상한사탕 하나로 무료 운영을 도와주세요 ☕",
+  "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll은 광고 없는 무료 게임이고, 한 사람이 만들고 있어요. 즐겁게 하셨다면 Ko-fi에서 후원해 주세요 ☕",
+  "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ 후원자 명단: 첫 번째 후원자가 되어 주세요! Ko-fi에서 후원할 때 이름을 남기면 여기에 올라가요.",
+  "☕ Thank you to our supporters: {names}": "☕ 후원해 주신 분들께 감사드립니다: {names}",
 };

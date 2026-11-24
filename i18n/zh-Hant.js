@@ -453,4 +453,9 @@ window.NEA_UI = {
   "▶ Start a new run": "▶ 開始新的一局",
   "▶ Your run is right where you left it: {count} / {total}": "▶ 進度都還在：{count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 差一點！在 💡 提示中開啟拼字輔助，拼法相近的名字也會算對",
+  "Enjoyed it? Support NameEmAll on Ko-fi ☕": "玩得開心嗎？在 Ko-fi 上支持 NameEmAll ☕",
+  "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "你完成了！如果 NameEmAll 讓你玩得開心，在 Ko-fi 請一顆神奇糖果，幫助它保持免費 ☕",
+  "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll 免費、沒有廣告，由一個人製作。喜歡的話，歡迎在 Ko-fi 上支持 ☕",
+  "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ 支持者名單：成為第一位吧！在 Ko-fi 支持時留下名字，就會列在這裡。",
+  "☕ Thank you to our supporters: {names}": "☕ 感謝我們的支持者：{names}",
 };
