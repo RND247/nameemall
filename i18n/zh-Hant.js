@@ -465,4 +465,5 @@ window.NEA_UI = {
   "Unlock": "解鎖",
   "That code didn't work. Check it and try again.": "這個代碼無效，請檢查後再試一次。",
   "Thank you for supporting NameEmAll ☕": "感謝你支持 NameEmAll ☕",
+  "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

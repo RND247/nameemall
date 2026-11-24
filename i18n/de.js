@@ -465,4 +465,5 @@ window.NEA_UI = {
   "Unlock": "Freischalten",
   "That code didn't work. Check it and try again.": "Dieser Code hat nicht funktioniert. Prüfe ihn und versuche es erneut.",
   "Thank you for supporting NameEmAll ☕": "Danke, dass du NameEmAll unterstützt ☕",
+  "Level up! Lv. {level}": "Level-Up! Lv. {level}",
 };

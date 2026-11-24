@@ -491,4 +491,5 @@ window.NEA_UI = {
   "Unlock": "解除",
   "That code didn't work. Check it and try again.": "コードが正しくありません。確認してもう一度お試しください。",
   "Thank you for supporting NameEmAll ☕": "NameEmAllを応援してくれてありがとう ☕",
+  "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };

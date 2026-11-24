@@ -465,4 +465,5 @@ window.NEA_UI = {
   "Unlock": "Sblocca",
   "That code didn't work. Check it and try again.": "Questo codice non funziona. Controllalo e riprova.",
   "Thank you for supporting NameEmAll ☕": "Grazie per sostenere NameEmAll ☕",
+  "Level up! Lv. {level}": "Livello su! Lv. {level}",
 };

@@ -189,12 +189,72 @@ body.skin-fx-fossil[data-tab] .card.found:not(.chat-claim):not(.last-revealed) {
 body.skin-fx-fossil .region-section.region-complete { border-color: #e0a33a; box-shadow: 0 0 18px rgba(224,163,58,.45), inset 0 0 22px rgba(224,163,58,.25); background: linear-gradient(110deg, transparent 30%, rgba(255,190,80,.10) 45%, transparent 60%) 0 0 / 250% 100%; animation: fx-amber 6s linear infinite; }
 body.skin-fx-fossil .region-section.region-complete .region-header, body.skin-fx-fossil .region-section.region-complete .region-count { color: #f0b54a !important; }
 @keyframes fx-amber { to { background-position: -250% 0; } }
-.fx-rock { position: fixed; pointer-events: none; z-index: 150; animation: fx-shake .13s linear; }
+.fx-rock { position: absolute; pointer-events: none; z-index: 150; animation: fx-shake .13s linear; }
 .fx-rock .fx-stone { position: absolute; inset: 0; border-radius: 7px; box-shadow: inset 0 -3px 6px rgba(0,0,0,.45); animation: fx-shard .62s cubic-bezier(.45,0,.9,.6) forwards; }
 .fx-rock .fx-dust { position: absolute; width: 4px; height: 4px; border-radius: 1px; background: #c9a878; opacity: 0; animation: fx-dust .8s ease-out forwards; }
 @keyframes fx-shake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(2px,-1px); } 75% { transform: translate(-1px,-1px); } }
 @keyframes fx-shard { to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.85); opacity: 0; } }
 @keyframes fx-dust { 0% { opacity: .9; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4); } }
+/* ── Skin FX: Rare Candy (candy-stripe scene, glossy wrapper tiles, unwrap reveal, level-up banner) ── */
+body.skin-fx-candy:not(.light) { --bg: #160f2e; background: #160f2e; }
+body.skin-fx-candy.light { --bg: #f4efff; background: #f4efff; }
+.scene-candy { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-candy .stripes { position: absolute; inset: -50%; opacity: .16;
+  background: repeating-linear-gradient(-45deg, #8f7bff 0 40px, #4fc3ff 40px 80px, #ff8fd8 80px 120px, #ffffff 120px 140px);
+  animation: fx-stripes 40s linear infinite; }
+body.light .scene-candy .stripes { opacity: .2; }
+.scene-candy .glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, transparent 30%, rgba(10,6,30,.75) 100%); }
+body.light .scene-candy .glow { background: radial-gradient(ellipse at 50% 30%, transparent 35%, rgba(244,239,255,.85) 100%); }
+.scene-candy img { position: absolute; bottom: -60px; image-rendering: pixelated; opacity: .55; animation: fx-float linear infinite; }
+@keyframes fx-stripes { to { transform: translate(113px, 113px); } }
+@keyframes fx-float { 0% { transform: translateY(0) rotate(-12deg); } 50% { transform: translateY(-60vh) rotate(12deg); } 100% { transform: translateY(-125vh) rotate(-12deg); } }
+body.skin-fx-candy header, body.skin-fx-candy .tab-bar { background: rgba(22,15,46,0.62); }
+body.skin-fx-candy.light header, body.skin-fx-candy.light .tab-bar { background: rgba(244,239,255,0.72); }
+body.skin-fx-candy .card.unrevealed, .fx-wrapper {
+  background:
+    linear-gradient(115deg, transparent 22%, rgba(255,255,255,.38) 30%, rgba(255,255,255,.08) 38%, transparent 46%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 2px, transparent 2px 5px) left / 6px 100% no-repeat,
+    repeating-linear-gradient(90deg, rgba(255,255,255,.22) 0 2px, transparent 2px 5px) right / 6px 100% no-repeat,
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.18), transparent 55%),
+    linear-gradient(160deg, #9d8bff, #6f5be8 50%, #4a7be0);
+}
+body.skin-fx-candy.light .card.unrevealed, body.light .fx-wrapper {
+  background:
+    linear-gradient(115deg, transparent 22%, rgba(255,255,255,.5) 30%, rgba(255,255,255,.12) 38%, transparent 46%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 2px, transparent 2px 5px) left / 6px 100% no-repeat,
+    repeating-linear-gradient(90deg, rgba(255,255,255,.3) 0 2px, transparent 2px 5px) right / 6px 100% no-repeat,
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.2), transparent 55%),
+    linear-gradient(160deg, #b3a4ff, #8d79f0 50%, #6c9cf0);
+}
+body.skin-fx-candy.light .card.unrevealed { box-shadow: inset 0 -4px 8px rgba(60,30,140,.25), 0 2px 5px rgba(60,30,140,.2); }
+body.skin-fx-candy .card.unrevealed { border: 1px solid rgba(255,255,255,.18); border-radius: 12px; box-shadow: inset 0 -4px 8px rgba(30,10,80,.4), 0 2px 5px rgba(20,8,60,.35); }
+body.skin-fx-candy .card.unrevealed:nth-child(3n+2) { filter: hue-rotate(-28deg); }
+body.skin-fx-candy .card.unrevealed:nth-child(3n) { filter: hue-rotate(38deg) saturate(.9); }
+body.skin-fx-candy .card.unrevealed .poke-placeholder { color: #fff !important; opacity: .9 !important; text-shadow: 0 2px 0 rgba(60,30,140,.45), 0 0 10px rgba(255,255,255,.35); }
+body.skin-fx-candy .card.just-found { animation: none; }
+body.skin-fx-candy[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(180,156,255,.6); border-radius: 12px; box-shadow: 0 0 8px rgba(143,123,255,.25); }
+body.skin-fx-candy .region-section.region-complete { border-color: #b49cff; box-shadow: 0 0 18px rgba(180,156,255,.5), inset 0 0 22px rgba(255,143,216,.18); }
+body.skin-fx-candy .region-header { color: #c9b8ff; }
+body.skin-fx-candy.light .region-header { color: #5b45c9; }
+body[class*="skin-fx-"] { overflow-x: clip; }
+.fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
+.fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
+.fx-wrap .fx-wrapper.l { left: 0; border-top-right-radius: 3px; border-bottom-right-radius: 3px; transform-origin: 0 50%; animation: fx-unwrap-l .5s cubic-bezier(.5,0,.75,.4) forwards; }
+.fx-wrap .fx-wrapper.r { right: 0; border-top-left-radius: 3px; border-bottom-left-radius: 3px; transform-origin: 100% 50%; background-position: right, left, right, center, center; animation: fx-unwrap-r .5s cubic-bezier(.5,0,.75,.4) forwards; }
+.fx-wrap .fx-wrapper.in { animation-name: fx-unwrap-in; }
+@keyframes fx-unwrap-in { 0% { transform: none; } 25% { transform: scaleY(.92); } 100% { transform: scaleY(.4) translateY(40%); opacity: 0; } }
+@keyframes fx-unwrap-l { 0% { transform: none; } 25% { transform: rotate(-4deg) scaleY(.92); } 100% { transform: translateX(-70%) rotate(-28deg) scaleY(.6); opacity: 0; } }
+@keyframes fx-unwrap-r { 0% { transform: none; } 25% { transform: rotate(4deg) scaleY(.92); } 100% { transform: translateX(70%) rotate(28deg) scaleY(.6); opacity: 0; } }
+.fx-wrap .fx-confetti { position: absolute; left: 50%; top: 45%; width: 5px; height: 8px; border-radius: 1px; opacity: 0; animation: fx-confetti .9s cubic-bezier(.2,.7,.4,1) forwards; }
+@keyframes fx-confetti { 0% { opacity: 1; transform: translate(0,0) rotate(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 30px)) rotate(var(--rot)); } }
+.fx-wrap .fx-lv { position: absolute; left: 0; right: 0; top: 18%; text-align: center; font-weight: 900; font-size: .8rem; color: #fff; text-shadow: 0 1px 0 #6f5be8, 0 0 8px rgba(143,123,255,.9); opacity: 0; animation: fx-lv 1.1s ease-out .12s forwards; }
+@keyframes fx-lv { 0% { opacity: 0; transform: translateY(6px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-34px) scale(1); } }
+.fx-levelup { position: fixed; left: 50%; top: 22%; z-index: 160; display: flex; align-items: center; gap: 10px; padding: 12px 22px; border-radius: 999px; pointer-events: none;
+  background: linear-gradient(90deg, #8f7bff, #4fc3ff, #ff8fd8); color: #fff; font-weight: 900; font-size: 1.15rem; letter-spacing: .02em; text-shadow: 0 2px 0 rgba(60,30,140,.4);
+  box-shadow: 0 10px 30px rgba(80,50,200,.45); animation: fx-levelup 2.5s ease-out forwards; }
+.fx-levelup img { width: 34px; height: 34px; image-rendering: pixelated; }
+@keyframes fx-levelup { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.7); } 12% { opacity: 1; transform: translate(-50%, 0) scale(1.08); } 20% { transform: translate(-50%, 0) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -16px); } }
+@media (prefers-reduced-motion: reduce) { .scene-candy .stripes, .scene-candy img, .scene-fossil b, body.skin-fx-fossil .region-section.region-complete { animation: none; } }
 .sup-form { padding: 6px 0 2px; font-size: .8rem; }
 .sup-form a { color: #ff5e5b; }
 .sup-row { display: flex; gap: 6px; margin-top: 6px; }
@@ -6309,7 +6369,7 @@ const Q = (function() {
     { id: 'ultra', name: 'Ultra Beasts', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
       col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] },
     // Supporter skin: unlocked with the code in the Ko-fi thank-you message, not by playing
-    { id: 'candy', name: 'Rare Candy', supporter: true, mascot: '../items/rare-candy', line: [440, 113, '../items/rare-candy', 242, 531], accent: '#8f7bff',
+    { id: 'candy', name: 'Rare Candy', supporter: true, fx: 'candy', mascot: '../items/rare-candy', line: [440, 113, '../items/rare-candy', 242, 531], accent: '#8f7bff',
       col: ['#7a6cff', '#5b8cff', '#b49cff', '#4fc3ff', '#e8e0ff', '#6a4bd0', '#9ad0ff', '#c9a0ff', '#ff8fd8'] }
   ];
   var SKIN_SPOTS = [[2, 4], [55, 0], [78, 38], [30, 55], [-6, 62], [62, 70], [40, 20], [85, 5], [12, 30]];
@@ -6369,6 +6429,12 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'candy') {
+        // Slow candy stripes with a few Rare Candies floating up
+        au.className = 'skin-aurora scene-candy';
+        var floats = '';
+        for (var f = 0; f < 9; f++) floats += '<img src="' + SKIN_SPRITE + '../items/rare-candy.png" alt="" style="left:' + ((f * 41 + 7) % 96) + '%;animation-delay:-' + (f * 3.1).toFixed(1) + 's;animation-duration:' + (22 + (f % 4) * 5) + 's;width:' + (22 + (f % 3) * 10) + 'px">';
+        au.innerHTML = '<div class="stripes"></div><div class="glow"></div>' + floats;
       } else au.innerHTML = s.col.map(function(c, i) {
         return '<i style="left:' + SKIN_SPOTS[i][0] + '%;top:' + SKIN_SPOTS[i][1] + '%;background:radial-gradient(circle,' + c + ' 0%,transparent 65%);animation-delay:-' + (i * 3) + 's"></i>';
       }).join('');
@@ -6445,11 +6511,12 @@ const Q = (function() {
   // Fossils: the stone slab cracks into shards that fall away, with a puff of dust
   function fossilBreak(c) {
     var r = c.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > window.innerHeight || !r.width) return;
+    if (!r.width) return;
     var o = document.createElement('div');
     o.className = 'fx-rock';
-    o.style.left = r.left + 'px'; o.style.top = r.top + 'px';
+    o.style.left = (r.left + window.scrollX) + 'px'; o.style.top = (r.top + window.scrollY) + 'px';
     o.style.width = r.width + 'px'; o.style.height = r.height + 'px';
+    var edgeR = r.right > window.innerWidth - 70, edgeL = r.left < 70;
     var cx = 40 + Math.random() * 20, cy = 40 + Math.random() * 20;
     var rim = [[0, 0], [35 + Math.random() * 30, 0], [100, 0], [100, 40 + Math.random() * 25], [100, 100], [30 + Math.random() * 40, 100], [0, 100], [0, 35 + Math.random() * 30]];
     var html = '';
@@ -6457,16 +6524,55 @@ const Q = (function() {
       var a = rim[i], b2 = rim[(i + 1) % rim.length];
       var mx = (a[0] + b2[0] + cx) / 3, my = (a[1] + b2[1] + cy) / 3;
       var dx = (mx - cx) * (0.9 + Math.random() * 0.6), dy = (my - cy) * 0.6 + 38 + Math.random() * 26;
+      if (edgeR && dx > 0) dx = -dx * 0.5; if (edgeL && dx < 0) dx = -dx * 0.5;
       html += '<i class="fx-stone" style="clip-path:polygon(' + cx + '% ' + cy + '%,' + a[0] + '% ' + a[1] + '%,' + b2[0] + '% ' + b2[1] + '%);' +
         '--dx:' + dx.toFixed(0) + 'px;--dy:' + dy.toFixed(0) + 'px;--rot:' + ((Math.random() - 0.5) * 70).toFixed(0) + 'deg;animation-delay:' + (110 + Math.random() * 60).toFixed(0) + 'ms"></i>';
     }
     for (var k = 0; k < 10; k++) {
       html += '<b class="fx-dust" style="left:' + (15 + Math.random() * 70).toFixed(0) + '%;top:' + (30 + Math.random() * 50).toFixed(0) + '%;' +
-        '--dx:' + ((Math.random() - 0.5) * 60).toFixed(0) + 'px;--dy:' + (20 + Math.random() * 40).toFixed(0) + 'px;animation-delay:' + (100 + Math.random() * 120).toFixed(0) + 'ms"></b>';
+        '--dx:' + ((edgeR ? -Math.random() : edgeL ? Math.random() : Math.random() - 0.5) * 60).toFixed(0) + 'px;--dy:' + (20 + Math.random() * 40).toFixed(0) + 'px;animation-delay:' + (100 + Math.random() * 120).toFixed(0) + 'ms"></b>';
     }
     o.innerHTML = html;
     document.body.appendChild(o);
     setTimeout(function() { o.remove(); }, 1100);
+  }
+
+  // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
+  var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
+  function candyUnwrap(c, m) {
+    var r = c.getBoundingClientRect();
+    if (!r.width) return;
+    var o = document.createElement('div');
+    o.className = 'fx-wrap';
+    var nth = Array.prototype.indexOf.call(c.parentNode.children, c) + 1;
+    if (nth % 3 === 2) o.style.filter = 'hue-rotate(-28deg)'; else if (nth % 3 === 0) o.style.filter = 'hue-rotate(38deg) saturate(.9)';
+    o.style.left = (r.left + window.scrollX) + 'px'; o.style.top = (r.top + window.scrollY) + 'px';
+    o.style.width = r.width + 'px'; o.style.height = r.height + 'px';
+    var edgeR = r.right > window.innerWidth - 70, edgeL = r.left < 70;
+    var html = '<i class="fx-wrapper l' + (edgeL ? ' in' : '') + '"></i><i class="fx-wrapper r' + (edgeR ? ' in' : '') + '"></i><span class="fx-lv" style="animation-delay:' + (m * 60) + 'ms">+1 Lv</span>';
+    for (var k = 0; k < 16; k++) {
+      var ang = -Math.PI / 2 + (edgeR ? -Math.random() : edgeL ? Math.random() : Math.random() - 0.5) * (edgeR || edgeL ? 1.2 : 2.4), d = 40 + Math.random() * 50;
+      html += '<b class="fx-confetti" style="background:' + CANDY_CONFETTI[k % CANDY_CONFETTI.length] + ';--dx:' + (Math.cos(ang) * d).toFixed(0) + 'px;--dy:' + (Math.sin(ang) * d).toFixed(0) + 'px;' +
+        '--rot:' + ((Math.random() - 0.5) * 540).toFixed(0) + 'deg;animation-delay:' + (120 + Math.random() * 80).toFixed(0) + 'ms"></b>';
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1300);
+  }
+  // Every 100 names in a Full Pokédex run: a "Level up!" banner (Lv = names / 10, so all 1025 is Lv. 100)
+  function candyLevelCheck(n) {
+    if (currentTab !== 'pokemon') return;
+    if (document.body.classList.contains('creator') && !creatorCelebrating()) return;
+    var now = foundSet.size, before = now - n;
+    if (Math.floor(now / 100) === Math.floor(before / 100) && !(now >= items.length && before < items.length)) return;
+    var lv = Math.min(100, Math.floor(now / 10));
+    if (now >= items.length) lv = 100;
+    var bnr = document.createElement('div');
+    bnr.className = 'fx-levelup';
+    bnr.innerHTML = '<img src="' + SKIN_SPRITE + '../items/rare-candy.png" alt=""><span></span>';
+    bnr.querySelector('span').textContent = t('Level up! Lv. {level}', { level: lv });
+    document.body.appendChild(bnr);
+    setTimeout(function() { bnr.remove(); }, 2600);
   }
 
   function skinSparkle(matches) {
@@ -6474,6 +6580,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
     matches.forEach(function(idx, m) {
       var c = $('c' + idx);
       if (!c) return;

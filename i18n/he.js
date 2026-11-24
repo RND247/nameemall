@@ -452,4 +452,5 @@ window.NEA_UI = {
   "Unlock": "פתיחה",
   "That code didn't work. Check it and try again.": "הקוד לא עבד. בדקו אותו ונסו שוב.",
   "Thank you for supporting NameEmAll ☕": "תודה שתמכתם ב-NameEmAll ☕",
+  "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };
