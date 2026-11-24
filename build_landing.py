@@ -370,11 +370,11 @@ def page(p, body, jsonld):
 <meta property="og:description" content="{esc(p['description'])}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{url}">
-<meta property="og:image" content="{SITE}og-image.png">
+<meta property="og:image" content="{SITE}og-image.png?v=10">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(p['h1'])}">
 <meta name="twitter:description" content="{esc(p['description'])}">
-<meta name="twitter:image" content="{SITE}og-image.png">
+<meta name="twitter:image" content="{SITE}og-image.png?v=10">
 <link rel="icon" type="image/png" sizes="48x48" href="/img/icons/favicon-48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/img/icons/icon-192.png">
 <script type="application/ld+json">{json.dumps(jsonld, ensure_ascii=False)}</script>
