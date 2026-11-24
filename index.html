@@ -148,6 +148,53 @@ body.skin-on .card.found:nth-child(3n+3) { animation-delay: -4.5s; }
 .skin-spark { position: fixed; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; pointer-events: none; z-index: 150; animation: skin-spark .65s ease-out forwards; }
 @keyframes skin-spark { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
 /* Picker */
+/* ── Skin FX: Fossils (rock strata scene, stone-slab tiles, crack-open reveal, amber region glow) ── */
+body.skin-fx-fossil:not(.light) { --bg: #17110b; background: #17110b; }
+body.skin-fx-fossil.light { --bg: #efe4cf; background: #efe4cf; }
+.scene-fossil { inset: 0; opacity: 1 !important; }
+.scene-fossil .strata { position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(176deg, transparent 0 46px, rgba(0,0,0,.18) 46px 49px, transparent 49px 120px),
+    linear-gradient(180deg, #2a1e14 0%, #3a2a1b 14%, #2f2217 22%, #4a3622 34%, #3a2a1b 41%, #26190f 55%, #3f2d1c 66%, #2c1f14 78%, #1d140c 100%); }
+body.light .scene-fossil .strata {
+  background:
+    repeating-linear-gradient(176deg, transparent 0 46px, rgba(120,80,30,.10) 46px 49px, transparent 49px 120px),
+    linear-gradient(180deg, #f3e9d6 0%, #e8d6b4 14%, #efe1c4 22%, #dcc39a 34%, #ead9b8 41%, #f2e6cf 55%, #dfc7a0 66%, #ecdcbd 78%, #f5ecdb 100%); }
+.scene-fossil b { position: absolute; width: 3px; height: 3px; border-radius: 1px; background: rgba(230,200,150,.35); animation: fx-mote linear infinite; }
+body.light .scene-fossil b { background: rgba(140,100,50,.25); }
+@keyframes fx-mote { 0% { transform: translate(0,0); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(40px, 60vh); opacity: 0; } }
+body.skin-fx-fossil header, body.skin-fx-fossil .tab-bar { background: rgba(23,17,11,0.62); }
+body.skin-fx-fossil.light header, body.skin-fx-fossil.light .tab-bar { background: rgba(245,236,219,0.7); }
+body.skin-fx-fossil { --fx-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .06 0 0 0 0 .02 0 0 0 1.5 -.62'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.045' numOctaves='2' seed='3'/%3E%3CfeColorMatrix values='0 0 0 0 .12 0 0 0 0 .08 0 0 0 0 .03 0 0 0 1.1 -.42'/%3E%3C/filter%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2' seed='11'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .92 0 0 0 0 .8 0 0 0 1.15 -.82'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23c)'/%3E%3C/svg%3E"); }
+body.skin-fx-fossil .card.unrevealed, .fx-stone {
+  background: var(--fx-grain), radial-gradient(ellipse at 30% 20%, rgba(255,235,200,.10), transparent 60%), linear-gradient(150deg, #6e5a43, #4c3c2c 55%, #3a2d21);
+  background-size: 140px 140px, 100% 100%, 100% 100%;
+}
+body.skin-fx-fossil .card.unrevealed { border-color: rgba(0,0,0,.4); box-shadow: inset 0 2px 0 rgba(255,235,200,.1), inset 0 -4px 7px rgba(0,0,0,.45), 0 1px 2px rgba(0,0,0,.3); border-radius: 7px; }
+body.skin-fx-fossil .card.unrevealed:nth-child(3n+2) { background-position: -47px -23px, 0 0, 0 0; }
+body.skin-fx-fossil .card.unrevealed:nth-child(3n) { background-position: -91px -67px, 0 0, 0 0; }
+body.skin-fx-fossil .card.unrevealed:nth-child(4n+3) { filter: brightness(.9) saturate(1.1); }
+body.skin-fx-fossil .card.unrevealed:nth-child(5n+1) { filter: brightness(1.07); }
+body.skin-fx-fossil.light .card.unrevealed, body.light .fx-stone {
+  background: var(--fx-grain), radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.35), transparent 60%), linear-gradient(150deg, #d6c09b, #c2a67c 55%, #ae916a);
+  background-size: 140px 140px, 100% 100%, 100% 100%;
+}
+body.skin-fx-fossil.light .card.unrevealed { border-color: rgba(90,60,30,.28); box-shadow: inset 0 2px 0 rgba(255,255,255,.35), inset 0 -4px 7px rgba(90,60,30,.25), 0 1px 2px rgba(90,60,30,.2); }
+body.skin-fx-fossil .region-header { color: #d9a85a; }
+body.skin-fx-fossil.light .region-header { color: #8a5a1e; }
+body.skin-fx-fossil .card.unrevealed .poke-placeholder { color: rgba(0,0,0,.42) !important; opacity: 1 !important; text-shadow: 0 1px 0 rgba(255,235,200,.14); }
+body.skin-fx-fossil.light .card.unrevealed .poke-placeholder { color: rgba(80,50,20,.4) !important; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+body.skin-fx-fossil .card.just-found { animation: none; }
+body.skin-fx-fossil[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(217,168,90,.55); box-shadow: inset 0 0 0 1px rgba(255,220,150,.08); }
+body.skin-fx-fossil .region-section.region-complete { border-color: #e0a33a; box-shadow: 0 0 18px rgba(224,163,58,.45), inset 0 0 22px rgba(224,163,58,.25); background: linear-gradient(110deg, transparent 30%, rgba(255,190,80,.10) 45%, transparent 60%) 0 0 / 250% 100%; animation: fx-amber 6s linear infinite; }
+body.skin-fx-fossil .region-section.region-complete .region-header, body.skin-fx-fossil .region-section.region-complete .region-count { color: #f0b54a !important; }
+@keyframes fx-amber { to { background-position: -250% 0; } }
+.fx-rock { position: fixed; pointer-events: none; z-index: 150; animation: fx-shake .13s linear; }
+.fx-rock .fx-stone { position: absolute; inset: 0; border-radius: 7px; box-shadow: inset 0 -3px 6px rgba(0,0,0,.45); animation: fx-shard .62s cubic-bezier(.45,0,.9,.6) forwards; }
+.fx-rock .fx-dust { position: absolute; width: 4px; height: 4px; border-radius: 1px; background: #c9a878; opacity: 0; animation: fx-dust .8s ease-out forwards; }
+@keyframes fx-shake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(2px,-1px); } 75% { transform: translate(-1px,-1px); } }
+@keyframes fx-shard { to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.85); opacity: 0; } }
+@keyframes fx-dust { 0% { opacity: .9; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4); } }
 .sup-form { padding: 6px 0 2px; font-size: .8rem; }
 .sup-form a { color: #ff5e5b; }
 .sup-row { display: flex; gap: 6px; margin-top: 6px; }
@@ -6255,7 +6302,7 @@ const Q = (function() {
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
     { id: 'creation', name: 'Creation Trio', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
       col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
-    { id: 'fossils', name: 'Fossils', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
+    { id: 'fossils', name: 'Fossils', fx: 'fossil', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
       col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
     { id: 'mythical', name: 'Mythicals', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
       col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
@@ -6307,13 +6354,22 @@ const Q = (function() {
     try { if (s) localStorage.setItem('nea_skin', s.id); else localStorage.removeItem('nea_skin'); } catch(e) {}
     var b = document.body;
     b.classList.toggle('skin-on', !!s);
+    // Per-skin effects: body.skin-fx-<name> styles the scene and tiles; skinSparkle picks the reveal
+    Array.prototype.slice.call(b.classList).forEach(function(c) { if (c.indexOf('skin-fx-') === 0) b.classList.remove(c); });
+    if (s && s.fx) b.classList.add('skin-fx-' + s.fx);
     ['skin-aurora', 'skin-hero'].forEach(function(x) { var el = $(x); if (el) el.remove(); });
     if (s) {
       s.col.forEach(function(c, i) { b.style.setProperty('--sk' + i, c); });
       b.style.setProperty('--sk-accent', s.accent);
       var au = document.createElement('div');
       au.id = 'skin-aurora'; au.className = 'skin-aurora'; au.setAttribute('aria-hidden', 'true');
-      au.innerHTML = s.col.map(function(c, i) {
+      if (s.fx === 'fossil') {
+        // Rock strata with slow-drifting dust motes instead of color blobs
+        au.className = 'skin-aurora scene-fossil';
+        var motes = '';
+        for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
+        au.innerHTML = '<div class="strata"></div>' + motes;
+      } else au.innerHTML = s.col.map(function(c, i) {
         return '<i style="left:' + SKIN_SPOTS[i][0] + '%;top:' + SKIN_SPOTS[i][1] + '%;background:radial-gradient(circle,' + c + ' 0%,transparent 65%);animation-delay:-' + (i * 3) + 's"></i>';
       }).join('');
       b.insertBefore(au, b.firstChild);
@@ -6386,10 +6442,38 @@ const Q = (function() {
     $('sup-code').focus();
   }
 
+  // Fossils: the stone slab cracks into shards that fall away, with a puff of dust
+  function fossilBreak(c) {
+    var r = c.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > window.innerHeight || !r.width) return;
+    var o = document.createElement('div');
+    o.className = 'fx-rock';
+    o.style.left = r.left + 'px'; o.style.top = r.top + 'px';
+    o.style.width = r.width + 'px'; o.style.height = r.height + 'px';
+    var cx = 40 + Math.random() * 20, cy = 40 + Math.random() * 20;
+    var rim = [[0, 0], [35 + Math.random() * 30, 0], [100, 0], [100, 40 + Math.random() * 25], [100, 100], [30 + Math.random() * 40, 100], [0, 100], [0, 35 + Math.random() * 30]];
+    var html = '';
+    for (var i = 0; i < rim.length; i++) {
+      var a = rim[i], b2 = rim[(i + 1) % rim.length];
+      var mx = (a[0] + b2[0] + cx) / 3, my = (a[1] + b2[1] + cy) / 3;
+      var dx = (mx - cx) * (0.9 + Math.random() * 0.6), dy = (my - cy) * 0.6 + 38 + Math.random() * 26;
+      html += '<i class="fx-stone" style="clip-path:polygon(' + cx + '% ' + cy + '%,' + a[0] + '% ' + a[1] + '%,' + b2[0] + '% ' + b2[1] + '%);' +
+        '--dx:' + dx.toFixed(0) + 'px;--dy:' + dy.toFixed(0) + 'px;--rot:' + ((Math.random() - 0.5) * 70).toFixed(0) + 'deg;animation-delay:' + (110 + Math.random() * 60).toFixed(0) + 'ms"></i>';
+    }
+    for (var k = 0; k < 10; k++) {
+      html += '<b class="fx-dust" style="left:' + (15 + Math.random() * 70).toFixed(0) + '%;top:' + (30 + Math.random() * 50).toFixed(0) + '%;' +
+        '--dx:' + ((Math.random() - 0.5) * 60).toFixed(0) + 'px;--dy:' + (20 + Math.random() * 40).toFixed(0) + 'px;animation-delay:' + (100 + Math.random() * 120).toFixed(0) + 'ms"></b>';
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1100);
+  }
+
   function skinSparkle(matches) {
     if (!skinCurrent || skinCalm()) return;
     var s = skinById(skinCurrent);
     if (!s) return;
+    if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
     matches.forEach(function(idx, m) {
       var c = $('c' + idx);
       if (!c) return;
