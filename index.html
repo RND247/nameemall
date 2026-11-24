@@ -286,6 +286,50 @@ body.skin-fx-birds.light .region-header { color: #1f5fa8; }
 .fx-flash { position: fixed; inset: 0; z-index: 140; pointer-events: none; background: radial-gradient(circle at 50% 40%, rgba(255,240,170,.22), rgba(255,240,170,0) 70%); animation: fx-flash .35s ease-out forwards; }
 @keyframes fx-flash { from { opacity: 1; } to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .scene-birds i { animation: none; } }
+/* ── Skin FX: Ultra Beasts (wormhole scene, neon outline tiles, glitch-in reveal, wormhole pulse on combos) ── */
+body.skin-fx-ultra:not(.light) { --bg: #05040c; background: #05040c; }
+body.skin-fx-ultra.light { --bg: #eef0fb; background: #eef0fb; }
+.scene-ultra { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-ultra .hole { position: absolute; left: 50%; top: 58%; width: 130vmin; height: 130vmin; margin: -65vmin 0 0 -65vmin; }
+.scene-ultra .hole i { position: absolute; inset: 0; border-radius: 50%; }
+.scene-ultra .r1 { background: conic-gradient(from 0deg, #6fe8f5, #b44bff, #ff8fb8, #ffd23f, #5fd17a, #6fe8f5);
+  -webkit-mask: radial-gradient(circle, transparent 50%, #000 53%, #000 57%, transparent 66%); mask: radial-gradient(circle, transparent 50%, #000 53%, #000 57%, transparent 66%);
+  filter: blur(6px); opacity: .55; animation: fx-spin 60s linear infinite; }
+.scene-ultra .r2 { inset: 16%; background: conic-gradient(from 90deg, #b44bff, #6fe8f5, #ffd23f, #ff8fb8, #b44bff);
+  -webkit-mask: radial-gradient(circle, transparent 58%, #000 62%, transparent 70%); mask: radial-gradient(circle, transparent 58%, #000 62%, transparent 70%);
+  filter: blur(3px); opacity: .4; animation: fx-spin 38s linear infinite reverse; }
+.scene-ultra .core { inset: 30%; background: radial-gradient(circle, rgba(180,75,255,.18), transparent 70%); }
+.scene-ultra .hole.pulse { animation: fx-hole .7s ease-out; }
+@keyframes fx-spin { to { transform: rotate(360deg); } }
+@keyframes fx-hole { 0% { transform: scale(1); filter: brightness(1); } 30% { transform: scale(1.07); filter: brightness(1.9); } 100% { transform: scale(1); filter: brightness(1); } }
+.scene-ultra .scan { position: absolute; inset: 0; background: repeating-linear-gradient(180deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px); }
+body.light .scene-ultra .r1 { opacity: .35; }
+body.light .scene-ultra .r2 { opacity: .25; }
+body.light .scene-ultra .scan { background: repeating-linear-gradient(180deg, rgba(20,10,60,.03) 0 1px, transparent 1px 3px); }
+body.skin-fx-ultra header, body.skin-fx-ultra .tab-bar { background: rgba(5,4,12,0.7); }
+body.skin-fx-ultra.light header, body.skin-fx-ultra.light .tab-bar { background: rgba(238,240,251,0.75); }
+body.skin-fx-ultra .card.unrevealed { --neon: #6fe8f5; background: rgba(5,4,12,.55); border: 1px solid var(--neon); border-radius: 4px; box-shadow: 0 0 6px color-mix(in srgb, var(--neon) 60%, transparent), inset 0 0 8px color-mix(in srgb, var(--neon) 25%, transparent); }
+body.skin-fx-ultra .card.unrevealed:nth-child(3n+2) { --neon: #e070ff; }
+body.skin-fx-ultra .card.unrevealed:nth-child(3n) { --neon: #ffd23f; }
+body.skin-fx-ultra .card.unrevealed .poke-placeholder { color: var(--neon) !important; opacity: .9 !important; font-weight: 900; text-shadow: 0 0 6px var(--neon), 0 0 14px var(--neon); }
+body.skin-fx-ultra.light .card.unrevealed { --neon: #0a9fb3; background: rgba(255,255,255,.6); }
+body.skin-fx-ultra.light .card.unrevealed:nth-child(3n+2) { --neon: #9b2fd6; }
+body.skin-fx-ultra.light .card.unrevealed:nth-child(3n) { --neon: #c98a00; }
+body.skin-fx-ultra.light .card.unrevealed .poke-placeholder { text-shadow: 0 0 6px color-mix(in srgb, var(--neon) 50%, transparent); }
+body.skin-fx-ultra .card.just-found { animation: none; }
+body.skin-fx-ultra[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(111,232,245,.45); border-radius: 4px; box-shadow: 0 0 6px rgba(111,232,245,.2); }
+body.skin-fx-ultra .region-section.region-complete { border-color: #6fe8f5; box-shadow: 0 0 10px #6fe8f5, 0 0 24px rgba(224,112,255,.5), inset 0 0 18px rgba(111,232,245,.25); }
+body.skin-fx-ultra .region-header { color: #6fe8f5; text-shadow: 0 0 8px rgba(111,232,245,.6); }
+body.skin-fx-ultra.light .region-header { color: #0a7f90; text-shadow: none; }
+.fx-glitch { position: absolute; pointer-events: none; z-index: 150; }
+.fx-glitch .fx-slice { position: absolute !important; inset: 0; margin: 0 !important; width: 100%; height: 100%; animation: fx-slice .42s steps(6) forwards;
+  filter: drop-shadow(2px 0 0 rgba(255,0,200,.8)) drop-shadow(-2px 0 0 rgba(0,240,255,.8)); }
+@keyframes fx-slice { 0% { transform: translateX(var(--gx)); opacity: 1; } 50% { transform: translateX(calc(var(--gx) * -0.6)); opacity: 1; } 85% { transform: translateX(calc(var(--gx) * 0.2)); opacity: .8; } 100% { transform: none; opacity: 0; } }
+.fx-glitch .fx-scanline { position: absolute; left: -4px; right: -4px; top: 0; height: 2px; background: #fff; box-shadow: 0 0 8px #6fe8f5, 0 0 16px #e070ff; animation: fx-scanline .4s linear forwards; }
+@keyframes fx-scanline { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: .2; } }
+.fx-burst .fx-ripple { position: absolute; inset: 0; border-radius: 50%; border: 2px solid #6fe8f5; box-shadow: 0 0 10px #e070ff, inset 0 0 10px #6fe8f5; opacity: 0; animation: fx-ripple .8s ease-out forwards; }
+@keyframes fx-ripple { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(var(--rs, 2.2)); } }
+@media (prefers-reduced-motion: reduce) { .scene-ultra .r1, .scene-ultra .r2 { animation: none; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -6416,7 +6460,7 @@ const Q = (function() {
       col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
     { id: 'mythical', name: 'Mythicals', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
       col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
-    { id: 'ultra', name: 'Ultra Beasts', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
+    { id: 'ultra', name: 'Ultra Beasts', fx: 'ultra', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
       col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] },
     // Supporter skin: unlocked with the code in the Ko-fi thank-you message, not by playing
     { id: 'candy', name: 'Rare Candy', supporter: true, fx: 'candy', mascot: '../items/rare-candy', line: [440, 113, '../items/rare-candy', 242, 531], accent: '#8f7bff',
@@ -6479,6 +6523,10 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'ultra') {
+        // Ultra Space: a slowly turning wormhole in the dark, under faint scanlines
+        au.className = 'skin-aurora scene-ultra';
+        au.innerHTML = '<div class="hole"><i class="r1"></i><i class="r2"></i><i class="core"></i></div><div class="scan"></div>';
       } else if (s.fx === 'birds') {
         // Open sky with soft clouds drifting at different heights and speeds
         au.className = 'skin-aurora scene-birds';
@@ -6642,6 +6690,40 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1200);
   }
 
+  // Ultra Beasts: the card glitches in (RGB-split slices that jitter into place) under a scanline sweep.
+  // Every 3rd name within 4 s makes the wormhole pulse and sends a neon ripple out of the card.
+  var ultraRun = { last: 0, n: 0 };
+  function ultraGlitch(c, m) {
+    var o = fxBox(c, 'fx-glitch'); if (!o) return;
+    var bands = [[0, 62], [30, 45], [58, 18], [80, 0]];
+    bands.forEach(function(b, i) {
+      var k = c.cloneNode(true);
+      k.removeAttribute('id'); k.classList.remove('last-revealed', 'just-found');
+      k.className += ' fx-slice';
+      k.style.clipPath = 'inset(' + b[0] + '% 0 ' + b[1] + '% 0)';
+      k.style.setProperty('--gx', ((i % 2 ? 1 : -1) * (4 + Math.random() * 8)).toFixed(0) + 'px');
+      k.style.animationDelay = (m * 60 + i * 25) + 'ms';
+      o.appendChild(k);
+    });
+    var sc = document.createElement('i'); sc.className = 'fx-scanline'; o.appendChild(sc);
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 700);
+  }
+  function ultraCombo(matches) {
+    var now = Date.now(), prev = ultraRun.n;
+    ultraRun.n = now - ultraRun.last < 4000 ? ultraRun.n + matches.length : matches.length;
+    ultraRun.last = now;
+    if (ultraRun.n < 3 || Math.floor(ultraRun.n / 3) === Math.floor(prev / 3)) return;
+    var hole = document.querySelector('.scene-ultra .hole');
+    if (hole) { hole.classList.remove('pulse'); void hole.offsetWidth; hole.classList.add('pulse'); }
+    var c = $('c' + matches[matches.length - 1]); if (!c) return;
+    var o = fxBox(c, 'fx-burst'); if (!o) return;
+    o.style.setProperty('--rs', o._edgeR || o._edgeL ? '1.25' : '2.2');
+    o.innerHTML = '<i class="fx-ripple"></i><i class="fx-ripple" style="animation-delay:.12s"></i>';
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1000);
+  }
+
   // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
   var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
   function candyUnwrap(c, m) {
@@ -6685,6 +6767,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'ultra') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) ultraGlitch(c, m); }); ultraCombo(matches); return; }
     if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
     if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
     matches.forEach(function(idx, m) {
