@@ -107,7 +107,7 @@ body.skin-on:not(.light) { --bg: #110c1c; background: #110c1c; }
 body.skin-on.light { --border: rgba(30,20,60,0.12); --accent: color-mix(in srgb, var(--sk-accent) 68%, #000); }
 .skin-aurora { position: fixed; inset: -15%; z-index: -1; pointer-events: none; opacity: .5; }
 body.light .skin-aurora { opacity: .32; }
-.skin-aurora i { position: absolute; width: 46vw; height: 46vw; border-radius: 50%; animation: skin-drift 26s ease-in-out infinite alternate; will-change: transform; }
+.skin-aurora:not([class*="scene-"]) i { position: absolute; width: 46vw; height: 46vw; border-radius: 50%; animation: skin-drift 26s ease-in-out infinite alternate; will-change: transform; }
 @keyframes skin-drift { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(6vw,-4vh) scale(1.15); } 100% { transform: translate(-5vw,5vh) scale(.95); } }
 body.skin-on header { background: rgba(17,12,28,0.55); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 body.skin-on .tab-bar { background: rgba(17,12,28,0.6); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
@@ -385,6 +385,60 @@ body.skin-fx-creation.light .region-header { color: #4a4aa8; }
   animation: fx-shock .6s ease-out .38s forwards; }
 @keyframes fx-shock { 0% { opacity: 1; transform: scale(.2); } 100% { opacity: 0; transform: scale(var(--rs, 1.9)); } }
 @media (prefers-reduced-motion: reduce) { .scene-creation .stars, .scene-creation .dial { animation: none; } body.fx-timewarp #grid-wrap { animation: none; } .fx-spacewave { display: none; } }
+/* ── Skin FX: Mythicals (pastel dreamscape with bubbles, pearl tiles, bubble-pop reveal, holo foil, rainbow mythicals) ── */
+body.skin-fx-mythical:not(.light) { --bg: #1b1230; background: #1b1230; }
+body.skin-fx-mythical.light { --bg: #fdf3fb; background: #fdf3fb; }
+.scene-mythical { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-mythical .dream { position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 20%, rgba(255,150,210,.28), transparent 50%), radial-gradient(ellipse at 80% 30%, rgba(150,200,255,.25), transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(200,170,255,.3), transparent 55%), linear-gradient(180deg, #1b1230, #2a1a45); }
+body.light .scene-mythical .dream { background: radial-gradient(ellipse at 20% 20%, rgba(255,170,220,.45), transparent 50%), radial-gradient(ellipse at 80% 30%, rgba(170,215,255,.45), transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(215,190,255,.45), transparent 55%), linear-gradient(180deg, #fdf3fb, #f1eefe); }
+.scene-mythical i { position: absolute; bottom: -100px; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.75) 0 8%, transparent 14%), radial-gradient(circle at 50% 50%, transparent 58%, rgba(255,190,235,.35) 68%, rgba(170,220,255,.45) 76%, rgba(255,250,180,.3) 84%, transparent 90%);
+  animation: fx-rise linear infinite, fx-sway ease-in-out infinite alternate; }
+@keyframes fx-rise { to { bottom: 110vh; } }
+@keyframes fx-sway { from { transform: translateX(-14px); } to { transform: translateX(14px); } }
+body.skin-fx-mythical header, body.skin-fx-mythical .tab-bar { background: rgba(27,18,48,0.62); }
+body.skin-fx-mythical.light header, body.skin-fx-mythical.light .tab-bar { background: rgba(253,243,251,0.72); }
+body.skin-fx-mythical .card.unrevealed, .fx-pearl {
+  background: radial-gradient(ellipse at 30% 25%, rgba(255,255,255,.28), transparent 45%),
+    conic-gradient(from 200deg at 60% 60%, rgba(255,180,230,.22), rgba(180,220,255,.22), rgba(255,245,180,.18), rgba(200,180,255,.22), rgba(255,180,230,.22)),
+    linear-gradient(160deg, #3a2c58, #2b2045);
+}
+body.skin-fx-mythical .card.unrevealed { border: 1px solid rgba(255,220,245,.25); border-radius: 14px; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 3px 10px rgba(10,0,30,.3); }
+body.skin-fx-mythical.light .card.unrevealed, body.light .fx-pearl {
+  background: radial-gradient(ellipse at 30% 25%, rgba(255,255,255,.95), transparent 50%),
+    conic-gradient(from 200deg at 60% 60%, rgba(255,190,230,.45), rgba(180,220,255,.45), rgba(255,240,170,.4), rgba(210,190,255,.45), rgba(255,190,230,.45)),
+    linear-gradient(160deg, #fff, #f3ecfb);
+}
+body.skin-fx-mythical.light .card.unrevealed { border-color: rgba(200,150,210,.3); box-shadow: inset 0 1px 0 #fff, 0 3px 10px rgba(150,100,180,.12); }
+body.skin-fx-mythical .card.unrevealed .poke-placeholder { color: #ffc6e8 !important; opacity: .85 !important; text-shadow: 0 0 10px rgba(255,180,230,.6); }
+body.skin-fx-mythical.light .card.unrevealed .poke-placeholder { color: #d77bb8 !important; text-shadow: 0 1px 0 #fff; }
+body.skin-fx-mythical .card.just-found { animation: none; }
+body.skin-fx-mythical[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(255,210,240,.4); border-radius: 14px; }
+body.skin-fx-mythical .card.found::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; opacity: .5; mix-blend-mode: overlay;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,120,220,.9) 40%, rgba(120,240,255,.9) 48%, rgba(255,250,140,.9) 56%, transparent 66%) fixed; background-size: 220% 220%; }
+body.skin-fx-mythical.light .card.found::after { opacity: .35; }
+body.skin-fx-mythical .card.found[data-pid="151"]::before, body.skin-fx-mythical .card.found[data-pid="251"]::before, body.skin-fx-mythical .card.found[data-pid="385"]::before, body.skin-fx-mythical .card.found[data-pid="386"]::before, body.skin-fx-mythical .card.found[data-pid="489"]::before, body.skin-fx-mythical .card.found[data-pid="490"]::before, body.skin-fx-mythical .card.found[data-pid="491"]::before, body.skin-fx-mythical .card.found[data-pid="492"]::before, body.skin-fx-mythical .card.found[data-pid="493"]::before, body.skin-fx-mythical .card.found[data-pid="494"]::before, body.skin-fx-mythical .card.found[data-pid="647"]::before, body.skin-fx-mythical .card.found[data-pid="648"]::before, body.skin-fx-mythical .card.found[data-pid="649"]::before, body.skin-fx-mythical .card.found[data-pid="719"]::before, body.skin-fx-mythical .card.found[data-pid="720"]::before, body.skin-fx-mythical .card.found[data-pid="721"]::before, body.skin-fx-mythical .card.found[data-pid="801"]::before, body.skin-fx-mythical .card.found[data-pid="802"]::before, body.skin-fx-mythical .card.found[data-pid="807"]::before, body.skin-fx-mythical .card.found[data-pid="808"]::before, body.skin-fx-mythical .card.found[data-pid="809"]::before, body.skin-fx-mythical .card.found[data-pid="893"]::before, body.skin-fx-mythical .card.found[data-pid="1025"]::before { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 2px; pointer-events: none; z-index: 1;
+  background: conic-gradient(#ff8fb8, #ffd23f, #5fd17a, #7fe3f0, #5b8cff, #e070ff, #ff8fb8);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: fx-hue 4s linear infinite; }
+@keyframes fx-hue { to { filter: hue-rotate(360deg); } }
+body.skin-fx-mythical .region-section.region-complete { border-color: #ffc6e8; box-shadow: 0 0 14px rgba(255,180,230,.45), 0 0 26px rgba(180,220,255,.3), inset 0 0 20px rgba(255,240,180,.15); }
+body.skin-fx-mythical .region-header { color: #ffc6e8; }
+body.skin-fx-mythical.light .region-header { color: #a8458a; }
+.fx-bubble { position: absolute; pointer-events: none; z-index: 150; }
+.fx-bubble .fx-pearl { position: absolute; inset: 0; border-radius: 14px; animation: fx-pearl .5s ease-in forwards; }
+@keyframes fx-pearl { 0% { opacity: 1; transform: none; } 100% { opacity: 0; transform: scale(.92); } }
+.fx-bubble .fx-orb { position: absolute; left: -12%; top: -12%; width: 124%; height: 124%; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle at 32% 26%, rgba(255,255,255,.9) 0 6%, transparent 11%), radial-gradient(circle, transparent 60%, rgba(255,180,230,.55) 70%, rgba(170,220,255,.6) 78%, rgba(255,250,170,.45) 86%, transparent 92%);
+  animation: fx-orb .55s ease-out forwards; }
+.fx-bubble .fx-orb.rare { left: -25%; top: -25%; width: 150%; height: 150%; filter: saturate(1.6) brightness(1.1); }
+@keyframes fx-orb { 0% { opacity: 0; transform: scale(.3); } 55% { opacity: 1; transform: scale(1); } 75% { opacity: 1; transform: scale(1.06); } 100% { opacity: 0; transform: scale(1.18); } }
+.fx-bubble .fx-glint { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2px 0 0 -2px; border-radius: 50%; opacity: 0; box-shadow: 0 0 6px currentColor; animation: fx-glint .7s ease-out forwards; }
+@keyframes fx-glint { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.3); } }
+@media (prefers-reduced-motion: reduce) { .scene-mythical i { animation: none; bottom: auto; top: 30%; } body.skin-fx-mythical .card.found[data-pid="151"]::before, body.skin-fx-mythical .card.found[data-pid="251"]::before, body.skin-fx-mythical .card.found[data-pid="385"]::before, body.skin-fx-mythical .card.found[data-pid="386"]::before, body.skin-fx-mythical .card.found[data-pid="489"]::before, body.skin-fx-mythical .card.found[data-pid="490"]::before, body.skin-fx-mythical .card.found[data-pid="491"]::before, body.skin-fx-mythical .card.found[data-pid="492"]::before, body.skin-fx-mythical .card.found[data-pid="493"]::before, body.skin-fx-mythical .card.found[data-pid="494"]::before, body.skin-fx-mythical .card.found[data-pid="647"]::before, body.skin-fx-mythical .card.found[data-pid="648"]::before, body.skin-fx-mythical .card.found[data-pid="649"]::before, body.skin-fx-mythical .card.found[data-pid="719"]::before, body.skin-fx-mythical .card.found[data-pid="720"]::before, body.skin-fx-mythical .card.found[data-pid="721"]::before, body.skin-fx-mythical .card.found[data-pid="801"]::before, body.skin-fx-mythical .card.found[data-pid="802"]::before, body.skin-fx-mythical .card.found[data-pid="807"]::before, body.skin-fx-mythical .card.found[data-pid="808"]::before, body.skin-fx-mythical .card.found[data-pid="809"]::before, body.skin-fx-mythical .card.found[data-pid="893"]::before, body.skin-fx-mythical .card.found[data-pid="1025"]::before { animation: none; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -6513,7 +6567,7 @@ const Q = (function() {
       col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
     { id: 'fossils', name: 'Fossils', fx: 'fossil', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
       col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
-    { id: 'mythical', name: 'Mythicals', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
+    { id: 'mythical', name: 'Mythicals', fx: 'mythical', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
       col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
     { id: 'ultra', name: 'Ultra Beasts', fx: 'ultra', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
       col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] },
@@ -6578,6 +6632,12 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'mythical') {
+        // Pastel dreamscape with iridescent bubbles drifting up and swaying
+        au.className = 'skin-aurora scene-mythical';
+        var bub = '';
+        for (var u = 0; u < 14; u++) bub += '<i style="left:' + ((u * 29 + 5) % 96) + '%;width:' + (24 + (u * 13) % 70) + 'px;animation-duration:' + (18 + (u % 5) * 6) + 's,' + (5 + u % 3) + 's;animation-delay:-' + (u * 2.3).toFixed(1) + 's,-' + (u % 4) + 's"></i>';
+        au.innerHTML = '<div class="dream"></div>' + bub;
       } else if (s.fx === 'creation') {
         // Deep space: three star layers drifting at different speeds (parallax), soft nebulae for
         // time (blue), space (pink) and the Distortion World (gold), and a slowly turning clock dial
@@ -6760,6 +6820,25 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1200);
   }
 
+  // Mythicals: a bubble swells around the card and pops into pastel sparkles. A mythical Pokémon gets
+  // a bigger rainbow bubble shower; on the board, found cards wear holo foil and mythicals a rainbow outline.
+  var MYTHICAL_IDS = [151, 251, 385, 386, 489, 490, 491, 492, 493, 494, 647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025];
+  var MYTH_COLORS = ['#ffb3d9', '#b3e5ff', '#fff0a8', '#c9b3ff', '#b3ffd9'];
+  function mythicalPop(c, m, rare) {
+    var o = fxBox(c, 'fx-bubble'); if (!o) return;
+    var d = m * 70;
+    var html = '<i class="fx-pearl" style="animation-delay:' + d + 'ms"></i><i class="fx-orb' + (rare && !o._edgeR && !o._edgeL ? ' rare' : '') + '" style="animation-delay:' + d + 'ms"></i>';
+    var n = rare ? 22 : 10;
+    for (var k = 0; k < n; k++) {
+      var ang = (k / n) * Math.PI * 2 + Math.random() * 0.4, dist = (rare ? 45 : 28) + Math.random() * (rare ? 40 : 18);
+      var dx = Math.cos(ang) * dist; if ((o._edgeR && dx > 0) || (o._edgeL && dx < 0)) dx = -dx * 0.4;
+      html += '<b class="fx-glint" style="background:' + MYTH_COLORS[k % 5] + ';--dx:' + dx.toFixed(0) + 'px;--dy:' + (Math.sin(ang) * dist).toFixed(0) + 'px;animation-delay:' + (d + 380 + Math.random() * 80).toFixed(0) + 'ms;' + (rare ? 'width:7px;height:7px;' : '') + '"></b>';
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1300);
+  }
+
   // Creation Trio: the dark cover spins down into a singularity, flashes, and sends out a flat shockwave.
   // Every 100 names in a Full Pokédex run, space-time bends: the board warps and the dial spins fast.
   function creationCollapse(c, m) {
@@ -6858,6 +6937,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'mythical') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) mythicalPop(c, m, items[idx] && MYTHICAL_IDS.indexOf(items[idx].id) >= 0); }); return; }
     if (s.fx === 'creation') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) creationCollapse(c, m); }); creationPulseCheck(matches.length); return; }
     if (s.fx === 'ultra') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) ultraGlitch(c, m); }); ultraCombo(matches); return; }
     if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
