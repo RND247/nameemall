@@ -439,6 +439,55 @@ body.skin-fx-mythical.light .region-header { color: #a8458a; }
 .fx-bubble .fx-glint { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2px 0 0 -2px; border-radius: 50%; opacity: 0; box-shadow: 0 0 6px currentColor; animation: fx-glint .7s ease-out forwards; }
 @keyframes fx-glint { 0% { opacity: 1; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.3); } }
 @media (prefers-reduced-motion: reduce) { .scene-mythical i { animation: none; bottom: auto; top: 30%; } body.skin-fx-mythical .card.found[data-pid="151"]::before, body.skin-fx-mythical .card.found[data-pid="251"]::before, body.skin-fx-mythical .card.found[data-pid="385"]::before, body.skin-fx-mythical .card.found[data-pid="386"]::before, body.skin-fx-mythical .card.found[data-pid="489"]::before, body.skin-fx-mythical .card.found[data-pid="490"]::before, body.skin-fx-mythical .card.found[data-pid="491"]::before, body.skin-fx-mythical .card.found[data-pid="492"]::before, body.skin-fx-mythical .card.found[data-pid="493"]::before, body.skin-fx-mythical .card.found[data-pid="494"]::before, body.skin-fx-mythical .card.found[data-pid="647"]::before, body.skin-fx-mythical .card.found[data-pid="648"]::before, body.skin-fx-mythical .card.found[data-pid="649"]::before, body.skin-fx-mythical .card.found[data-pid="719"]::before, body.skin-fx-mythical .card.found[data-pid="720"]::before, body.skin-fx-mythical .card.found[data-pid="721"]::before, body.skin-fx-mythical .card.found[data-pid="801"]::before, body.skin-fx-mythical .card.found[data-pid="802"]::before, body.skin-fx-mythical .card.found[data-pid="807"]::before, body.skin-fx-mythical .card.found[data-pid="808"]::before, body.skin-fx-mythical .card.found[data-pid="809"]::before, body.skin-fx-mythical .card.found[data-pid="893"]::before, body.skin-fx-mythical .card.found[data-pid="1025"]::before { animation: none; } }
+/* ── Skin FX: Starters (lab zones, chalkboard / notebook tiles, page-flip reveal, type particles, line stamps) ── */
+body.skin-fx-starters:not(.light) { --bg: #10161a; background: #10161a; }
+body.skin-fx-starters.light { --bg: #f7f3ea; background: #f7f3ea; }
+.scene-starters { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-starters .zones { position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 12% 85%, rgba(80,200,110,.25), transparent 45%), radial-gradient(ellipse at 50% 95%, rgba(255,130,60,.22), transparent 45%),
+    radial-gradient(ellipse at 88% 85%, rgba(70,150,255,.25), transparent 45%); }
+body.light .scene-starters .zones { background: radial-gradient(ellipse at 12% 85%, rgba(110,210,130,.3), transparent 45%), radial-gradient(ellipse at 50% 95%, rgba(255,160,90,.28), transparent 45%),
+    radial-gradient(ellipse at 88% 85%, rgba(110,170,255,.3), transparent 45%); }
+.scene-starters .doodles { position: absolute; inset: 0; opacity: .06;
+  background: repeating-linear-gradient(0deg, transparent 0 31px, #fff 31px 32px); }
+body.light .scene-starters .doodles { opacity: .35; background: repeating-linear-gradient(0deg, transparent 0 31px, rgba(90,140,210,.35) 31px 32px), linear-gradient(90deg, transparent 0 7%, rgba(230,90,90,.35) 7% calc(7% + 1px), transparent calc(7% + 1px)); }
+body.skin-fx-starters header, body.skin-fx-starters .tab-bar { background: rgba(16,22,26,0.65); }
+body.skin-fx-starters.light header, body.skin-fx-starters.light .tab-bar { background: rgba(247,243,234,0.78); }
+body.skin-fx-starters .card.unrevealed, .fx-sheet {
+  background: radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.06), transparent 55%), repeating-linear-gradient(0deg, transparent 0 13px, rgba(255,255,255,.05) 13px 14px), linear-gradient(160deg, #2d3a35, #23302b);
+}
+body.skin-fx-starters .card.unrevealed { border: 2px solid #5a4632; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,.4); }
+body.skin-fx-starters .card.unrevealed .poke-placeholder { color: rgba(240,240,230,.75) !important; opacity: 1 !important; font-family: 'Chalkboard SE', 'Comic Sans MS', 'Marker Felt', cursive; font-weight: 400; text-shadow: 0 0 2px rgba(255,255,255,.4); }
+body.skin-fx-starters .card.unrevealed:nth-child(3n+1) .poke-placeholder { color: rgba(170,240,180,.8) !important; }
+body.skin-fx-starters .card.unrevealed:nth-child(3n+2) .poke-placeholder { color: rgba(255,190,150,.8) !important; }
+body.skin-fx-starters .card.unrevealed:nth-child(3n) .poke-placeholder { color: rgba(170,210,255,.8) !important; }
+body.skin-fx-starters.light .card.unrevealed, body.light .fx-sheet {
+  background: linear-gradient(90deg, transparent 0 12%, rgba(230,90,90,.5) 12% calc(12% + 1px), transparent calc(12% + 1px)), repeating-linear-gradient(0deg, transparent 0 11px, rgba(90,140,210,.3) 11px 12px), #fffdf6;
+}
+body.skin-fx-starters.light .card.unrevealed { border: 1px solid rgba(120,100,70,.25); border-radius: 3px; box-shadow: 1px 2px 0 rgba(120,100,70,.15); }
+body.skin-fx-starters.light .card.unrevealed .poke-placeholder { text-shadow: none; }
+body.skin-fx-starters.light .card.unrevealed:nth-child(3n+1) .poke-placeholder { color: #3f9a55 !important; }
+body.skin-fx-starters.light .card.unrevealed:nth-child(3n+2) .poke-placeholder { color: #d9662b !important; }
+body.skin-fx-starters.light .card.unrevealed:nth-child(3n) .poke-placeholder { color: #3a74c9 !important; }
+body.skin-fx-starters .card.just-found { animation: none; }
+body.skin-fx-starters[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 2px solid rgba(90,70,50,.7); border-radius: 4px; }
+body.skin-fx-starters.light[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { border: 1px solid rgba(120,100,70,.3); border-radius: 3px; }
+body.skin-fx-starters .region-section.region-complete { border-color: #ffb03a; box-shadow: 0 0 12px rgba(80,200,110,.35), 0 0 20px rgba(255,130,60,.3), 0 0 28px rgba(70,150,255,.25); }
+body.skin-fx-starters .region-header { color: #e8e2c8; font-family: 'Chalkboard SE', 'Comic Sans MS', 'Marker Felt', cursive; }
+body.skin-fx-starters.light .region-header { color: #4a3b26; }
+.fx-page, .fx-stampbox { position: absolute; pointer-events: none; z-index: 150; perspective: 400px; }
+.fx-page .fx-sheet { position: absolute; inset: 0; border-radius: 4px; transform-origin: 50% 0; animation: fx-flip .5s cubic-bezier(.5,0,.8,.4) forwards; backface-visibility: hidden; }
+@keyframes fx-flip { 0% { transform: rotateX(0); } 100% { transform: rotateX(-105deg); opacity: .3; } }
+.fx-page .fx-p { position: absolute; opacity: 0; animation: fx-p 1s ease-out forwards; }
+.fx-p.leaf { width: 9px; height: 5px; border-radius: 0 100% 0 100%; background: linear-gradient(135deg, #8fe36a, #3fbf6a); }
+.fx-p.ember { width: 5px; height: 5px; border-radius: 50%; background: #ffb14a; box-shadow: 0 0 8px #ff6a2a; }
+.fx-p.bubble { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid rgba(140,200,255,.95); background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.8) 0 15%, transparent 25%); }
+.fx-p.star { font-size: 11px; line-height: 1; color: #ffd23f; text-shadow: 0 0 4px rgba(255,210,63,.6); }
+@keyframes fx-p { 0% { opacity: 1; transform: translate(0,0) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); } }
+.fx-stampbox .fx-stamp { position: absolute; right: 4px; top: 4px; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: #fff; background: radial-gradient(circle at 35% 30%, #ffd86b, #e6a21a); border: 2px solid #fff6d0; box-shadow: 0 2px 6px rgba(0,0,0,.4);
+  opacity: 0; animation: fx-stamp 3s ease-out forwards; }
+@keyframes fx-stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-30deg); } 12% { opacity: 1; transform: scale(.9) rotate(8deg); } 18% { transform: scale(1.05) rotate(-4deg); } 24% { transform: scale(1) rotate(0); } 85% { opacity: 1; } 100% { opacity: 0; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -2724,6 +2773,7 @@ const Q = (function() {
       if (family.m.every(fid => items.some((w, i) => w.id === fid && revealedSet.has(i)))) {
         completedFamilies.add(famIdx);
         setTimeout(() => familyToast(family), 400);
+        skinFamilyDone(family);
       }
     }
   }
@@ -6559,7 +6609,7 @@ const Q = (function() {
   var SKINS = [
     { id: 'eevee', name: 'Eeveelutions', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
       col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
-    { id: 'starters', name: 'Starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
+    { id: 'starters', name: 'Starters', fx: 'starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
       col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
     { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
@@ -6632,6 +6682,10 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'starters') {
+        // A professor's lab: three soft zones for grass, fire and water, with faint doodles
+        au.className = 'skin-aurora scene-starters';
+        au.innerHTML = '<div class="zones"></div><div class="doodles"></div>';
       } else if (s.fx === 'mythical') {
         // Pastel dreamscape with iridescent bubbles drifting up and swaying
         au.className = 'skin-aurora scene-mythical';
@@ -6820,6 +6874,41 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1200);
   }
 
+  // Starters: the notebook page (chalkboard in dark mode) flips up, and the Pokémon's type sets the particles:
+  // leaves for grass, embers for fire, bubbles for water, pencil stars for everything else.
+  // Finishing a starter's evolution line stamps a badge on each card of the line.
+  var STARTER_ROOTS = [1, 4, 7, 152, 155, 158, 252, 255, 258, 387, 390, 393, 495, 498, 501, 650, 653, 656, 722, 725, 728, 810, 813, 816, 906, 909, 912];
+  function startersFlip(c, m, w) {
+    var o = fxBox(c, 'fx-page'); if (!o) return;
+    var ty = getTypesForCard(w, parseInt(c.dataset.formIdx || '0') || 0);
+    var kind = ty.indexOf('grass') >= 0 ? 'leaf' : ty.indexOf('fire') >= 0 ? 'ember' : ty.indexOf('water') >= 0 ? 'bubble' : 'star';
+    var d = m * 70;
+    var html = '<i class="fx-sheet" style="animation-delay:' + d + 'ms"></i>';
+    for (var k = 0; k < 10; k++) {
+      var dx = (Math.random() - 0.5) * 70, dy = kind === 'leaf' ? 20 + Math.random() * 40 : -(30 + Math.random() * 45);
+      if (kind === 'star') dy = (Math.random() - 0.5) * 70;
+      if ((o._edgeR && dx > 0) || (o._edgeL && dx < 0)) dx = -dx * 0.5;
+      html += '<b class="fx-p ' + kind + '" style="left:' + (20 + Math.random() * 60).toFixed(0) + '%;top:' + (35 + Math.random() * 35).toFixed(0) + '%;--dx:' + dx.toFixed(0) + 'px;--dy:' + dy.toFixed(0) + 'px;--rot:' + ((Math.random() - 0.5) * 400).toFixed(0) + 'deg;animation-delay:' + (d + 150 + Math.random() * 150).toFixed(0) + 'ms">' + (kind === 'star' ? '★' : '') + '</b>';
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1400);
+  }
+  function skinFamilyDone(family) {
+    if (skinCurrent !== 'starters' || skinCalm() || currentTab !== 'pokemon') return;
+    if (!family.m.some(function(id) { return STARTER_ROOTS.indexOf(id) >= 0; })) return;
+    setTimeout(function() {
+      family.m.forEach(function(pid, n) {
+        var i = -1; for (var j = 0; j < items.length; j++) if (items[j].id === pid) { i = j; break; }
+        var c = i >= 0 ? $('c' + i) : null; if (!c) return;
+        var o = fxBox(c, 'fx-stampbox'); if (!o) return;
+        o.innerHTML = '<span class="fx-stamp" style="animation-delay:' + (n * 160) + 'ms">★</span>';
+        document.body.appendChild(o);
+        setTimeout(function() { o.remove(); }, 3200 + n * 160);
+      });
+    }, 350);
+  }
+
   // Mythicals: a bubble swells around the card and pops into pastel sparkles. A mythical Pokémon gets
   // a bigger rainbow bubble shower; on the board, found cards wear holo foil and mythicals a rainbow outline.
   var MYTHICAL_IDS = [151, 251, 385, 386, 489, 490, 491, 492, 493, 494, 647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025];
@@ -6937,6 +7026,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'starters') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c && items[idx]) startersFlip(c, m, items[idx]); }); return; }
     if (s.fx === 'mythical') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) mythicalPop(c, m, items[idx] && MYTHICAL_IDS.indexOf(items[idx].id) >= 0); }); return; }
     if (s.fx === 'creation') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) creationCollapse(c, m); }); creationPulseCheck(matches.length); return; }
     if (s.fx === 'ultra') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) ultraGlitch(c, m); }); ultraCombo(matches); return; }
