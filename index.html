@@ -330,6 +330,61 @@ body.skin-fx-ultra.light .region-header { color: #0a7f90; text-shadow: none; }
 .fx-burst .fx-ripple { position: absolute; inset: 0; border-radius: 50%; border: 2px solid #6fe8f5; box-shadow: 0 0 10px #e070ff, inset 0 0 10px #6fe8f5; opacity: 0; animation: fx-ripple .8s ease-out forwards; }
 @keyframes fx-ripple { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(var(--rs, 2.2)); } }
 @media (prefers-reduced-motion: reduce) { .scene-ultra .r1, .scene-ultra .r2 { animation: none; } }
+/* ── Skin FX: Creation Trio (parallax starfield with clock dial, star-glass tiles, singularity reveal, space-time pulse) ── */
+body.skin-fx-creation:not(.light) { --bg: #070818; background: #070818; }
+body.skin-fx-creation.light { --bg: #f1f0fb; background: #f1f0fb; }
+.scene-creation { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-creation .nebula { position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 15% 30%, rgba(80,130,255,.22), transparent 45%), radial-gradient(ellipse at 85% 25%, rgba(255,120,200,.18), transparent 45%),
+    radial-gradient(ellipse at 50% 95%, rgba(200,150,60,.16), transparent 50%), radial-gradient(ellipse at 50% 60%, rgba(90,40,140,.18), transparent 60%); }
+body.light .scene-creation .nebula { opacity: .7; }
+.scene-creation .stars { position: absolute; left: 0; top: 0; border-radius: 50%; background: transparent; animation: fx-starfall linear infinite; }
+body.light .scene-creation .stars { opacity: .35; filter: invert(1) sepia(1) hue-rotate(200deg); }
+@keyframes fx-starfall { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
+.scene-creation .dial { position: absolute; left: 50%; top: 55%; width: 110vmin; height: 110vmin; margin: -55vmin 0 0 -55vmin; opacity: .3; animation: fx-spin 240s linear infinite; }
+.scene-creation .dial b { position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(200,210,255,.7) 0 .35deg, transparent .35deg 6deg);
+  -webkit-mask: radial-gradient(circle, transparent 66%, #000 66.5%, #000 68%, transparent 68.5%); mask: radial-gradient(circle, transparent 66%, #000 66.5%, #000 68%, transparent 68.5%); }
+.scene-creation .dial b.hours { background: repeating-conic-gradient(from 0deg, rgba(255,200,230,.9) 0 1deg, transparent 1deg 30deg);
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 62.5%, #000 68%, transparent 68.5%); mask: radial-gradient(circle, transparent 62%, #000 62.5%, #000 68%, transparent 68.5%); }
+body.light .scene-creation .dial { opacity: .22; filter: invert(.7); }
+body.fx-timewarp .scene-creation .dial { animation-duration: 3s; }
+body.fx-timewarp #grid-wrap { animation: fx-warp 1.1s ease-in-out; }
+@keyframes fx-warp { 0% { transform: none; filter: none; } 30% { transform: scale(.975) skewX(1.2deg); filter: hue-rotate(35deg) blur(.6px); } 60% { transform: scale(1.01) skewX(-.6deg); filter: hue-rotate(-20deg); } 100% { transform: none; filter: none; } }
+.fx-spacewave { position: fixed; left: 50%; top: 50%; width: 20vmin; height: 20vmin; margin: -10vmin 0 0 -10vmin; border-radius: 50%; z-index: 140; pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(168,200,255,.7), 0 0 30px rgba(255,140,210,.6), inset 0 0 30px rgba(168,200,255,.4); animation: fx-spacewave 1.2s ease-out forwards; }
+@keyframes fx-spacewave { from { transform: scale(.2); opacity: 1; } to { transform: scale(9); opacity: 0; } }
+body.skin-fx-creation header, body.skin-fx-creation .tab-bar { background: rgba(7,8,24,0.65); }
+body.skin-fx-creation.light header, body.skin-fx-creation.light .tab-bar { background: rgba(241,240,251,0.75); }
+body.skin-fx-creation .card.unrevealed, .fx-void {
+  background: radial-gradient(circle at 22% 30%, rgba(255,255,255,.7) 0 1px, transparent 1.5px), radial-gradient(circle at 70% 18%, rgba(255,255,255,.5) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 80% 72%, rgba(255,255,255,.6) 0 1px, transparent 1.5px), radial-gradient(circle at 35% 80%, rgba(255,255,255,.4) 0 .8px, transparent 1.3px),
+    radial-gradient(ellipse at 50% 50%, rgba(140,110,255,.22), transparent 70%), linear-gradient(160deg, #141a3d, #0c0f29 60%, #1d1033);
+}
+body.skin-fx-creation .card.unrevealed { border: 1px solid rgba(200,180,255,.22); border-radius: 8px; box-shadow: 0 0 10px rgba(110,130,255,.15), inset 0 0 12px rgba(255,140,210,.08); }
+body.skin-fx-creation .card.unrevealed:nth-child(3n+2) { box-shadow: 0 0 10px rgba(255,140,210,.18), inset 0 0 12px rgba(255,140,210,.1); }
+body.skin-fx-creation .card.unrevealed:nth-child(3n) { box-shadow: 0 0 10px rgba(230,180,80,.16), inset 0 0 12px rgba(230,180,80,.08); }
+body.skin-fx-creation .card.unrevealed .poke-placeholder { opacity: 1 !important; color: transparent !important; background: linear-gradient(160deg, #a8c8ff, #ffb3e6 60%, #f0d080); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 0 6px rgba(168,200,255,.45)); }
+body.skin-fx-creation.light .card.unrevealed, body.light .fx-void {
+  background: radial-gradient(ellipse at 50% 40%, rgba(255,255,255,.9), transparent 70%), linear-gradient(160deg, #e9ecff, #dfe2fb 55%, #f4e4f2);
+}
+body.skin-fx-creation.light .card.unrevealed { border-color: rgba(110,90,200,.22); box-shadow: 0 2px 8px rgba(90,80,180,.12); }
+body.skin-fx-creation.light .card.unrevealed .poke-placeholder { background: linear-gradient(160deg, #3d63c9, #c9449a 60%, #a8781c); -webkit-background-clip: text; background-clip: text; filter: none; }
+body.skin-fx-creation .card.just-found { animation: none; }
+body.skin-fx-creation[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(200,180,255,.35); border-radius: 8px; }
+body.skin-fx-creation .region-section.region-complete { border-color: #c9b8ff; box-shadow: 0 0 14px rgba(110,140,255,.45), 0 0 26px rgba(255,140,210,.3), inset 0 0 20px rgba(230,180,80,.15); }
+body.skin-fx-creation .region-header { color: #b9c8ff; }
+body.skin-fx-creation.light .region-header { color: #4a4aa8; }
+.fx-rift { position: absolute; pointer-events: none; z-index: 150; }
+.fx-rift .fx-void { position: absolute; inset: 0; border-radius: 8px; animation: fx-collapse .5s cubic-bezier(.6,0,.9,.5) forwards; }
+@keyframes fx-collapse { 0% { transform: none; border-radius: 8px; } 100% { transform: rotate(-220deg) scale(0); border-radius: 50%; opacity: .6; } }
+.fx-rift .fx-point { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #fff; opacity: 0;
+  box-shadow: 0 0 10px 4px #a8c8ff, 0 0 22px 8px rgba(255,140,210,.7); animation: fx-point .7s ease-out forwards; }
+@keyframes fx-point { 0%, 55% { opacity: 0; transform: scale(.2); } 70% { opacity: 1; transform: scale(1.5); } 100% { opacity: 0; transform: scale(.3); } }
+.fx-rift .fx-shock { position: absolute; left: 0; right: 0; top: 30%; bottom: 30%; border-radius: 50%; border: 2px solid rgba(200,215,255,.9); box-shadow: 0 0 12px rgba(255,140,210,.7); opacity: 0;
+  animation: fx-shock .6s ease-out .38s forwards; }
+@keyframes fx-shock { 0% { opacity: 1; transform: scale(.2); } 100% { opacity: 0; transform: scale(var(--rs, 1.9)); } }
+@media (prefers-reduced-motion: reduce) { .scene-creation .stars, .scene-creation .dial { animation: none; } body.fx-timewarp #grid-wrap { animation: none; } .fx-spacewave { display: none; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -6454,7 +6509,7 @@ const Q = (function() {
       col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
     { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
-    { id: 'creation', name: 'Creation Trio', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
+    { id: 'creation', name: 'Creation Trio', fx: 'creation', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
       col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
     { id: 'fossils', name: 'Fossils', fx: 'fossil', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
       col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
@@ -6523,6 +6578,21 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'creation') {
+        // Deep space: three star layers drifting at different speeds (parallax), soft nebulae for
+        // time (blue), space (pink) and the Distortion World (gold), and a slowly turning clock dial
+        au.className = 'skin-aurora scene-creation';
+        var layers = '';
+        [[70, 1, 140], [40, 2, 90], [16, 3, 55]].forEach(function(L, li) {
+          var sh = [];
+          for (var k = 0; k < L[0]; k++) {
+            var x = ((k * 7919 + li * 131) % 1000) / 10, y = ((k * 104729 + li * 337) % 1000) / 10;
+            sh.push(x + 'vw ' + y + 'vh 0 rgba(230,235,255,' + (0.35 + (k % 4) * 0.15).toFixed(2) + ')');
+            sh.push(x + 'vw ' + (y + 100) + 'vh 0 rgba(230,235,255,' + (0.35 + (k % 4) * 0.15).toFixed(2) + ')');
+          }
+          layers += '<i class="stars" style="width:' + L[1] + 'px;height:' + L[1] + 'px;box-shadow:' + sh.join(',') + ';animation-duration:' + L[2] + 's"></i>';
+        });
+        au.innerHTML = '<div class="nebula"></div>' + layers + '<div class="dial"><b></b><b class="hours"></b></div>';
       } else if (s.fx === 'ultra') {
         // Ultra Space: a slowly turning wormhole in the dark, under faint scanlines
         au.className = 'skin-aurora scene-ultra';
@@ -6690,6 +6760,27 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1200);
   }
 
+  // Creation Trio: the dark cover spins down into a singularity, flashes, and sends out a flat shockwave.
+  // Every 100 names in a Full Pokédex run, space-time bends: the board warps and the dial spins fast.
+  function creationCollapse(c, m) {
+    var o = fxBox(c, 'fx-rift'); if (!o) return;
+    o.style.setProperty('--rs', o._edgeR || o._edgeL ? '1.15' : '1.9');
+    var d = (m * 60) + 'ms';
+    o.innerHTML = '<i class="fx-void" style="animation-delay:' + d + '"></i><i class="fx-point" style="animation-delay:' + d + '"></i><i class="fx-shock" style="animation-delay:' + (380 + m * 60) + 'ms"></i>';
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1000);
+  }
+  function creationPulseCheck(n) {
+    if (currentTab !== 'pokemon') return;
+    if (document.body.classList.contains('creator') && !creatorCelebrating()) return;
+    var now = foundSet.size, before = now - n;
+    if (Math.floor(now / 100) === Math.floor(before / 100) && !(now >= items.length && before < items.length)) return;
+    var b = document.body;
+    b.classList.remove('fx-timewarp'); void b.offsetWidth; b.classList.add('fx-timewarp');
+    var w = document.createElement('div'); w.className = 'fx-spacewave'; b.appendChild(w);
+    setTimeout(function() { b.classList.remove('fx-timewarp'); w.remove(); }, 1300);
+  }
+
   // Ultra Beasts: the card glitches in (RGB-split slices that jitter into place) under a scanline sweep.
   // Every 3rd name within 4 s makes the wormhole pulse and sends a neon ripple out of the card.
   var ultraRun = { last: 0, n: 0 };
@@ -6767,6 +6858,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'creation') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) creationCollapse(c, m); }); creationPulseCheck(matches.length); return; }
     if (s.fx === 'ultra') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) ultraGlitch(c, m); }); ultraCombo(matches); return; }
     if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
     if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
