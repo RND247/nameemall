@@ -488,6 +488,58 @@ body.skin-fx-starters.light .region-header { color: #4a3b26; }
   font-size: 15px; color: #fff; background: radial-gradient(circle at 35% 30%, #ffd86b, #e6a21a); border: 2px solid #fff6d0; box-shadow: 0 2px 6px rgba(0,0,0,.4);
   opacity: 0; animation: fx-stamp 3s ease-out forwards; }
 @keyframes fx-stamp { 0% { opacity: 0; transform: scale(2.6) rotate(-30deg); } 12% { opacity: 1; transform: scale(.9) rotate(8deg); } 18% { transform: scale(1.05) rotate(-4deg); } 24% { transform: scale(1) rotate(0); } 85% { opacity: 1; } 100% { opacity: 0; } }
+/* ── Skin FX: Eeveelutions (prism scene, plush stitched tiles, evolution-glow reveal by type, all-9 parade) ── */
+body.skin-fx-eevee:not(.light) { --bg: #17121f; background: #17121f; }
+body.skin-fx-eevee.light { --bg: #fbf6ef; background: #fbf6ef; }
+.scene-eevee { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-eevee .prism { position: absolute; left: 50%; top: -40%; width: 200vmax; height: 200vmax; margin-left: -100vmax; opacity: .26; filter: blur(30px);
+  background: conic-gradient(from 135deg at 50% 0%, transparent 0deg, #5b8cff 10deg, #ffd23f 22deg, #ff7a3d 34deg, #e070ff 46deg, #8d7bb8 58deg, #5fd17a 70deg, #7fe3f0 82deg, #ff8fb8 94deg, transparent 104deg);
+  animation: fx-prism 24s ease-in-out infinite alternate; }
+.scene-eevee .beam { position: absolute; left: 50%; top: 0; width: 2px; height: 30vh; margin-left: -1px; background: linear-gradient(rgba(255,255,255,.7), transparent); filter: blur(1px); opacity: .5; }
+body.light .scene-eevee .prism { opacity: .3; }
+body.light .scene-eevee .beam { background: linear-gradient(rgba(255,255,255,1), transparent); opacity: .8; }
+.scene-eevee.all .prism { animation: fx-prism 24s ease-in-out infinite alternate, fx-hue 12s linear infinite; opacity: .36; }
+@keyframes fx-prism { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+body.skin-fx-eevee header, body.skin-fx-eevee .tab-bar { background: rgba(23,18,31,0.62); }
+body.skin-fx-eevee.light header, body.skin-fx-eevee.light .tab-bar { background: rgba(251,246,239,0.75); }
+body.skin-fx-eevee .card.unrevealed, .fx-plush {
+  --plush: #7a5a3c;
+  background: var(--fx-felt), radial-gradient(ellipse at 35% 25%, rgba(255,255,255,.18), transparent 60%), linear-gradient(160deg, color-mix(in srgb, var(--plush) 85%, #fff), var(--plush));
+  background-size: 120px 120px, 100% 100%, 100% 100%;
+}
+body.skin-fx-eevee { --fx-felt: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 -.45'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"); }
+body.skin-fx-eevee .card.unrevealed { border: none; border-radius: 14px; outline: 2px dashed rgba(255,255,255,.4); outline-offset: -6px; box-shadow: inset 0 -5px 10px rgba(0,0,0,.25), 0 3px 8px rgba(0,0,0,.25); }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+1) { --plush: #4f72c9; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+2) { --plush: #c9a223; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+3) { --plush: #c95f2c; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+4) { --plush: #a457c2; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+5) { --plush: #3b3550; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+6) { --plush: #4a9e5c; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+7) { --plush: #4fa7b8; }
+body.skin-fx-eevee .card.unrevealed:nth-child(8n+8) { --plush: #c96a8f; }
+body.skin-fx-eevee.light .card.unrevealed {
+  background: var(--fx-felt), radial-gradient(ellipse at 35% 25%, rgba(255,255,255,.25), transparent 60%), linear-gradient(160deg, color-mix(in srgb, var(--plush) 80%, #fff), var(--plush));
+  background-size: 120px 120px, 100% 100%, 100% 100%; }
+body.skin-fx-eevee.light .card.unrevealed { filter: saturate(.75) brightness(1.12); box-shadow: inset 0 -5px 10px rgba(0,0,0,.12), 0 3px 8px rgba(120,90,60,.15); }
+body.skin-fx-eevee .card.unrevealed .poke-placeholder { color: rgba(255,255,255,.9) !important; opacity: 1 !important; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+body.skin-fx-eevee .card.just-found { animation: none; }
+body.skin-fx-eevee[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(255,230,200,.3); border-radius: 14px; }
+body.skin-fx-eevee .region-section.region-complete { border-color: #ffd23f; box-shadow: 0 0 10px rgba(91,140,255,.4), 0 0 18px rgba(255,122,61,.3), 0 0 26px rgba(224,112,255,.25), 0 0 34px rgba(95,209,122,.2); }
+body.skin-fx-eevee .region-header { color: #f0c88a; }
+body.skin-fx-eevee.light .region-header { color: #8a5a28; }
+.fx-evolve { position: absolute; pointer-events: none; z-index: 150; }
+.fx-evolve .fx-plush { position: absolute; inset: 0; border-radius: 14px; animation: fx-evo .62s ease-in forwards; }
+@keyframes fx-evo { 0% { filter: brightness(1); transform: scale(1); } 20% { filter: brightness(3) saturate(0); transform: scale(1.04); } 35% { filter: brightness(1.4); transform: scale(.97); }
+  50% { filter: brightness(3.5) saturate(0); transform: scale(1.06); } 70% { filter: brightness(5) saturate(0); transform: scale(1.02); opacity: 1; } 100% { filter: brightness(5) saturate(0); transform: scale(1.1); opacity: 0; } }
+.fx-evolve .fx-evoglow { position: absolute; inset: -20%; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--ev) 35%, transparent 70%); opacity: 0; animation: fx-evoglow .7s ease-out forwards; }
+@keyframes fx-evoglow { 0%, 55% { opacity: 0; transform: scale(.4); } 70% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.25); } }
+.fx-evolve .fx-evospark { position: absolute; left: 50%; top: 50%; margin: -7px 0 0 -5px; font-size: 13px; line-height: 1; color: var(--ev); text-shadow: 0 0 6px var(--ev), 0 0 2px #fff; opacity: 0; animation: fx-evospark .75s ease-out forwards; }
+@keyframes fx-evospark { 0% { opacity: 1; transform: translate(0,0) scale(.6) rotate(0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.1) rotate(90deg); } }
+.fx-parade { position: fixed; left: 0; bottom: 14px; z-index: 160; display: flex; gap: 2px; pointer-events: none; animation: fx-parade 5s linear forwards; }
+.fx-parade img { width: 64px; height: 64px; image-rendering: pixelated; filter: drop-shadow(0 4px 4px rgba(0,0,0,.4)); animation: fx-hop .45s ease-in-out infinite alternate; }
+@keyframes fx-parade { from { transform: translateX(-640px); } to { transform: translateX(110vw); } }
+@keyframes fx-hop { from { transform: translateY(0); } to { transform: translateY(-14px); } }
+@media (prefers-reduced-motion: reduce) { .scene-eevee .prism { animation: none !important; } .fx-parade { display: none; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -6607,7 +6659,7 @@ const Q = (function() {
   // header and the unlock screen, mascot in the middle. Saved as nea_skin, so device transfer carries it.
   var SKIN_SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
   var SKINS = [
-    { id: 'eevee', name: 'Eeveelutions', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
+    { id: 'eevee', name: 'Eeveelutions', fx: 'eevee', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
       col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
     { id: 'starters', name: 'Starters', fx: 'starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
       col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
@@ -6682,6 +6734,10 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'eevee') {
+        // Light through a prism, split into the eight Eeveelution colors. Once all 9 are named the prism cycles.
+        au.className = 'skin-aurora scene-eevee' + (eeveeAllFound() ? ' all' : '');
+        au.innerHTML = '<div class="prism"></div><div class="beam"></div>';
       } else if (s.fx === 'starters') {
         // A professor's lab: three soft zones for grass, fire and water, with faint doodles
         au.className = 'skin-aurora scene-starters';
@@ -6874,6 +6930,44 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1200);
   }
 
+  // Eeveelutions: the plush cover glows white and pulses like an evolution, then bursts into sparkles in the
+  // color of the Eeveelution that matches the Pokémon's type. Naming all 9 sends a parade across the screen.
+  var EEVEE_IDS = [133, 134, 135, 136, 196, 197, 470, 471, 700];
+  var EEVEE_TYPE = { water: '#5b8cff', electric: '#ffd23f', fire: '#ff7a3d', psychic: '#e070ff', dark: '#8d7bb8', grass: '#5fd17a', ice: '#7fe3f0', fairy: '#ff8fb8' };
+  function eeveeColor(w, c) {
+    var ty = getTypesForCard(w, parseInt(c.dataset.formIdx || '0') || 0);
+    for (var i = 0; i < ty.length; i++) if (EEVEE_TYPE[ty[i]]) return EEVEE_TYPE[ty[i]];
+    return '#c99a62';
+  }
+  function eeveeAllFound() {
+    if (currentTab !== 'pokemon' || !items || !items.length) return false;
+    return EEVEE_IDS.every(function(pid) { for (var i = 0; i < items.length; i++) if (items[i].id === pid) return foundSet.has(i); return false; });
+  }
+  function eeveeEvolve(c, m, w) {
+    var o = fxBox(c, 'fx-evolve'); if (!o) return;
+    var col = eeveeColor(w, c), d = m * 70;
+    o.style.setProperty('--ev', col);
+    var html = '<i class="fx-plush" style="animation-delay:' + d + 'ms"></i><i class="fx-evoglow" style="animation-delay:' + d + 'ms"></i>';
+    for (var k = 0; k < 14; k++) {
+      var ang = (k / 14) * Math.PI * 2, dist = 30 + Math.random() * 26;
+      var dx = Math.cos(ang) * dist; if ((o._edgeR && dx > 0) || (o._edgeL && dx < 0)) dx = -dx * 0.4;
+      html += '<b class="fx-evospark" style="--dx:' + dx.toFixed(0) + 'px;--dy:' + (Math.sin(ang) * dist).toFixed(0) + 'px;animation-delay:' + (d + 430 + Math.random() * 60).toFixed(0) + 'ms">✦</b>';
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1400);
+  }
+  function eeveeCheckAll(matches) {
+    if (!matches.some(function(i) { return items[i] && EEVEE_IDS.indexOf(items[i].id) >= 0; })) return;
+    if (!eeveeAllFound()) return;
+    var sc = document.querySelector('.scene-eevee'); if (sc) sc.classList.add('all');
+    if (document.body.classList.contains('creator') && !creatorCelebrating()) return;
+    var p = document.createElement('div');
+    p.className = 'fx-parade';
+    p.innerHTML = EEVEE_IDS.map(function(pid, i) { return '<img src="' + SKIN_SPRITE + pid + '.png" alt="" style="animation-delay:' + (i * 0.09).toFixed(2) + 's">'; }).join('');
+    setTimeout(function() { document.body.appendChild(p); setTimeout(function() { p.remove(); }, 5200); }, 700);
+  }
+
   // Starters: the notebook page (chalkboard in dark mode) flips up, and the Pokémon's type sets the particles:
   // leaves for grass, embers for fire, bubbles for water, pencil stars for everything else.
   // Finishing a starter's evolution line stamps a badge on each card of the line.
@@ -7026,6 +7120,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'eevee') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c && items[idx]) eeveeEvolve(c, m, items[idx]); }); eeveeCheckAll(matches); return; }
     if (s.fx === 'starters') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c && items[idx]) startersFlip(c, m, items[idx]); }); return; }
     if (s.fx === 'mythical') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) mythicalPop(c, m, items[idx] && MYTHICAL_IDS.indexOf(items[idx].id) >= 0); }); return; }
     if (s.fx === 'creation') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) creationCollapse(c, m); }); creationPulseCheck(matches.length); return; }
@@ -7128,6 +7223,8 @@ const Q = (function() {
     setTimeout(function() { supporterRedeem(m[1], 'link'); }, 600);
   })();
   setTimeout(skinMaybeReveal, 2500);
+  // The saved run loads after the skin: restore the cycling Eeveelution prism once the board is ready
+  setTimeout(function() { var sc = document.querySelector('.scene-eevee'); if (sc && eeveeAllFound()) sc.classList.add('all'); }, 1500);
   // Pick up progress from before achievements existed (saved Full Pokédex game, past dailies), quietly
   // (only once, so a reset isn't undone by the saved game on the next visit)
   setTimeout(function() {
