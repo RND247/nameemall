@@ -673,8 +673,6 @@ body.creator-spot-on .toast-stack .toast:not(.family-toast):not(.toast-dupe):not
 body.creator-no-evo .toast-stack .evo-toast { display: none; }
 body.creator .creator-nav { display: flex; position: absolute; top: 8px; right: 12px; gap: 6px; opacity: 0.25; transition: opacity 0.2s; z-index: 3; }
 body.creator .creator-nav:hover, body.creator .creator-nav:focus-within { opacity: 1; }
-/* Nothing on stream that isn't the game: no install prompt */
-body.creator #set-install { display: none !important; }
 .creator-nav button { background: var(--bg-card); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 4px 10px; font-size: 0.8rem; cursor: pointer; }
 .creator-nav button.active { border-color: var(--accent); }
 body.creator.creator-spot-on .creator-spot:not(:empty) { display: flex; align-items: center; gap: 12px; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); max-width: 260px; }
@@ -889,7 +887,6 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
   .settings-panel.open { position: fixed; top: auto; bottom: 0; left: 0; right: 0; transform: none; width: auto; min-width: 0; max-height: 75vh; border-radius: 14px 14px 0 0; padding: 14px 0 calc(10px + env(safe-area-inset-bottom)); z-index: 160; }
   .settings-panel.open::before { content: ''; display: block; width: 36px; height: 4px; border-radius: 2px; background: var(--border); margin: -6px auto 8px; }
   body.panel-open .panel-backdrop { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 155; }
-  .install-btn .btn-text { display: none; }
   #action-bar .btn-sep { display: none; }
 }
 .grid { display: grid; gap: 3px; }
@@ -1530,36 +1527,17 @@ body.creator .kofi-nudge { display: none !important; }
   };
 </script>
 <script>
-  // Installable app (PWA): register the service worker and offer an Install button where the
-  // browser supports it (Chrome, Edge, Android). iOS users add it via Share, Add to Home Screen.
+  // Service worker (offline cache). No install button: the browser's own menu still offers it, and
+  // the automatic install banner on Android is suppressed so it doesn't get in the way of playing.
   if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
     window.addEventListener('load', function() {
       navigator.serviceWorker.register('/sw.js').catch(function() {});
     });
   }
-  (function() {
-    var deferred = null;
-    function section() { return document.getElementById('set-install'); }
-    window.addEventListener('beforeinstallprompt', function(e) {
-      e.preventDefault();
-      deferred = e;
-      var s = section(); if (s) s.hidden = false;
-    });
-    window.addEventListener('appinstalled', function() {
-      deferred = null;
-      var s = section(); if (s) s.hidden = true;
-      try { gtag('event', 'pwa_installed'); } catch(e) {}
-    });
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest || !e.target.closest('#set-install') || !deferred) return;
-      deferred.prompt();
-      deferred.userChoice.then(function(c) {
-        try { gtag('event', 'pwa_install_prompt', { outcome: c.outcome }); } catch(err) {}
-        deferred = null;
-        var s = section(); if (s) s.hidden = true;
-      });
-    });
-  })();
+  window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); });
+  window.addEventListener('appinstalled', function() {
+    try { gtag('event', 'pwa_installed'); } catch(e) {}
+  });
 </script>
 
 <nav class="tab-bar">
@@ -1667,7 +1645,6 @@ body.creator .kofi-nudge { display: none !important; }
         <div class="lang-list" id="lang-list"></div>
       </div>
     </div>
-    <button class="btn install-btn" id="set-install" hidden title="📲 Install app">📲<span class="btn-text"> Install app</span></button>
   </div>
   <div class="btn-row" id="duel-settings-bar" style="display:none;justify-content:center;">
     <div class="settings-wrap">
