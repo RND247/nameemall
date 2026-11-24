@@ -24,9 +24,17 @@ jobs:
         run: |
           if [ -z "$WEBHOOK" ]; then echo "DISCORD_RELEASES_WEBHOOK not set, skipping"; exit 0; fi
           V=$(tr -d '[:space:]' < version.txt)
-          NOTES=$(awk -v h="## v$V" '$0==h{on=1;next} on&&/^## /{exit} on' CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          SECTION=$(awk -v h="## v$V" '$0==h{on=1;next} on&&/^## /{exit} on' CHANGELOG.md | sed '/^[[:space:]]*$/d')
+          # "Image: path/in/repo.png" lines are attached as pictures (up to 4) instead of shown as text
+          NOTES=$(printf '%s\n' "$SECTION" | grep -v '^Image: ' || true)
           if [ -z "$NOTES" ]; then echo "No CHANGELOG.md section for v$V, skipping"; exit 0; fi
           LINK="<https://nameemall.com/?utm_source=discord&utm_medium=social&utm_campaign=release>"
           CONTENT=$(printf '🆕 **NameEmAll v%s**\n%s\n%s' "$V" "$NOTES" "$LINK" | head -c 1900)
           jq -n --arg c "$CONTENT" '{content: $c, allowed_mentions: {parse: []}}' > body.json
-          curl -sS --fail-with-body -H 'Content-Type: application/json' -d @body.json "$WEBHOOK"
+          ARGS=(-F "payload_json=<body.json")
+          n=0
+          while IFS= read -r img; do
+            f="${img#Image: }"
+            if [ -f "$f" ] && [ $n -lt 4 ]; then ARGS+=(-F "files[$n]=@$f"); n=$((n+1)); else echo "Skipping image: $f"; fi
+          done < <(printf '%s\n' "$SECTION" | grep '^Image: ' || true)
+          curl -sS --fail-with-body "${ARGS[@]}" "$WEBHOOK"

@@ -4,6 +4,7 @@ Player-facing release notes. When a version ships, the section whose heading mat
 version.txt is posted to the Discord #announcements channel automatically
 (.github/workflows/discord-release.yml). No section for a version means no post, so small
 fixes can ship quietly. Keep it short, plain and in players' words.
+To attach screenshots, add lines like "Image: press/screenshot.png" (a file in this repo, up to 4).
 
 ## v1.21.12
 
