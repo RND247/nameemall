@@ -451,7 +451,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "입력창 옆 콤보 미터",
   "Evolution line notices": "진화 라인 알림",
   "▶ Start a new run": "▶ 새 게임 시작",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ 멈춘 곳에서 이어집니다: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 아깝다! 💡 힌트에서 철자 도우미를 켜면 비슷한 철자도 정답으로 인정돼요",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "재미있었나요? Ko-fi에서 NameEmAll을 후원해 주세요 ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "완주했어요! NameEmAll이 즐거웠다면 Ko-fi에서 이상한사탕 하나로 무료 운영을 도와주세요 ☕",

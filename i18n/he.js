@@ -438,7 +438,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "מד קומבו ליד תיבת השם",
   "Evolution line notices": "הודעות על שרשראות אבולוציה",
   "▶ Start a new run": "▶ להתחיל ריצה חדשה",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ הריצה שלכם מחכה בדיוק איפה שעצרתם: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ כמעט! הפעילו את העזרה באיות תחת 💡 רמז כדי לקבל שמות כמעט נכונים",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "נהניתם? תמכו ב-NameEmAll ב-Ko-fi ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "סיימתם! אם נהניתם מ-NameEmAll, סוכריה נדירה ב-Ko-fi עוזרת לשמור עליו חינמי ☕",

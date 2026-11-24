@@ -5850,13 +5850,6 @@ const Q = (function() {
   }
 
   var pokeResumeNote = false;
-  function pokeResumeToast() {
-    var el = document.createElement('div');
-    el.className = 'toast toast-resume';
-    el.textContent = t('▶ Your run is right where you left it: {count} / {total}', { count: foundSet.size, total: items.length });
-    $toasts.appendChild(el);
-    setTimeout(function() { el.remove(); }, 4000);
-  }
   function switchTab(tab, confirmed) {
     if (tab === 'achievements') { achOpen(); return; }
     if (tab === currentTab && items.length) return;
@@ -6056,7 +6049,13 @@ const Q = (function() {
           }
         }
       }
-      if (currentTab === 'pokemon' && pokeResumeNote && !givenUp && foundSet.size < items.length) pokeResumeToast();
+      // Coming back to a run left mid-game: show it paused, same as the ⏸ button
+      if (currentTab === 'pokemon' && pokeResumeNote && !givenUp && foundSet.size < items.length) {
+        paused = true;
+        $input.disabled = true;
+        $('pause-overlay').classList.add('active');
+        setPauseBtn(true);
+      }
       // A finished game comes back as its final board; the results were already shown when it ended
       if (givenUp) {
         $input.disabled = true;

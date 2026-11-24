@@ -477,7 +477,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "入力欄の横にコンボメーター",
   "Evolution line notices": "進化ライン完成の通知",
   "▶ Start a new run": "▶ 新しく始める",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ 中断したところから続きです: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ おしい！ 💡 ヒントのスペル補助をオンにすると、つづりが近い名前も正解になります",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "楽しめましたか？ Ko-fiでNameEmAllを応援する ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "クリアおめでとう！ NameEmAllを楽しんでもらえたなら、Ko-fiでふしぎなアメを1つ。無料で続けるための力になります ☕",

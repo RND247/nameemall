@@ -451,7 +451,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "Combo-Anzeige neben dem Eingabefeld",
   "Evolution line notices": "Hinweise zu Entwicklungsreihen",
   "▶ Start a new run": "▶ Neue Runde starten",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ Deine Runde ist genau da, wo du aufgehört hast: {count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ Knapp daneben! Schalte unter 💡 Hinweis die Rechtschreibhilfe ein, damit fast richtige Namen zählen",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "Hat's Spaß gemacht? Unterstütze NameEmAll auf Ko-fi ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "Geschafft! Wenn dir NameEmAll Spaß gemacht hat, hilft ein Sonderbonbon auf Ko-fi, es kostenlos zu halten ☕",

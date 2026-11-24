@@ -451,7 +451,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "輸入框旁的連擊計量表",
   "Evolution line notices": "進化線完成通知",
   "▶ Start a new run": "▶ 開始新的一局",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ 進度都還在：{count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 差一點！在 💡 提示中開啟拼字輔助，拼法相近的名字也會算對",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "玩得開心嗎？在 Ko-fi 上支持 NameEmAll ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "你完成了！如果 NameEmAll 讓你玩得開心，在 Ko-fi 請一顆神奇糖果，幫助它保持免費 ☕",

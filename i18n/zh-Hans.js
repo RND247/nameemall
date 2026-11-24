@@ -438,7 +438,6 @@ window.NEA_UI = {
   "Combo meter beside the name box": "输入框旁的连击计量表",
   "Evolution line notices": "进化线完成通知",
   "▶ Start a new run": "▶ 开始新的一局",
-  "▶ Your run is right where you left it: {count} / {total}": "▶ 进度都还在：{count} / {total}",
   "✏️ So close! Turn on the Spelling Assistant under 💡 Hint to accept near-misses": "✏️ 差一点！在 💡 提示中打开拼字辅助，拼法相近的名字也会算对",
   "Enjoyed it? Support NameEmAll on Ko-fi ☕": "玩得开心吗？在 Ko-fi 上支持 NameEmAll ☕",
   "You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕": "你完成了！如果 NameEmAll 让你玩得开心，在 Ko-fi 请一颗神奇糖果，帮助它保持免费 ☕",
