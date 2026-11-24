@@ -236,6 +236,56 @@ body.skin-fx-candy[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { 
 body.skin-fx-candy .region-section.region-complete { border-color: #b49cff; box-shadow: 0 0 18px rgba(180,156,255,.5), inset 0 0 22px rgba(255,143,216,.18); }
 body.skin-fx-candy .region-header { color: #c9b8ff; }
 body.skin-fx-candy.light .region-header { color: #5b45c9; }
+/* ── Skin FX: Legendary Birds (sky with clouds, frosted-glass tiles, feather reveal, ice/lightning/ember combos) ── */
+body.skin-fx-birds:not(.light) { --bg: #0c1a33; background: #0c1a33; }
+body.skin-fx-birds.light { --bg: #e6f4ff; background: #e6f4ff; }
+.scene-birds { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-birds .sky { position: absolute; inset: 0; background: linear-gradient(180deg, #091428 0%, #12284d 35%, #24497c 70%, #3c6aa3 100%); }
+body.light .scene-birds .sky { background: linear-gradient(180deg, #8fcaf5 0%, #b9e0fb 40%, #e3f3ff 80%, #fff6e6 100%); }
+.scene-birds i { position: absolute; left: -40vw; height: 9vw; min-height: 50px; border-radius: 50%; filter: blur(14px);
+  background: radial-gradient(ellipse at 50% 60%, rgba(200,220,255,.55), rgba(200,220,255,0) 70%); animation: fx-cloud linear infinite; }
+body.light .scene-birds i { background: radial-gradient(ellipse at 50% 60%, rgba(255,255,255,.95), rgba(255,255,255,0) 70%); }
+@keyframes fx-cloud { to { transform: translateX(150vw); } }
+body.skin-fx-birds header, body.skin-fx-birds .tab-bar { background: rgba(12,26,51,0.6); }
+body.skin-fx-birds.light header, body.skin-fx-birds.light .tab-bar { background: rgba(230,244,255,0.7); }
+body.skin-fx-birds .card.unrevealed, .fx-frost {
+  background: linear-gradient(135deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.06) 45%, rgba(255,255,255,.12) 100%),
+    radial-gradient(circle at 80% 15%, rgba(255,255,255,.25), transparent 30%), rgba(150,190,240,.10);
+}
+body.skin-fx-birds .card.unrevealed { border: 1px solid rgba(255,255,255,.28); border-radius: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 4px 14px rgba(0,10,40,.25); }
+body.skin-fx-birds.light .card.unrevealed, body.light .fx-frost {
+  background: linear-gradient(135deg, rgba(255,255,255,.75) 0%, rgba(255,255,255,.4) 45%, rgba(255,255,255,.6) 100%),
+    radial-gradient(circle at 80% 15%, rgba(255,255,255,.9), transparent 30%), rgba(120,170,230,.18);
+}
+body.skin-fx-birds.light .card.unrevealed { border-color: rgba(80,130,200,.3); box-shadow: inset 0 1px 0 #fff, 0 4px 14px rgba(40,90,160,.12); }
+body.skin-fx-birds .card.unrevealed .poke-placeholder { color: rgba(255,255,255,.75) !important; opacity: 1 !important; text-shadow: 0 0 12px rgba(180,220,255,.6); }
+body.skin-fx-birds.light .card.unrevealed .poke-placeholder { color: rgba(40,90,160,.45) !important; text-shadow: 0 1px 0 #fff; }
+body.skin-fx-birds .card.unrevealed:nth-child(3n+1) .poke-placeholder { text-shadow: 0 0 12px rgba(127,227,240,.7); }
+body.skin-fx-birds .card.unrevealed:nth-child(3n+2) .poke-placeholder { text-shadow: 0 0 12px rgba(255,210,63,.6); }
+body.skin-fx-birds .card.unrevealed:nth-child(3n) .poke-placeholder { text-shadow: 0 0 12px rgba(255,122,61,.6); }
+body.skin-fx-birds .card.just-found { animation: none; }
+body.skin-fx-birds[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(255,255,255,.35); border-radius: 10px; box-shadow: 0 4px 14px rgba(0,10,40,.2); }
+body.skin-fx-birds .region-section.region-complete { border-color: #ffd23f; box-shadow: 0 0 16px rgba(127,227,240,.45), 0 0 30px rgba(255,122,61,.25), inset 0 0 20px rgba(255,210,63,.18); }
+body.skin-fx-birds .region-header { color: #a8e6ff; }
+body.skin-fx-birds.light .region-header { color: #1f5fa8; }
+.fx-sky, .fx-burst { position: absolute; pointer-events: none; z-index: 150; }
+.fx-sky .fx-frost { position: absolute; inset: 0; border-radius: 10px; animation: fx-defrost .45s ease-in .12s forwards; }
+@keyframes fx-defrost { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 0 100%); } }
+.fx-sky .fx-trail { position: absolute; left: -10%; top: 50%; width: 120%; height: 3px; border-radius: 3px; transform: rotate(-24deg); opacity: 0;
+  background: linear-gradient(90deg, transparent, var(--bird), #fff); box-shadow: 0 0 10px var(--bird); animation: fx-trail .5s ease-out .05s forwards; }
+@keyframes fx-trail { 0% { opacity: 0; clip-path: inset(0 100% 0 0); } 40% { opacity: 1; } 100% { opacity: 0; clip-path: inset(0 0 0 0); } }
+.fx-sky .fx-feather { position: absolute; left: -30%; top: 70%; width: 46%; filter: drop-shadow(0 0 6px currentColor); animation: fx-feather .6s cubic-bezier(.3,.1,.3,1) forwards; }
+.fx-sky .fx-feather svg { display: block; width: 100%; height: auto; }
+@keyframes fx-feather { 0% { transform: translate(0,0) rotate(-24deg); opacity: 0; } 15% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(260%, -140%) rotate(-34deg); opacity: 0; } }
+.fx-burst .fx-ice { position: absolute; left: 50%; top: 50%; width: 5px; height: 12px; margin: -6px 0 0 -2px; background: linear-gradient(#fff, #7fe3f0); clip-path: polygon(50% 0, 100% 100%, 0 100%); opacity: 0; animation: fx-ice .8s ease-out forwards; }
+@keyframes fx-ice { 0% { opacity: 1; transform: rotate(var(--rot)) translate(0,0); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); } }
+.fx-burst .fx-ember { position: absolute; left: 50%; top: 60%; width: 5px; height: 5px; border-radius: 50%; background: #ffb14a; box-shadow: 0 0 8px #ff7a3d; opacity: 0; animation: fx-ember 1s ease-out forwards; }
+@keyframes fx-ember { 0% { opacity: 1; transform: translate(0,0) scale(1); } 50% { transform: translate(calc(var(--dx) * .5 + 6px), calc(var(--dy) * .5)) scale(.9); } 100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) - 20px)) scale(.3); } }
+.fx-burst .fx-bolt { position: absolute; left: 50%; top: -80%; width: 40%; margin-left: -20%; fill: #ffe066; filter: drop-shadow(0 0 8px #ffd23f) drop-shadow(0 0 2px #fff); opacity: 0; animation: fx-bolt .5s ease-out forwards; }
+@keyframes fx-bolt { 0% { opacity: 0; transform: translateY(-20px) scaleY(.6); } 15% { opacity: 1; transform: none; } 30% { opacity: .4; } 45% { opacity: 1; } 100% { opacity: 0; } }
+.fx-flash { position: fixed; inset: 0; z-index: 140; pointer-events: none; background: radial-gradient(circle at 50% 40%, rgba(255,240,170,.22), rgba(255,240,170,0) 70%); animation: fx-flash .35s ease-out forwards; }
+@keyframes fx-flash { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .scene-birds i { animation: none; } }
 body[class*="skin-fx-"] { overflow-x: clip; }
 .fx-wrap { position: absolute; pointer-events: none; z-index: 150; }
 .fx-wrap .fx-wrapper { position: absolute; top: 0; bottom: 0; width: 50%; border-radius: 12px; }
@@ -6358,7 +6408,7 @@ const Q = (function() {
       col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
     { id: 'starters', name: 'Starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
       col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
-    { id: 'birds', name: 'Legendary Birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
+    { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
     { id: 'creation', name: 'Creation Trio', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
       col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
@@ -6429,6 +6479,12 @@ const Q = (function() {
         var motes = '';
         for (var m = 0; m < 18; m++) motes += '<b style="left:' + ((m * 37) % 100) + '%;top:' + ((m * 53) % 100) + '%;animation-delay:-' + (m * 1.7).toFixed(1) + 's;animation-duration:' + (14 + (m % 5) * 3) + 's"></b>';
         au.innerHTML = '<div class="strata"></div>' + motes;
+      } else if (s.fx === 'birds') {
+        // Open sky with soft clouds drifting at different heights and speeds
+        au.className = 'skin-aurora scene-birds';
+        var clouds = '';
+        for (var q = 0; q < 7; q++) clouds += '<i style="top:' + (6 + q * 13) + '%;width:' + (28 + (q * 17) % 30) + 'vw;animation-duration:' + (70 + q * 23) + 's;animation-delay:-' + (q * 19) + 's;opacity:' + (0.35 + (q % 3) * 0.15).toFixed(2) + '"></i>';
+        au.innerHTML = '<div class="sky"></div>' + clouds;
       } else if (s.fx === 'candy') {
         // Slow candy stripes with a few Rare Candies floating up
         au.className = 'skin-aurora scene-candy';
@@ -6537,6 +6593,55 @@ const Q = (function() {
     setTimeout(function() { o.remove(); }, 1100);
   }
 
+  // Legendary Birds: a feather streaks across the card and wipes the frost off the glass.
+  // Fast streaks (3, 6, 9... names within 4 s of each other) add a burst from one of the three birds.
+  var BIRD_COLORS = ['#7fe3f0', '#ffd23f', '#ff7a3d'];
+  var BIRD_FEATHER = '<svg viewBox="0 0 40 12" aria-hidden="true"><path d="M1 6 Q14 -1 39 5 Q14 13 1 6Z" fill="currentColor"/><path d="M3 6 L38 5.2" stroke="rgba(255,255,255,.75)" stroke-width=".9"/></svg>';
+  var birdsRun = { last: 0, n: 0, k: 0 };
+  function fxBox(c, cls) {
+    var r = c.getBoundingClientRect();
+    if (!r.width) return null;
+    var o = document.createElement('div');
+    o.className = cls;
+    o.style.left = (r.left + window.scrollX) + 'px'; o.style.top = (r.top + window.scrollY) + 'px';
+    o.style.width = r.width + 'px'; o.style.height = r.height + 'px';
+    o._edgeR = r.right > window.innerWidth - 70; o._edgeL = r.left < 70;
+    return o;
+  }
+  function birdsStreak(c, m) {
+    var o = fxBox(c, 'fx-sky'); if (!o) return;
+    var col = BIRD_COLORS[(birdsRun.k++) % 3];
+    o.style.setProperty('--bird', col);
+    o.innerHTML = '<i class="fx-frost"></i><i class="fx-trail"></i><span class="fx-feather" style="color:' + col + '">' + BIRD_FEATHER + '</span>';
+    if (m) o.style.animationDelay = (m * 70) + 'ms';
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 900);
+  }
+  function birdsCombo(matches) {
+    var now = Date.now(), prev = birdsRun.n;
+    birdsRun.n = now - birdsRun.last < 4000 ? birdsRun.n + matches.length : matches.length;
+    birdsRun.last = now;
+    if (Math.floor(birdsRun.n / 3) === Math.floor(prev / 3) || birdsRun.n < 3) return;
+    var c = $('c' + matches[matches.length - 1]); if (!c) return;
+    var kind = Math.floor(birdsRun.n / 3) % 3, o = fxBox(c, 'fx-burst'); if (!o) return;
+    var html = '';
+    if (kind === 1) {
+      html = '<svg class="fx-bolt" viewBox="0 0 30 60" aria-hidden="true"><path d="M18 0 L4 34 H14 L8 60 L27 22 H16 L24 0Z"/></svg>';
+      var fl = document.createElement('div'); fl.className = 'fx-flash'; document.body.appendChild(fl);
+      setTimeout(function() { fl.remove(); }, 400);
+    } else {
+      for (var k = 0; k < 12; k++) {
+        var ang = kind === 0 ? (k / 12) * Math.PI * 2 : -Math.PI / 2 + (Math.random() - 0.5) * 1.4;
+        var d = kind === 0 ? 34 + Math.random() * 26 : 40 + Math.random() * 50;
+        var dx = Math.cos(ang) * d; if ((o._edgeR && dx > 0) || (o._edgeL && dx < 0)) dx = -dx * 0.5;
+        html += '<b class="' + (kind === 0 ? 'fx-ice' : 'fx-ember') + '" style="--dx:' + dx.toFixed(0) + 'px;--dy:' + (Math.sin(ang) * d).toFixed(0) + 'px;--rot:' + (ang * 57.3 + 90).toFixed(0) + 'deg;animation-delay:' + (Math.random() * 120).toFixed(0) + 'ms"></b>';
+      }
+    }
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1200);
+  }
+
   // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
   var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
   function candyUnwrap(c, m) {
@@ -6580,6 +6685,7 @@ const Q = (function() {
     var s = skinById(skinCurrent);
     if (!s) return;
     if (s.fx === 'fossil') { matches.forEach(function(idx) { var c = $('c' + idx); if (c) fossilBreak(c); }); return; }
+    if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
     if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
     matches.forEach(function(idx, m) {
       var c = $('c' + idx);
