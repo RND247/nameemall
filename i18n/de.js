@@ -458,4 +458,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll ist kostenlos, ohne Werbung und von einer einzigen Person gemacht. Gefällt es dir? Unterstütze es auf Ko-fi ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ Unterstützer-Wand: Sei die erste Person! Hinterlasse bei deiner Unterstützung auf Ko-fi einen Namen, dann steht er hier.",
   "☕ Thank you to our supporters: {names}": "☕ Danke an alle, die uns unterstützen: {names}",
+  "Rare Candy": "Sonderbonbon",
+  "☕ Ko-fi supporters": "☕ Ko-fi-Unterstützer",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ Unterstützer-Skin: Unterstütze NameEmAll auf Ko-fi und du bekommst einen Freischaltcode.",
+  "Enter code": "Code eingeben",
+  "Unlock": "Freischalten",
+  "That code didn't work. Check it and try again.": "Dieser Code hat nicht funktioniert. Prüfe ihn und versuche es erneut.",
+  "Thank you for supporting NameEmAll ☕": "Danke, dass du NameEmAll unterstützt ☕",
 };

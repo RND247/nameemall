@@ -484,4 +484,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAllは広告なしの無料ゲームで、一人で作っています。楽しんでいただけたら、Ko-fiで応援してください ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ サポーター一覧：最初の一人になりませんか？ Ko-fiで応援するときに名前を残すと、ここに掲載されます。",
   "☕ Thank you to our supporters: {names}": "☕ 応援してくださった皆さん、ありがとうございます：{names}",
+  "Rare Candy": "ふしぎなアメ",
+  "☕ Ko-fi supporters": "☕ Ko-fiサポーター限定",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ サポーター限定スキン：Ko-fiでNameEmAllを応援すると、解除コードが届きます。",
+  "Enter code": "コードを入力",
+  "Unlock": "解除",
+  "That code didn't work. Check it and try again.": "コードが正しくありません。確認してもう一度お試しください。",
+  "Thank you for supporting NameEmAll ☕": "NameEmAllを応援してくれてありがとう ☕",
 };

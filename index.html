@@ -148,6 +148,11 @@ body.skin-on .card.found:nth-child(3n+3) { animation-delay: -4.5s; }
 .skin-spark { position: fixed; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; pointer-events: none; z-index: 150; animation: skin-spark .65s ease-out forwards; }
 @keyframes skin-spark { to { transform: translate(var(--dx), var(--dy)) scale(.2); opacity: 0; } }
 /* Picker */
+.sup-form { padding: 6px 0 2px; font-size: .8rem; }
+.sup-form a { color: #ff5e5b; }
+.sup-row { display: flex; gap: 6px; margin-top: 6px; }
+.sup-row input { flex: 1; min-width: 0; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--input-bg, var(--bg-card)); color: var(--text); font: inherit; text-transform: uppercase; letter-spacing: .05em; }
+.sup-msg { color: #ff7a7a; min-height: 1em; margin: 4px 0 0; }
 .skin-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 4px 12px 6px; }
 .skin-chip { position: relative; height: 70px; border-radius: 12px; border: 2px solid var(--border); overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; padding: 6px 8px; text-align: left; font: inherit; background: var(--bg-card); }
 .skin-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -162,7 +167,7 @@ body.skin-on .card.found:nth-child(3n+3) { animation-delay: -4.5s; }
 .skin-chip .lk { position: absolute; top: 5px; right: 7px; font-size: .7rem; }
 .skin-chip .pg { position: relative; height: 4px; background: rgba(255,255,255,.18); border-radius: 2px; margin-top: 4px; width: 60%; }
 .skin-chip .pg span { display: block; height: 100%; border-radius: 2px; background: var(--chip-accent, #f0a050); }
-.skin-chip .pt { position: relative; font-size: .58rem; color: rgba(255,255,255,.8); margin-top: 2px; }
+.skin-chip .pt { display: block; position: relative; font-size: .58rem; color: rgba(255,255,255,.8); margin-top: 2px; }
 .skin-hint { font-size: .7rem; color: var(--text-dim); padding: 0 12px 8px; min-height: 1em; line-height: 1.35; }
 /* Unlock reveal */
 .skin-unlock { position: fixed; inset: 0; z-index: 300; background: rgba(5,3,10,.82); display: flex; align-items: center; justify-content: center; padding: 16px; }
@@ -6255,11 +6260,33 @@ const Q = (function() {
     { id: 'mythical', name: 'Mythicals', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
       col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
     { id: 'ultra', name: 'Ultra Beasts', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
-      col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] }
+      col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] },
+    // Supporter skin: unlocked with the code in the Ko-fi thank-you message, not by playing
+    { id: 'candy', name: 'Rare Candy', supporter: true, mascot: '../items/rare-candy', line: [440, 113, '../items/rare-candy', 242, 531], accent: '#8f7bff',
+      col: ['#7a6cff', '#5b8cff', '#b49cff', '#4fc3ff', '#e8e0ff', '#6a4bd0', '#9ad0ff', '#c9a0ff', '#ff8fd8'] }
   ];
   var SKIN_SPOTS = [[2, 4], [55, 0], [78, 38], [30, 55], [-6, 62], [62, 70], [40, 20], [85, 5], [12, 30]];
   function skinById(id) { for (var i = 0; i < SKINS.length; i++) if (SKINS[i].id === id) return SKINS[i]; return null; }
-  function skinUnlocked(s) { return !!achUnlocked['set_' + s.id]; }
+  function skinUnlocked(s) { return s.supporter ? supporterHas() : !!achUnlocked['set_' + s.id]; }
+  // Supporter code check. Only a salted hash lives here; the code itself is in the Ko-fi thank-you message.
+  // nea_supporter moves with device transfer (nea_ prefix) and survives an achievements reset.
+  var SUPPORTER_HASH = '1861c6a75b8ae26e238d3daa619bb15443c465a41fe76a0a5181cfdcd84f813f';
+  function supporterHas() { try { return !!localStorage.getItem('nea_supporter'); } catch(e) { return false; } }
+  async function supporterRedeem(raw, from) {
+    var norm = String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!norm || !(window.crypto && crypto.subtle)) return false;
+    var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('nameemall-supporter:' + norm));
+    var hex = Array.prototype.map.call(new Uint8Array(buf), function(b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    if (hex !== SUPPORTER_HASH) { track('supporter_code', { result: 'wrong', from: from }); return false; }
+    var first = !supporterHas();
+    try { localStorage.setItem('nea_supporter', String(Date.now())); } catch(e) {}
+    track('supporter_code', { result: first ? 'unlocked' : 'again', from: from });
+    var sk = skinById('candy');
+    if (skinSeen.indexOf('candy') < 0) { skinSeen.push('candy'); try { localStorage.setItem('nea_skin_seen', JSON.stringify(skinSeen)); } catch(e) {} }
+    skinRenderPicker();
+    if (!document.querySelector('.skin-unlock')) skinShowReveal(sk, 0);
+    return true;
+  }
   function skinCalm() { return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); }
   function skinImg(id, mascot, delay) {
     return '<img src="' + SKIN_SPRITE + id + '.png" alt=""' + (mascot ? ' class="mascot"' : '') + ' style="animation-delay:-' + delay + 's" loading="lazy">';
@@ -6317,6 +6344,7 @@ const Q = (function() {
         '<img src="' + SKIN_SPRITE + s.mascot + '.png" alt="" loading="lazy">' +
         (open ? '' : '<span class="lk">🔒</span>') +
         '<span><span class="nm">' + esc(t(s.name)) + '</span>' +
+        (!open && s.supporter ? '<span class="pt">' + esc(t('☕ Ko-fi supporters')) + '</span>' : '') +
         (!open && a ? '<span class="pg"><span style="width:' + Math.round(a.p[0] * 100 / a.p[1]) + '%"></span></span>' +
           '<span class="pt">' + esc(t('{count} / {total} named', { count: a.p[0], total: a.p[1] })) + '</span>' : '') +
         '</span></button>';
@@ -6329,6 +6357,7 @@ const Q = (function() {
     if (!chip) return;
     var id = chip.getAttribute('data-skin');
     var s = id ? skinById(id) : null;
+    if (s && s.supporter && !skinUnlocked(s)) { supporterForm(); return; }
     if (s && !skinUnlocked(s)) {
       var a = achList().filter(function(x) { return x.id === 'set_' + id; })[0];
       $('skin-hint').textContent = t('🔒 To unlock: {desc}', { desc: a ? achDesc(a) : '' });
@@ -6338,6 +6367,24 @@ const Q = (function() {
     skinApply(id);
     track('skin_change', { skin: id || 'classic', from: 'settings' });
   });
+
+  function supporterForm() {
+    var hint = $('skin-hint'); if (!hint) return;
+    var esc = function(x) { var d = document.createElement('div'); d.textContent = x; return d.innerHTML; };
+    hint.innerHTML = '<div class="sup-form"><p>' + esc(t('☕ Supporter skin: support NameEmAll on Ko-fi and you\'ll get an unlock code.')) +
+      ' <a href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" data-kofi="supporter_skin">Ko-fi</a></p>' +
+      '<div class="sup-row"><input id="sup-code" maxlength="24" autocomplete="off" spellcheck="false" placeholder="' + esc(t('Enter code')) + '">' +
+      '<button type="button" class="btn" id="sup-go">' + esc(t('Unlock')) + '</button></div><p class="sup-msg" id="sup-msg"></p></div>';
+    kofiTrackClicks(hint);
+    var go = function() {
+      supporterRedeem($('sup-code').value, 'settings').then(function(ok) {
+        if (!ok && $('sup-msg')) $('sup-msg').textContent = t('That code didn\'t work. Check it and try again.');
+      });
+    };
+    $('sup-go').addEventListener('click', go);
+    $('sup-code').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+    $('sup-code').focus();
+  }
 
   function skinSparkle(matches) {
     if (!skinCurrent || skinCalm()) return;
@@ -6388,7 +6435,7 @@ const Q = (function() {
     u.querySelector('.kick').textContent = t('✨ New skin unlocked');
     u.querySelector('.kick').style.color = s.accent;
     u.querySelector('h2').textContent = t(s.name);
-    u.querySelector('.why').textContent = a ? achDesc(a) : '';
+    u.querySelector('.why').textContent = s.supporter ? t('Thank you for supporting NameEmAll ☕') : (a ? achDesc(a) : '');
     if (more > 0) u.querySelector('.more').textContent = t('+{count} more skins unlocked', { count: more });
     var tryBtn = u.querySelector('.try'), later = u.querySelector('.later');
     tryBtn.textContent = t('Try it on');
@@ -6431,6 +6478,13 @@ const Q = (function() {
 
   achReady = true;
   skinApply(skinCurrent);
+  // Link from the Ko-fi thank-you message: nameemall.com/#supporter=CODE (a fragment, so it never reaches analytics)
+  (function() {
+    var m = /^#supporter=([A-Za-z0-9-]{4,30})$/.exec(location.hash || '');
+    if (!m) return;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch(e) {}
+    setTimeout(function() { supporterRedeem(m[1], 'link'); }, 600);
+  })();
   setTimeout(skinMaybeReveal, 2500);
   // Pick up progress from before achievements existed (saved Full Pokédex game, past dailies), quietly
   // (only once, so a reset isn't undone by the saved game on the next visit)

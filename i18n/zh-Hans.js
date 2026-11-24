@@ -445,4 +445,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll 免费、没有广告，由一个人制作。喜欢的话，欢迎在 Ko-fi 上支持 ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ 支持者名单：成为第一位吧！在 Ko-fi 支持时留下名字，就会列在这里。",
   "☕ Thank you to our supporters: {names}": "☕ 感谢我们的支持者：{names}",
+  "Rare Candy": "神奇糖果",
+  "☕ Ko-fi supporters": "☕ Ko-fi 支持者专属",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ 支持者皮肤：在 Ko-fi 支持 NameEmAll，就会收到解锁码。",
+  "Enter code": "输入代码",
+  "Unlock": "解锁",
+  "That code didn't work. Check it and try again.": "这个代码无效，请检查后再试一次。",
+  "Thank you for supporting NameEmAll ☕": "感谢你支持 NameEmAll ☕",
 };

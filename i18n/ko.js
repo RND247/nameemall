@@ -458,4 +458,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll은 광고 없는 무료 게임이고, 한 사람이 만들고 있어요. 즐겁게 하셨다면 Ko-fi에서 후원해 주세요 ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ 후원자 명단: 첫 번째 후원자가 되어 주세요! Ko-fi에서 후원할 때 이름을 남기면 여기에 올라가요.",
   "☕ Thank you to our supporters: {names}": "☕ 후원해 주신 분들께 감사드립니다: {names}",
+  "Rare Candy": "이상한사탕",
+  "☕ Ko-fi supporters": "☕ Ko-fi 후원자 전용",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ 후원자 스킨: Ko-fi에서 NameEmAll을 후원하면 잠금 해제 코드를 받아요.",
+  "Enter code": "코드 입력",
+  "Unlock": "잠금 해제",
+  "That code didn't work. Check it and try again.": "코드가 맞지 않아요. 확인하고 다시 시도해 주세요.",
+  "Thank you for supporting NameEmAll ☕": "NameEmAll을 후원해 주셔서 감사합니다 ☕",
 };

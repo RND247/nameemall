@@ -458,4 +458,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll 免費、沒有廣告，由一個人製作。喜歡的話，歡迎在 Ko-fi 上支持 ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ 支持者名單：成為第一位吧！在 Ko-fi 支持時留下名字，就會列在這裡。",
   "☕ Thank you to our supporters: {names}": "☕ 感謝我們的支持者：{names}",
+  "Rare Candy": "神奇糖果",
+  "☕ Ko-fi supporters": "☕ Ko-fi 支持者專屬",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ 支持者造型：在 Ko-fi 支持 NameEmAll，就會收到解鎖碼。",
+  "Enter code": "輸入代碼",
+  "Unlock": "解鎖",
+  "That code didn't work. Check it and try again.": "這個代碼無效，請檢查後再試一次。",
+  "Thank you for supporting NameEmAll ☕": "感謝你支持 NameEmAll ☕",
 };

@@ -445,4 +445,11 @@ window.NEA_UI = {
   "NameEmAll is free, with no ads, and made by one person. Enjoying it? Support it on Ko-fi ☕": "NameEmAll חינמי, בלי פרסומות, ונבנה על ידי אדם אחד. נהנים? תמכו בו ב-Ko-fi ☕",
   "☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.": "☕ קיר התומכים: היו הראשונים! השאירו שם כשאתם תומכים ב-Ko-fi והוא יופיע כאן.",
   "☕ Thank you to our supporters: {names}": "☕ תודה לתומכים שלנו: {names}",
+  "Rare Candy": "סוכריה נדירה",
+  "☕ Ko-fi supporters": "☕ לתומכי Ko-fi",
+  "☕ Supporter skin: support NameEmAll on Ko-fi and you'll get an unlock code.": "☕ סקין תומכים: תמכו ב-NameEmAll ב-Ko-fi ותקבלו קוד פתיחה.",
+  "Enter code": "הזינו קוד",
+  "Unlock": "פתיחה",
+  "That code didn't work. Check it and try again.": "הקוד לא עבד. בדקו אותו ונסו שוב.",
+  "Thank you for supporting NameEmAll ☕": "תודה שתמכתם ב-NameEmAll ☕",
 };
