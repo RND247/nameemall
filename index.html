@@ -6519,6 +6519,8 @@ const Q = (function() {
     if (!fresh.length) return;
     fresh.forEach(function(a) {
       track('achievement_unlock', { achievement_id: a.id });
+      // how: play = earned now; earlier = progress from before this skin existed, counted on load
+      if (a.id.indexOf('set_') === 0 && skinById(a.id.slice(4))) track('skin_unlocked', { skin: a.id.slice(4), how: silent ? 'earlier' : 'play' });
       if (!silent) achToast(a);
     });
     achUpdateBadge();
@@ -6726,6 +6728,7 @@ const Q = (function() {
     var first = !supporterHas();
     try { localStorage.setItem('nea_supporter', String(Date.now())); } catch(e) {}
     track('supporter_code', { result: first ? 'unlocked' : 'again', from: from });
+    if (first) track('skin_unlocked', { skin: 'candy', how: 'supporter' });
     var sk = skinById('candy');
     if (skinSeen.indexOf('candy') < 0) { skinSeen.push('candy'); try { localStorage.setItem('nea_skin_seen', JSON.stringify(skinSeen)); } catch(e) {} }
     skinRenderPicker();
