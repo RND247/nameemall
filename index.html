@@ -6690,7 +6690,7 @@ const Q = (function() {
   // header and the unlock screen, mascot in the middle. Saved as nea_skin, so device transfer carries it.
   var SKIN_SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
   var SKINS = [
-    { id: 'pikachu', name: 'Pikachu', fx: 'pikachu', mascot: 25, popup: [25], line: [311, 417, 587, 172, 25, 26, 702, 777, 921], accent: '#ffd23f',
+    { id: 'pikachu', name: 'Pikachu', fx: 'pikachu', mascot: 25, line: [25], accent: '#ffd23f',
       col: ['#ffd23f', '#ff5a4e', '#f7c21d', '#ffe066', '#ffb000', '#8a5a2b', '#fff3a0', '#e8a33d', '#ff7a6e'] },
     { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
@@ -7230,7 +7230,7 @@ const Q = (function() {
     u.className = 'skin-unlock';
     u.setAttribute('role', 'dialog'); u.setAttribute('aria-modal', 'true');
     u.innerHTML = '<div class="box"><div class="glow"></div><div class="kick"></div><h2></h2><div class="why"></div>' +
-      '<div class="row">' + (s.popup || s.line).map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.33).toFixed(2)); }).join('') + '</div>' +
+      '<div class="row">' + s.line.map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.33).toFixed(2)); }).join('') + '</div>' +
       (more > 0 ? '<div class="more"></div>' : '') +
       '<div class="btns"><button type="button" class="try"></button><button type="button" class="later"></button></div></div>';
     u.querySelector('.glow').style.background = 'radial-gradient(circle at 30% 20%,' + s.col[3] + '55,transparent 45%),radial-gradient(circle at 75% 25%,' + s.col[1] + '55,transparent 45%),' +
