@@ -464,5 +464,9 @@ window.NEA_UI = {
   "Unlock": "잠금 해제",
   "That code didn't work. Check it and try again.": "코드가 맞지 않아요. 확인하고 다시 시도해 주세요.",
   "Thank you for supporting NameEmAll ☕": "NameEmAll을 후원해 주셔서 감사합니다 ☕",
+  "Pikachu": "피카츄",
+  "Pika Pika!": "피카피카!",
+  "Name Pikachu": "피카츄 맞히기",
+  "Pika!": "피카!",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

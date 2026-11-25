@@ -464,5 +464,9 @@ window.NEA_UI = {
   "Unlock": "解鎖",
   "That code didn't work. Check it and try again.": "這個代碼無效，請檢查後再試一次。",
   "Thank you for supporting NameEmAll ☕": "感謝你支持 NameEmAll ☕",
+  "Pikachu": "皮卡丘",
+  "Pika Pika!": "皮卡皮卡！",
+  "Name Pikachu": "說出皮卡丘",
+  "Pika!": "皮卡！",
   "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

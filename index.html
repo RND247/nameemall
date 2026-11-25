@@ -195,6 +195,59 @@ body.skin-fx-fossil .region-section.region-complete .region-header, body.skin-fx
 @keyframes fx-shake { 0%,100% { transform: translate(0,0); } 25% { transform: translate(-2px,1px); } 50% { transform: translate(2px,-1px); } 75% { transform: translate(-1px,-1px); } }
 @keyframes fx-shard { to { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(.85); opacity: 0; } }
 @keyframes fx-dust { 0% { opacity: .9; transform: translate(0,0) scale(1); } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(.4); } }
+/* ── Skin FX: Pikachu (storm scene with lightning flashes, Pikachu-face tiles, Thunderbolt reveal, Pikachu dash every 25 names) ── */
+body.skin-fx-pikachu:not(.light) { --bg: #15131f; background: #15131f; }
+body.skin-fx-pikachu.light { --bg: #fff7d1; background: #fff7d1; }
+.scene-pikachu { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-pikachu .sky { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% -10%, #3a3352 0%, #1d1a2b 45%, #15131f 80%); }
+body.light .scene-pikachu .sky { background: radial-gradient(ellipse at 50% -10%, #fffbe8 0%, #fff1b3 50%, #ffe680 100%); }
+.scene-pikachu .zig { position: absolute; inset: -60px 0 0 0; opacity: .07; animation: fx-zig 30s linear infinite;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cpath d='M0 40 L30 10 L30 30 L60 0 M60 40 L90 10 L90 30 L120 0' stroke='%23ffd23f' stroke-width='6' fill='none' stroke-linejoin='bevel'/%3E%3C/svg%3E"); }
+body.light .scene-pikachu .zig { opacity: .13; filter: sepia(1) hue-rotate(-20deg) brightness(.55); }
+@keyframes fx-zig { to { transform: translateY(60px); } }
+.scene-pikachu .flash { position: absolute; inset: 0; background: radial-gradient(ellipse at var(--fx, 70%) 0%, rgba(255,240,170,.5), rgba(255,220,80,.12) 45%, transparent 75%); opacity: 0; animation: fx-storm 11s linear infinite; }
+.scene-pikachu .flash.b { --fx: 22%; animation-duration: 17s; animation-delay: -6s; }
+body.light .scene-pikachu .flash { background: radial-gradient(ellipse at var(--fx, 70%) 0%, rgba(255,255,255,.9), rgba(255,255,255,.25) 45%, transparent 75%); }
+.scene-pikachu svg { position: absolute; top: 0; width: 70px; height: 46vh; opacity: 0; fill: #ffe066; filter: drop-shadow(0 0 10px #ffd23f) drop-shadow(0 0 2px #fff); animation: fx-storm 11s linear infinite; }
+.scene-pikachu svg.a { left: 66%; }
+.scene-pikachu svg.b { left: 18%; height: 34vh; animation-duration: 17s; animation-delay: -6s; }
+body.light .scene-pikachu svg { fill: #f2b417; filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 1px #8a5a2b); }
+@keyframes fx-storm { 0%, 90% { opacity: 0; } 90.6% { opacity: 1; } 91.4% { opacity: .15; } 92.2% { opacity: .9; } 94.5%, 100% { opacity: 0; } }
+body.skin-fx-pikachu header, body.skin-fx-pikachu .tab-bar { background: rgba(21,19,31,0.62); }
+body.skin-fx-pikachu.light header, body.skin-fx-pikachu.light .tab-bar { background: rgba(255,247,209,0.75); }
+body.skin-fx-pikachu .card.unrevealed {
+  background: radial-gradient(circle at 17% 74%, rgba(255,90,78,.3) 0 5.5%, transparent 6.5%), radial-gradient(circle at 83% 74%, rgba(255,90,78,.3) 0 5.5%, transparent 6.5%),
+    linear-gradient(160deg, #2c2838, #211e2c);
+  border: 1px solid rgba(255,210,63,.35); border-radius: 12px; box-shadow: inset 0 1px 0 rgba(255,230,120,.12), 0 3px 10px rgba(0,0,0,.3); }
+body.skin-fx-pikachu.light .card.unrevealed {
+  background: radial-gradient(circle at 17% 74%, rgba(255,90,78,.8) 0 5.5%, transparent 6.5%), radial-gradient(circle at 83% 74%, rgba(255,90,78,.8) 0 5.5%, transparent 6.5%),
+    linear-gradient(160deg, #ffe680, #f7c928);
+  border-color: rgba(138,90,43,.35); box-shadow: inset 0 -3px 6px rgba(180,120,0,.25), 0 2px 6px rgba(138,90,43,.18); }
+body.skin-fx-pikachu .card.unrevealed .poke-placeholder { color: #ffd23f !important; opacity: .85 !important; text-shadow: 0 0 10px rgba(255,210,63,.55); }
+body.skin-fx-pikachu.light .card.unrevealed .poke-placeholder { color: #6b4318 !important; opacity: .7 !important; text-shadow: 0 1px 0 rgba(255,255,255,.6); }
+body.skin-fx-pikachu .card.just-found { animation: none; }
+body.skin-fx-pikachu[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(255,210,63,.55); border-radius: 12px; box-shadow: 0 0 8px rgba(255,210,63,.22); }
+body.skin-fx-pikachu.light[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { border-color: rgba(214,150,0,.6); box-shadow: 0 2px 6px rgba(138,90,43,.15); }
+body.skin-fx-pikachu .region-section.region-complete { border-color: #ffd23f; box-shadow: 0 0 18px rgba(255,210,63,.5), inset 0 0 22px rgba(255,90,78,.15); }
+body.skin-fx-pikachu .region-header { color: #ffe066; }
+body.skin-fx-pikachu.light .region-header { color: #8a5a2b; }
+.fx-thunder { position: absolute; pointer-events: none; z-index: 150; }
+.fx-thunder svg { position: absolute; left: 50%; bottom: 50%; width: 44px; height: 180px; margin-left: -22px; fill: #fff3a0; transform-origin: 50% 0;
+  filter: drop-shadow(0 0 6px #ffd23f) drop-shadow(0 0 14px #ffb000); opacity: 0; animation: fx-strike .55s ease-out forwards; }
+.fx-thunder .hit { position: absolute; inset: -4px; border-radius: 14px; background: radial-gradient(circle, #fffbe0 0%, rgba(255,226,80,.8) 40%, rgba(255,210,63,0) 72%); opacity: 0; animation: fx-hit .6s ease-out .1s forwards; }
+.fx-thunder b { position: absolute; left: 50%; top: 50%; width: 3px; height: 14px; margin: -7px 0 0 -1.5px; background: #ffe066; border-radius: 2px; box-shadow: 0 0 6px #ffd23f;
+  opacity: 0; transform: rotate(var(--a)) translateY(0); animation: fx-zap .5s ease-out .15s forwards; }
+@keyframes fx-strike { 0% { opacity: 0; transform: scaleY(.2); } 15% { opacity: 1; transform: scaleY(1); } 35% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: 0; transform: scaleY(1); } }
+@keyframes fx-hit { 0% { opacity: 0; transform: scale(.6); } 25% { opacity: 1; transform: scale(1.05); } 100% { opacity: 0; transform: scale(1.25); } }
+@keyframes fx-zap { 0% { opacity: 1; transform: rotate(var(--a)) translateY(-10px); } 100% { opacity: 0; transform: rotate(var(--a)) translateY(-42px) scaleY(.4); } }
+.fx-pikadash { position: fixed; bottom: 10vh; right: -120px; z-index: 160; pointer-events: none; display: flex; align-items: center; animation: fx-dash 3.2s linear forwards; }
+.fx-pikadash img { width: 72px; height: 72px; image-rendering: pixelated; filter: drop-shadow(0 0 10px rgba(255,210,63,.8)); animation: fx-hop .3s ease-in-out infinite alternate; }
+.fx-pikadash .trail { width: 46vw; height: 6px; margin-left: -6px; border-radius: 3px; background: linear-gradient(90deg, #fff3a0, rgba(255,210,63,.6) 30%, transparent);
+  clip-path: polygon(0 0, 8% 100%, 16% 0, 24% 100%, 32% 0, 40% 100%, 48% 0, 56% 100%, 64% 0, 72% 100%, 80% 0, 88% 100%, 100% 0, 100% 100%, 0 100%); height: 14px; }
+.fx-pikadash span { position: absolute; left: 6px; top: -30px; font-weight: 900; font-size: 1.3rem; color: #ffd23f; text-shadow: 0 2px 0 #8a5a2b, 0 0 10px rgba(255,210,63,.6); white-space: nowrap; }
+@keyframes fx-dash { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-100vw - 60vw)); } }
+@keyframes fx-hop { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+@media (prefers-reduced-motion: reduce) { .scene-pikachu .zig, .scene-pikachu .flash, .scene-pikachu svg { animation: none; } }
 /* ── Skin FX: Rare Candy (candy-stripe scene, glossy wrapper tiles, unwrap reveal, level-up banner) ── */
 body.skin-fx-candy:not(.light) { --bg: #160f2e; background: #160f2e; }
 body.skin-fx-candy.light { --bg: #f4efff; background: #f4efff; }
@@ -6332,7 +6385,8 @@ const Q = (function() {
     creation: [483, 484, 487],
     fossils: [138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883],
     mythical: [151, 251, 385, 386, 489, 490, 491, 492, 493, 494, 647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025],
-    ultra: [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806]
+    ultra: [793, 794, 795, 796, 797, 798, 799, 803, 804, 805, 806],
+    pikachu: [25]
   };
   var achReady = false;
   function achDefaultStats() { return { duelWins: 0, coop: 0, comboBest: 0, share: 0, runFull: 0, runNoHint: 0, runHour: 0, runKanto: 0, backfilled: 0 }; }
@@ -6416,7 +6470,8 @@ const Q = (function() {
       { id: 'run_hour', cat: 'Full Pokédex', icon: '⏱️', title: 'Under Two Hours', desc: 'Name all {count} in one game in under 2 hours', n: 1025, p: flag(achStats.runHour) },
       { id: 'run_kanto', cat: 'Full Pokédex', icon: '⚡', title: 'Kanto Speedrun', desc: 'Name all 151 Gen 1 Pokémon in under 10 minutes', p: flag(achStats.runKanto) }
     );
-    [['starters', '🌱', 'Starter Squad', 'Name all {count} starter Pokémon'],
+    [['pikachu', '⚡', 'Pika Pika!', 'Name Pikachu'],
+     ['starters', '🌱', 'Starter Squad', 'Name all {count} starter Pokémon'],
      ['eevee', '🦊', 'Eeveelution Expert', 'Name Eevee and all 8 of its evolutions'],
      ['birds', '🐦', 'Legendary Birds', 'Name the three legendary birds of Kanto'],
      ['creation', '🌌', 'Creation Trio', 'Name the Creation Trio from Sinnoh'],
@@ -6635,20 +6690,22 @@ const Q = (function() {
   // header and the unlock screen, mascot in the middle. Saved as nea_skin, so device transfer carries it.
   var SKIN_SPRITE = 'https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/';
   var SKINS = [
-    { id: 'eevee', name: 'Eeveelutions', fx: 'eevee', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
-      col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
-    { id: 'starters', name: 'Starters', fx: 'starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
-      col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
+    { id: 'pikachu', name: 'Pikachu', fx: 'pikachu', mascot: 25, popup: [25], line: [311, 417, 587, 172, 25, 26, 702, 777, 921], accent: '#ffd23f',
+      col: ['#ffd23f', '#ff5a4e', '#f7c21d', '#ffe066', '#ffb000', '#8a5a2b', '#fff3a0', '#e8a33d', '#ff7a6e'] },
     { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
     { id: 'creation', name: 'Creation Trio', fx: 'creation', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
       col: ['#7aa2ff', '#5b8cff', '#d77bff', '#e070ff', '#ff8fb8', '#4b3a7a', '#3f5bd0', '#b44bff', '#c9a0ff'] },
-    { id: 'fossils', name: 'Fossils', fx: 'fossil', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
-      col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
-    { id: 'mythical', name: 'Mythicals', fx: 'mythical', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
-      col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
+    { id: 'eevee', name: 'Eeveelutions', fx: 'eevee', mascot: 133, line: [134, 135, 136, 196, 133, 197, 470, 471, 700], accent: '#f0a050',
+      col: ['#c99a62', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#8d7bb8', '#5fd17a', '#7fe3f0', '#ff8fb8'] },
     { id: 'ultra', name: 'Ultra Beasts', fx: 'ultra', mascot: 794, line: [793, 795, 796, 797, 794, 798, 799, 803, 805], accent: '#6fe8f5',
       col: ['#7fe3f0', '#5b8cff', '#ffd23f', '#ff7a3d', '#e070ff', '#b44bff', '#5fd17a', '#9ff0ff', '#ff8fb8'] },
+    { id: 'mythical', name: 'Mythicals', fx: 'mythical', mascot: 151, line: [251, 385, 492, 494, 151, 648, 719, 802, 809], accent: '#ff8fc8',
+      col: ['#ffb3d9', '#5b8cff', '#ffd23f', '#e070ff', '#ff8fb8', '#c9a0ff', '#5fd17a', '#7fe3f0', '#ff7a3d'] },
+    { id: 'fossils', name: 'Fossils', fx: 'fossil', mascot: 142, line: [138, 140, 345, 347, 142, 408, 410, 696, 698], accent: '#d9a85a',
+      col: ['#c99a62', '#7fb0d0', '#e8c890', '#d4a050', '#a07850', '#8a7a5a', '#b0c070', '#5b8cff', '#e0b070'] },
+    { id: 'starters', name: 'Starters', fx: 'starters', mascot: 4, line: [1, 152, 252, 7, 4, 158, 255, 387, 393], accent: '#ff8a3d',
+      col: ['#5fd17a', '#5b8cff', '#ffd23f', '#ff7a3d', '#8fe36a', '#4fa3ff', '#3fbf6a', '#6fc3ff', '#ff9f43'] },
     // Supporter skin: unlocked with the code in the Ko-fi thank-you message, not by playing
     { id: 'candy', name: 'Rare Candy', supporter: true, fx: 'candy', mascot: '../items/rare-candy', line: [440, 113, '../items/rare-candy', 242, 531], accent: '#8f7bff',
       col: ['#7a6cff', '#5b8cff', '#b49cff', '#4fc3ff', '#e8e0ff', '#6a4bd0', '#9ad0ff', '#c9a0ff', '#ff8fd8'] }
@@ -6749,6 +6806,11 @@ const Q = (function() {
         var clouds = '';
         for (var q = 0; q < 7; q++) clouds += '<i style="top:' + (6 + q * 13) + '%;width:' + (28 + (q * 17) % 30) + 'vw;animation-duration:' + (70 + q * 23) + 's;animation-delay:-' + (q * 19) + 's;opacity:' + (0.35 + (q % 3) * 0.15).toFixed(2) + '"></i>';
         au.innerHTML = '<div class="sky"></div>' + clouds;
+      } else if (s.fx === 'pikachu') {
+        // Night storm: drifting zigzags, and now and then a lightning bolt with a sheet flash
+        au.className = 'skin-aurora scene-pikachu';
+        au.innerHTML = '<div class="sky"></div><div class="zig"></div><div class="flash"></div><div class="flash b"></div>' +
+          '<svg class="a" viewBox="0 0 40 120" preserveAspectRatio="none">' + PIKA_BOLT + '</svg><svg class="b" viewBox="0 0 40 120" preserveAspectRatio="none">' + PIKA_BOLT + '</svg>';
       } else if (s.fx === 'candy') {
         // Slow candy stripes with a few Rare Candies floating up
         au.className = 'skin-aurora scene-candy';
@@ -7055,6 +7117,32 @@ const Q = (function() {
 
   // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
   var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
+  // Pikachu: a Thunderbolt strikes each named card; every 25 names (Pikachu is #25), and when Pikachu itself is named, Pikachu dashes across
+  var PIKA_BOLT = '<path d="M24 0 L6 56 L20 56 L10 120 L36 44 L22 44 L32 0 Z"/>';
+  function pikachuStrike(c, m) {
+    var o = fxBox(c, 'fx-thunder'); if (!o) return;
+    var html = '<svg viewBox="0 0 40 120" preserveAspectRatio="none" style="animation-delay:' + (m * 70) + 'ms">' + PIKA_BOLT + '</svg><i class="hit" style="animation-delay:' + (100 + m * 70) + 'ms"></i>';
+    for (var k = 0; k < 8; k++) html += '<b style="--a:' + (k * 45 + (m * 20) % 45) + 'deg;animation-delay:' + (150 + m * 70) + 'ms"></b>';
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1000 + m * 70);
+  }
+  function pikachuDashCheck(matches) {
+    var named = matches.some(function(i) { return items[i] && items[i].id === 25; });
+    var every = false;
+    if (currentTab === 'pokemon' && !(document.body.classList.contains('creator') && !creatorCelebrating())) {
+      var now = foundSet.size, before = now - matches.length;
+      every = Math.floor(now / 25) !== Math.floor(before / 25);
+    }
+    if (!named && !every) return;
+    if (document.querySelector('.fx-pikadash')) return;
+    var d = document.createElement('div');
+    d.className = 'fx-pikadash';
+    d.innerHTML = '<img src="' + SKIN_SPRITE + 'versions/generation-v/black-white/animated/25.gif" alt=""><i class="trail"></i><span></span>';
+    d.querySelector('span').textContent = t('Pika!');
+    document.body.appendChild(d);
+    setTimeout(function() { d.remove(); }, 3300);
+  }
   function candyUnwrap(c, m) {
     var r = c.getBoundingClientRect();
     if (!r.width) return;
@@ -7102,6 +7190,7 @@ const Q = (function() {
     if (s.fx === 'creation') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) creationCollapse(c, m); }); creationPulseCheck(matches.length); return; }
     if (s.fx === 'ultra') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) ultraGlitch(c, m); }); ultraCombo(matches); return; }
     if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
+    if (s.fx === 'pikachu') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) pikachuStrike(c, m); }); pikachuDashCheck(matches); return; }
     if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
     matches.forEach(function(idx, m) {
       var c = $('c' + idx);
@@ -7141,7 +7230,7 @@ const Q = (function() {
     u.className = 'skin-unlock';
     u.setAttribute('role', 'dialog'); u.setAttribute('aria-modal', 'true');
     u.innerHTML = '<div class="box"><div class="glow"></div><div class="kick"></div><h2></h2><div class="why"></div>' +
-      '<div class="row">' + s.line.map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.33).toFixed(2)); }).join('') + '</div>' +
+      '<div class="row">' + (s.popup || s.line).map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.33).toFixed(2)); }).join('') + '</div>' +
       (more > 0 ? '<div class="more"></div>' : '') +
       '<div class="btns"><button type="button" class="try"></button><button type="button" class="later"></button></div></div>';
     u.querySelector('.glow').style.background = 'radial-gradient(circle at 30% 20%,' + s.col[3] + '55,transparent 45%),radial-gradient(circle at 75% 25%,' + s.col[1] + '55,transparent 45%),' +

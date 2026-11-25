@@ -451,5 +451,9 @@ window.NEA_UI = {
   "Unlock": "פתיחה",
   "That code didn't work. Check it and try again.": "הקוד לא עבד. בדקו אותו ונסו שוב.",
   "Thank you for supporting NameEmAll ☕": "תודה שתמכתם ב-NameEmAll ☕",
+  "Pikachu": "פיקאצ'ו",
+  "Pika Pika!": "פיקה פיקה!",
+  "Name Pikachu": "נקבו בפיקאצ'ו",
+  "Pika!": "פיקה!",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };
