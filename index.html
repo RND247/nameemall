@@ -1950,7 +1950,6 @@ body.creator .kofi-nudge { display: none !important; }
       </div>
     </div>
     <div class="dr-foot">
-      <a class="discord-link dr-discord" id="modal-discord" data-discord="pokedex_result" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener" hidden>💬 Show it off on Discord</a>
       <a class="kofi-nudge" id="modal-kofi" data-kofi="pokedex_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
     </div>
   </div>
@@ -2035,7 +2034,6 @@ body.creator .kofi-nudge { display: none !important; }
     </div>
     <div class="dr-foot">
       <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
-      <a class="discord-link dr-discord" id="daily-discord" hidden target="_blank" rel="noopener">💬 Compare results on our Discord</a>
       <a class="kofi-nudge" id="daily-kofi" data-kofi="daily_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
     </div>
     <div class="dr-nav">
@@ -3167,7 +3165,6 @@ const Q = (function() {
     $('modal-best').textContent = hsParts.join(' · ');
     displayHighscore();
     $('modal-image-btn').hidden = currentTab !== 'pokemon';
-    $('modal-discord').hidden = currentTab !== 'pokemon';
     kofiNudge('modal-kofi', currentTab === 'pokemon' && count > 0, won && items.length >= 100);
     var chatLine = '';
     if (currentTab === 'pokemon' && chatEnabled() && chat.claims.size) {
@@ -8366,12 +8363,6 @@ const Q = (function() {
     copyImageBlob(achShareState.blob).then(function(ok) {
       if (ok) discordFlash(a, t('✓ Image copied! Paste it in #achievements'));
     });
-  });
-  $('modal-discord').addEventListener('click', function() {
-    var a = this;
-    if (shareCache.key === sharePokedexKey() && shareCache.blob) {
-      copyImageBlob(shareCache.blob).then(function(ok) { if (ok) discordFlash(a, t('✓ Image copied! Paste it in #achievements')); });
-    }
   });
 
   function sharePrepare(key, build) {
