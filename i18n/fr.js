@@ -491,5 +491,6 @@ window.NEA_UI = {
   "♥ adopted by {name}": "♥ adopté par {name}",
   "♥ Adopted by {name}": "♥ Adopté par {name}",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ Personne n’a encore adopté {name}. Adoptez-le sur Ko-fi ☕",
+  "Ran, who made NameEmAll": "Ran, le créateur de NameEmAll",
   "Level up! Lv. {level}": "Niveau supérieur ! N. {level}",
 };

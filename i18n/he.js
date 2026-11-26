@@ -478,5 +478,6 @@ window.NEA_UI = {
   "♥ adopted by {name}": "♥ אומץ על ידי {name}",
   "♥ Adopted by {name}": "♥ אומץ על ידי {name}",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ אף אחד עוד לא אימץ את {name}. אמצו אותו ב-Ko-fi ☕",
+  "Ran, who made NameEmAll": "רן, שבנה את NameEmAll",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };

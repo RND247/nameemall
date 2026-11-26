@@ -4549,8 +4549,10 @@ const Q = (function() {
   })();
   // Adopted Pokémon: national Pokédex id -> the supporter's name (added by hand, only with their OK).
   // One adopter per Pokémon, forever. Shown on the named tile, in the naming toast, in the hover card and in About.
-  var ADOPTIONS = {};
-  function adoptedBy(w) { return w && currentTab !== 'mandarin' && ADOPTIONS[w.id] ? ADOPTIONS[w.id] : ''; }
+  // '@dev' = adopted by Ran himself, shown honestly as the game's maker (not a supporter)
+  var ADOPTIONS = { 43: '@dev' };
+  function adoptName(id) { var n = ADOPTIONS[id]; return n === '@dev' ? t('Ran, who made NameEmAll') : (n || ''); }
+  function adoptedBy(w) { return w && currentTab !== 'mandarin' ? adoptName(w.id) : ''; }
   function adoptMark(c, w) {
     var old = c.querySelector('.adopt-badge'); if (old) old.remove();
     var by = adoptedBy(w); if (!by) return;
@@ -4567,7 +4569,7 @@ const Q = (function() {
     if (!ids.length) { el.innerHTML = esc(t('♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.')) + link; kofiTrackClicks(el); return; }
     var go = function(data) {
       var byId = {}; data.forEach(function(p) { byId[p.id] = p; });
-      var list = ids.sort(function(a, b) { return a - b; }).map(function(id) { return esc((byId[id] ? displayName(byId[id]) : '#' + id) + ' · ' + ADOPTIONS[id]); }).join(', ');
+      var list = ids.sort(function(a, b) { return a - b; }).map(function(id) { return esc((byId[id] ? displayName(byId[id]) : '#' + id) + ' · ' + adoptName(id)); }).join(', ');
       el.innerHTML = esc(t('♥ Adopted Pokémon, {count} of 1025:', { count: ids.length })) + ' ' + list + '.' + link;
       kofiTrackClicks(el);
     };

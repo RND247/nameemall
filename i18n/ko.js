@@ -491,5 +491,6 @@ window.NEA_UI = {
   "♥ adopted by {name}": "♥ {name}님이 입양",
   "♥ Adopted by {name}": "♥ {name}님이 입양",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ 아직 아무도 {name}을(를) 입양하지 않았어요. Ko-fi에서 입양하세요 ☕",
+  "Ran, who made NameEmAll": "NameEmAll 제작자 Ran",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

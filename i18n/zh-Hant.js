@@ -491,5 +491,6 @@ window.NEA_UI = {
   "♥ adopted by {name}": "♥ 由 {name} 領養",
   "♥ Adopted by {name}": "♥ 由 {name} 領養",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ 還沒有人領養{name}。在 Ko-fi 上領養牠 ☕",
+  "Ran, who made NameEmAll": "NameEmAll 的作者 Ran",
   "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

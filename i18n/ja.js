@@ -517,5 +517,6 @@ window.NEA_UI = {
   "♥ adopted by {name}": "♥ 里親：{name}さん",
   "♥ Adopted by {name}": "♥ 里親：{name}さん",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ {name}にはまだ里親がいません。Ko-fiで里親になろう ☕",
+  "Ran, who made NameEmAll": "NameEmAllの作者、Ran",
   "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };
