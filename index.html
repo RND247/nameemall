@@ -1469,6 +1469,30 @@ body.creator .kofi-nudge { display: none !important; }
 .modal.daily-modal h2 { font-size: 1.25rem; margin-bottom: 6px; }
 .modal.daily-modal .big { font-size: 2.2rem; margin: 4px 0; }
 .modal.daily-modal p { margin-bottom: 4px; font-size: 0.82rem; }
+/* Daily result: score card, one main action, the challenge, then a quiet footer */
+.daily-modal .dr-sub { color: var(--text-dim); margin-bottom: 14px !important; }
+.daily-modal .dr-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px 12px; margin-bottom: 12px; }
+.daily-modal .dr-hero .big { margin: 0 0 6px; line-height: 1; font-variant-numeric: tabular-nums; }
+.daily-modal .dr-meta { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.daily-modal .dr-chip { font-size: 0.78rem; color: var(--text-dim); background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-variant-numeric: tabular-nums; }
+.daily-modal .dr-chip:empty { display: none; }
+.daily-modal .dr-chip.dr-streak { color: #f59e0b; border-color: rgba(245,158,11,.35); }
+.daily-modal .dr-hero .daily-result-grid { margin: 0; padding: 0; border: 0; background: none; }
+.daily-modal .dr-actions { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 14px; }
+.daily-modal .dr-actions .btn { padding: 9px 12px; }
+.daily-modal .dr-main { font-size: 0.9rem; padding: 11px 12px !important; background: var(--accent); color: #fff; }
+.daily-modal .dr-main:hover { filter: brightness(1.1); }
+.daily-modal .dr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.daily-modal .dr-challenge { display: flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+.daily-modal .dr-challenge input { flex: 1; min-width: 0; height: auto; margin: 0; background: var(--bg); color: var(--text); border: 0; border-radius: 0; padding: 9px 12px; font-size: 0.82rem; outline: none; }
+.daily-modal .dr-challenge .btn { margin: 0; border: 0; border-inline-start: 1px solid var(--border); border-radius: 0; white-space: nowrap; padding: 9px 12px; }
+.daily-modal .dr-foot { border-top: 1px solid var(--border); padding-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.daily-modal .dr-foot .daily-next { margin-top: 0; }
+.daily-modal .dr-discord { background: none; color: #8b93ff; padding: 0; margin: 0; font-weight: 600; }
+.daily-modal .dr-discord:hover { filter: none; text-decoration: underline; }
+.daily-modal .dr-foot .kofi-nudge { margin: 0; text-align: center; max-width: 340px; line-height: 1.4; }
+.daily-modal .dr-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.daily-modal .dr-nav .btn { background: transparent; padding: 8px 10px; }
 .daily-result-grid { font-family: 'SF Mono', Menlo, monospace; font-size: clamp(0.62rem, 2.1vw, 0.9rem); line-height: 1.25; letter-spacing: 0; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0; user-select: all; white-space: pre; word-break: keep-all; overflow-x: auto; max-width: 100%; }
 .daily-share-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 .daily-share-row .btn { min-width: 130px; }
@@ -1973,26 +1997,31 @@ body.creator .kofi-nudge { display: none !important; }
 <div class="overlay" id="daily-result-overlay">
   <div class="modal daily-modal">
     <h2 id="daily-result-title">Daily Complete!</h2>
-    <p id="daily-result-sub" style="margin-bottom:4px;">🗓️ Daily #0 · Today</p>
-    <div class="big" id="daily-result-score">0 / 0</div>
-    <p id="daily-result-time"></p>
-    <p id="daily-result-streak"></p>
+    <p class="dr-sub" id="daily-result-sub">🗓️ Daily #0 · Today</p>
+    <div class="dr-hero">
+      <div class="big" id="daily-result-score">0 / 0</div>
+      <div class="dr-meta"><span class="dr-chip" id="daily-result-time"></span><span class="dr-chip dr-streak" id="daily-result-streak"></span></div>
+      <div class="daily-result-grid" id="daily-result-grid"></div>
+    </div>
     <div class="daily-result-vs" id="daily-result-vs" style="display:none;"></div>
     <div class="daily-result-global" id="daily-result-global" style="display:none;"></div>
-    <div class="daily-result-grid" id="daily-result-grid"></div>
-    <div class="daily-share-row">
-      <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
-      <button class="btn danger" id="daily-share-btn">🔗 Share</button>
-      <button class="btn" id="daily-image-btn">🖼️ Share Image</button>
+    <div class="dr-actions">
+      <button class="btn danger dr-main" id="daily-share-btn">🔗 Share</button>
+      <div class="dr-pair">
+        <button class="btn" id="daily-copy-btn">📋 Copy Result</button>
+        <button class="btn" id="daily-image-btn">🖼️ Share Image</button>
+      </div>
     </div>
-    <div class="daily-challenge-row">
+    <div class="dr-challenge">
       <input type="text" id="daily-name-input" maxlength="16" placeholder="Your name (optional)" autocomplete="nickname">
       <button class="btn" id="daily-challenge-btn">⚔️ Challenge a Friend</button>
     </div>
-    <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
-    <a class="discord-link" id="daily-discord" hidden target="_blank" rel="noopener">💬 Compare results on our Discord</a>
-    <a class="kofi-nudge" id="daily-kofi" data-kofi="daily_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
-    <div class="daily-share-row" style="margin-top:14px;">
+    <div class="dr-foot">
+      <div class="daily-next">Next daily in <span class="dl-cd-val" id="daily-result-countdown">--:--:--</span></div>
+      <a class="discord-link dr-discord" id="daily-discord" hidden target="_blank" rel="noopener">💬 Compare results on our Discord</a>
+      <a class="kofi-nudge" id="daily-kofi" data-kofi="daily_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
+    </div>
+    <div class="dr-nav">
       <button class="btn" id="daily-result-close">👀 See Board</button>
       <button class="btn" id="daily-result-lobby">← Back to Daily</button>
     </div>
