@@ -484,5 +484,12 @@ window.NEA_UI = {
   "Light all 8 candles: play the Hanukkah Daily on each of its nights": "촛불 8개 모두 켜기: 하누카 데일리를 매일 밤 플레이하기",
   "Hanukkah Lights": "하누카의 빛",
   "🕎 Hanukkah Dailies, {date}": "🕎 하누카 데일리, {date}",
+  "Adopted by {name}": "{name}님이 입양",
+  "Adopt one on Ko-fi": "Ko-fi에서 입양하기",
+  "♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.": "♥ 포켓몬 입양하기: Ko-fi에서 후원하면 누군가 그 포켓몬을 맞힐 때마다 내 이름이 표시돼요. 1025마리 모두 아직 기다리고 있어요.",
+  "♥ Adopted Pokémon, {count} of 1025:": "♥ 입양된 포켓몬, 1025마리 중 {count}마리:",
+  "♥ adopted by {name}": "♥ {name}님이 입양",
+  "♥ Adopted by {name}": "♥ {name}님이 입양",
+  "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ 아직 아무도 {name}을(를) 입양하지 않았어요. Ko-fi에서 입양하세요 ☕",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

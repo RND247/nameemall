@@ -510,5 +510,12 @@ window.NEA_UI = {
   "Light all 8 candles: play the Hanukkah Daily on each of its nights": "8本すべてのろうそくを灯す：ハヌカーのデイリーを毎晩プレイする",
   "Hanukkah Lights": "ハヌカーの光",
   "🕎 Hanukkah Dailies, {date}": "🕎 ハヌカーのデイリー、{date}",
+  "Adopted by {name}": "{name}さんが里親",
+  "Adopt one on Ko-fi": "Ko-fiで里親になる",
+  "♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.": "♥ ポケモンの里親になろう：Ko-fiで応援すると、誰かがそのポケモンを答えるたびにあなたの名前が表示されます。1025匹すべてがまだ待っています。",
+  "♥ Adopted Pokémon, {count} of 1025:": "♥ 里親が決まったポケモン（1025匹中{count}匹）：",
+  "♥ adopted by {name}": "♥ 里親：{name}さん",
+  "♥ Adopted by {name}": "♥ 里親：{name}さん",
+  "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ {name}にはまだ里親がいません。Ko-fiで里親になろう ☕",
   "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };

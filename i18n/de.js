@@ -484,5 +484,12 @@ window.NEA_UI = {
   "Light all 8 candles: play the Hanukkah Daily on each of its nights": "Zünde alle 8 Kerzen an: Spiele die Chanukka-Daily in jeder ihrer Nächte",
   "Hanukkah Lights": "Chanukka-Lichter",
   "🕎 Hanukkah Dailies, {date}": "🕎 Chanukka-Dailies, {date}",
+  "Adopted by {name}": "Adoptiert von {name}",
+  "Adopt one on Ko-fi": "Adoptiere eins auf Ko-fi",
+  "♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.": "♥ Adoptiere ein Pokémon: Unterstütze auf Ko-fi und dein Name erscheint jedes Mal, wenn jemand es nennt. Alle 1025 warten noch.",
+  "♥ Adopted Pokémon, {count} of 1025:": "♥ Adoptierte Pokémon, {count} von 1025:",
+  "♥ adopted by {name}": "♥ adoptiert von {name}",
+  "♥ Adopted by {name}": "♥ Adoptiert von {name}",
+  "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ {name} wurde noch nicht adoptiert. Adoptiere es auf Ko-fi ☕",
   "Level up! Lv. {level}": "Level-Up! Lv. {level}",
 };

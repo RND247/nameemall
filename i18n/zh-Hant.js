@@ -484,5 +484,12 @@ window.NEA_UI = {
   "Light all 8 candles: play the Hanukkah Daily on each of its nights": "點亮全部 8 支蠟燭：在光明節每晚都玩當晚的每日挑戰",
   "Hanukkah Lights": "光明節之光",
   "🕎 Hanukkah Dailies, {date}": "🕎 光明節每日挑戰，{date}",
+  "Adopted by {name}": "由 {name} 領養",
+  "Adopt one on Ko-fi": "在 Ko-fi 上領養一隻",
+  "♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.": "♥ 領養一隻寶可夢：在 Ko-fi 上支持，每當有人說出牠的名字，就會顯示你的名字。全部 1025 隻都還在等待。",
+  "♥ Adopted Pokémon, {count} of 1025:": "♥ 已領養的寶可夢，{count}/1025：",
+  "♥ adopted by {name}": "♥ 由 {name} 領養",
+  "♥ Adopted by {name}": "♥ 由 {name} 領養",
+  "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ 還沒有人領養{name}。在 Ko-fi 上領養牠 ☕",
   "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

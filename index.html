@@ -1386,6 +1386,12 @@ footer a { color: var(--text-pinyin); text-decoration: none; }
 .kofi-nudge.special { font-size: 0.85rem; color: #ff8a80; opacity: 1; max-width: 340px; text-align: center; line-height: 1.4; }
 .ach-kofi { margin: 18px auto 4px; text-align: center; }
 .supporters { font-size: 0.85rem; }
+.card .adopt-badge { position: absolute; right: 4px; bottom: 3px; font-size: 0.62rem; line-height: 1; color: #ff8fa3; text-shadow: 0 0 6px rgba(255,120,150,.6); pointer-events: none; z-index: 2; }
+.toast.adopted { border-color: #ff8fa3; }
+.toast .toast-adopt { margin-inline-start: 8px; color: #ff8fa3; font-weight: 700; }
+.poke-popup .pp-adopt { margin-top: 8px; font-size: 0.72rem; }
+.poke-popup .pp-adopt.on { color: #ff8fa3; font-weight: 700; }
+.poke-popup .pp-adopt.kofi-nudge { display: block; width: auto; margin: 8px 0 0; color: var(--text-dim); opacity: .8; }
 .supporters a { color: inherit; }
 body.creator .kofi-nudge { display: none !important; }
 /* Right-to-left (Hebrew): the logo, scores and times keep left-to-right order */
@@ -1863,6 +1869,7 @@ body.creator .kofi-nudge { display: none !important; }
   </div>
   <dl class="pp-stats" id="pp-stats"></dl>
   <div class="pp-flavor" id="pp-flavor"></div>
+  <div class="pp-adopt" id="pp-adopt"></div>
 </div>
 
 <div class="toast-stack" id="toasts"></div>
@@ -2008,6 +2015,7 @@ body.creator .kofi-nudge { display: none !important; }
   <p>NameEmAll (Name 'Em All) is a free Pokémon quiz: name every Pokémon, all 1025 from Bulbasaur to Pecharunt, as fast as you can.</p>
   <p>Play the Daily challenge (Mini with 5 Pokémon, Midi with 30), duel a friend in real time, or team up in Co-Op. No sign-up needed.</p>
   <p class="supporters" id="supporters"></p>
+  <p class="supporters" id="adoptions"></p>
   <p class="about-langs"><a href="https://nameemall.com/" hreflang="en" data-no-i18n>English</a> · <a href="https://nameemall.com/?lang=ja" hreflang="ja" data-no-i18n>日本語</a> · <a href="https://nameemall.com/?lang=zh-Hant" hreflang="zh-Hant" data-no-i18n>繁體中文</a> · <a href="https://nameemall.com/?lang=zh-Hans" hreflang="zh-Hans" data-no-i18n>简体中文</a> · <a href="https://nameemall.com/?lang=ko" hreflang="ko" data-no-i18n>한국어</a> · <a href="https://nameemall.com/?lang=fr" hreflang="fr" data-no-i18n>Français</a> · <a href="https://nameemall.com/?lang=de" hreflang="de" data-no-i18n>Deutsch</a> · <a href="https://nameemall.com/?lang=es" hreflang="es" data-no-i18n>Español</a> · <a href="https://nameemall.com/?lang=it" hreflang="it" data-no-i18n>Italiano</a> · <a href="https://nameemall.com/?lang=he" hreflang="he" data-no-i18n>עברית</a></p>
 </details>
 <footer>
@@ -2871,6 +2879,7 @@ const Q = (function() {
       c.querySelector('.poke-gen').textContent = w.g;
       addFormToggle(c, w);
       applyTypeBg(c, w);
+      adoptMark(c, w);
     }
   }
 
@@ -2889,6 +2898,7 @@ const Q = (function() {
       c.querySelector('.poke-gen').textContent = w.g;
       addFormToggle(c, w);
       applyTypeBg(c, w);
+      adoptMark(c, w);
     }
   }
 
@@ -2899,9 +2909,17 @@ const Q = (function() {
       el.innerHTML = '<span class="tc">' + w.t + '</span> ' + w.p + ' - ' + displayMeaning(w);
     } else {
       el.innerHTML = '<img src="' + w.s + '" alt=""> ' + displayName(w);
+      var by = adoptedBy(w);
+      if (by) {
+        el.classList.add('adopted');
+        var sp = document.createElement('span');
+        sp.className = 'toast-adopt';
+        sp.textContent = t('♥ adopted by {name}', { name: by });
+        el.appendChild(sp);
+      }
     }
     $toasts.appendChild(el);
-    setTimeout(() => el.remove(), 2700);
+    setTimeout(() => el.remove(), el.classList.contains('adopted') ? 4200 : 2700);
   }
 
   function checkFamilyComplete(revealedIds) {
@@ -3175,6 +3193,9 @@ const Q = (function() {
     $('pp-types').innerHTML = '';
     $('pp-stats').innerHTML = '';
     $('pp-flavor').textContent = 'Loading…';
+    var ppBy = adoptedBy(w), ppA = $('pp-adopt');
+    ppA.className = 'pp-adopt' + (ppBy ? ' on' : ' kofi-nudge');
+    ppA.textContent = ppBy ? t('♥ Adopted by {name}', { name: ppBy }) : t('♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕', { name: displayName(w) });
 
     if (formTypes) {
       $('pp-types').innerHTML = formTypes.map(t =>
@@ -4526,6 +4547,33 @@ const Q = (function() {
       ? t('☕ Thank you to our supporters: {names}', { names: SUPPORTERS.join(', ') })
       : t('☕ The Supporters wall is still empty. Support on Ko-fi and your name goes first, for good.');
   })();
+  // Adopted Pokémon: national Pokédex id -> the supporter's name (added by hand, only with their OK).
+  // One adopter per Pokémon, forever. Shown on the named tile, in the naming toast, in the hover card and in About.
+  var ADOPTIONS = {};
+  function adoptedBy(w) { return w && currentTab !== 'mandarin' && ADOPTIONS[w.id] ? ADOPTIONS[w.id] : ''; }
+  function adoptMark(c, w) {
+    var old = c.querySelector('.adopt-badge'); if (old) old.remove();
+    var by = adoptedBy(w); if (!by) return;
+    var b = document.createElement('span');
+    b.className = 'adopt-badge'; b.textContent = '♥';
+    b.title = t('Adopted by {name}', { name: by });
+    c.appendChild(b);
+  }
+  function adoptRenderWall() {
+    var el = $('adoptions'); if (!el) return;
+    var ids = Object.keys(ADOPTIONS).map(Number);
+    var esc = function(x) { var d = document.createElement('div'); d.textContent = x; return d.innerHTML; };
+    var link = ' <a href="' + KOFI_URL + '" target="_blank" rel="noopener" data-kofi="adopt_wall">' + esc(t('Adopt one on Ko-fi')) + '</a>';
+    if (!ids.length) { el.innerHTML = esc(t('♥ Adopt a Pokémon: support on Ko-fi and your name shows up every time someone names it. All 1025 are still waiting.')) + link; kofiTrackClicks(el); return; }
+    var go = function(data) {
+      var byId = {}; data.forEach(function(p) { byId[p.id] = p; });
+      var list = ids.sort(function(a, b) { return a - b; }).map(function(id) { return esc((byId[id] ? displayName(byId[id]) : '#' + id) + ' · ' + ADOPTIONS[id]); }).join(', ');
+      el.innerHTML = esc(t('♥ Adopted Pokémon, {count} of 1025:', { count: ids.length })) + ' ' + list + '.' + link;
+      kofiTrackClicks(el);
+    };
+    if (dataSources.pokemon) go(dataSources.pokemon);
+    else fetch('pokemon.json').then(function(r) { return r.json(); }).then(go, function() {});
+  }
   function dailyTodayStr(d) {
     d = d || new Date();
     var y = d.getFullYear();
@@ -7313,6 +7361,7 @@ const Q = (function() {
   // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
   var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
   // Pikachu: a Thunderbolt strikes each named card; every 25 names (Pikachu is #25), and when Pikachu itself is named, Pikachu dashes across
+  (function() { var ab = $('about-section'); if (ab) ab.addEventListener('toggle', function() { if (ab.open) adoptRenderWall(); }); if (ab && ab.open) adoptRenderWall(); })();
   // Hanukkah: a named tile glows warm and sends a small flame up; the scene's menorah lights one more
   // candle for each eighth of the board, and all eight when the board is done
   function hanukkahGlow(c, m) {
