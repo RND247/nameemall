@@ -479,5 +479,7 @@ window.NEA_UI = {
   "♥ Adopted by {name}": "♥ 由 {name} 领养",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ 还没有人领养{name}。在 Ko-fi 上领养它 ☕",
   "Ran, who made NameEmAll": "NameEmAll 的作者 Ran",
+  "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name}是你这局说出的第一个名字，还没有人领养它。在 Ko-fi 上领养它 ☕",
+  "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "你在这局一开始就说出了{name}，还没有人领养它。在 Ko-fi 上领养它 ☕",
   "Level up! Lv. {level}": "升级了！Lv. {level}",
 };

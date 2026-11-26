@@ -479,5 +479,7 @@ window.NEA_UI = {
   "♥ Adopted by {name}": "♥ אומץ על ידי {name}",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ אף אחד עוד לא אימץ את {name}. אמצו אותו ב-Ko-fi ☕",
   "Ran, who made NameEmAll": "רן, שבנה את NameEmAll",
+  "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name} היה הניחוש הראשון שלכם במשחק הזה, ועדיין אף אחד לא אימץ אותו. אמצו אותו ב-Ko-fi ☕",
+  "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "ניחשתם את {name} כבר בתחילת המשחק, ועדיין אף אחד לא אימץ אותו. אמצו אותו ב-Ko-fi ☕",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };

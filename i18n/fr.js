@@ -492,5 +492,7 @@ window.NEA_UI = {
   "♥ Adopted by {name}": "♥ Adopté par {name}",
   "♥ Nobody has adopted {name} yet. Adopt it on Ko-fi ☕": "♥ Personne n’a encore adopté {name}. Adoptez-le sur Ko-fi ☕",
   "Ran, who made NameEmAll": "Ran, le créateur de NameEmAll",
+  "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name} était votre premier nom de la partie, et personne ne l’a encore adopté. Adoptez-le sur Ko-fi ☕",
+  "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "Vous avez nommé {name} tôt dans la partie, et personne ne l’a encore adopté. Adoptez-le sur Ko-fi ☕",
   "Level up! Lv. {level}": "Niveau supérieur ! N. {level}",
 };

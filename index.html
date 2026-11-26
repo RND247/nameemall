@@ -4514,6 +4514,18 @@ const Q = (function() {
   // A finished run of 100+ Pokémon (a whole generation or the full Pokédex) is the player's peak moment:
   // there the ask is warmer and skips the daily cap, since it happens rarely.
   var KOFI_TEXT = 'Enjoyed it? Support NameEmAll on Ko-fi ☕';
+  var KOFI_ADOPT_FIRST = '{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕';
+  var KOFI_ADOPT_EARLY = 'You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕';
+  // First unadopted Pokémon among the first few this player named (naming order = foundSet order)
+  function kofiAdoptPick() {
+    if (currentTab !== 'pokemon' && currentTab !== 'daily') return null;
+    var order = Array.from(foundSet);
+    for (var i = 0; i < order.length && i < 5; i++) {
+      var w = items[order[i]];
+      if (w && w.id <= 1025 && !ADOPTIONS[w.id]) return { w: w, first: i === 0 };
+    }
+    return null;
+  }
   var KOFI_FIRST = 'Enjoyed it? Be the first to support NameEmAll on Ko-fi ☕';
   var KOFI_SPECIAL = 'You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕';
   function kofiNudge(id, show, special) {
@@ -4525,15 +4537,20 @@ const Q = (function() {
       if (!special && localStorage.getItem('nea_kofi_day') === today) return;
       localStorage.setItem('nea_kofi_day', today);
     } catch(e) { if (!special) return; }
-    a.textContent = t(special ? KOFI_SPECIAL : (SUPPORTERS.length ? KOFI_TEXT : KOFI_FIRST));
+    // The everyday ask names a Pokémon this player named early in this game, if nobody has adopted it yet
+    var pick = special ? null : kofiAdoptPick();
+    a.textContent = special ? t(KOFI_SPECIAL)
+      : pick ? t(pick.first ? KOFI_ADOPT_FIRST : KOFI_ADOPT_EARLY, { name: displayName(pick.w) })
+      : t(SUPPORTERS.length ? KOFI_TEXT : KOFI_FIRST);
     a.classList.toggle('special', !!special);
+    a.classList.toggle('adopt', !!pick);
     a.hidden = false;
-    track('kofi_nudge_shown', { placement: a.dataset.kofi + (special ? '_complete' : '') });
+    track('kofi_nudge_shown', { placement: a.dataset.kofi + (special ? '_complete' : (pick ? '_adopt' : '')) });
   }
   function kofiTrackClicks(root) {
     root.querySelectorAll('[data-kofi]').forEach(function(a) {
       a.addEventListener('click', function() {
-        track('kofi_click', { placement: a.dataset.kofi + (a.classList.contains('special') ? '_complete' : '') });
+        track('kofi_click', { placement: a.dataset.kofi + (a.classList.contains('special') ? '_complete' : (a.classList.contains('adopt') ? '_adopt' : '')) });
       });
     });
   }
