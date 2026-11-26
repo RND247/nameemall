@@ -1469,30 +1469,40 @@ body.creator .kofi-nudge { display: none !important; }
 .modal.daily-modal h2 { font-size: 1.25rem; margin-bottom: 6px; }
 .modal.daily-modal .big { font-size: 2.2rem; margin: 4px 0; }
 .modal.daily-modal p { margin-bottom: 4px; font-size: 0.82rem; }
-/* Daily result: score card, one main action, the challenge, then a quiet footer */
-.daily-modal .dr-sub { color: var(--text-dim); margin-bottom: 14px !important; }
-.daily-modal .dr-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px 12px; margin-bottom: 12px; }
-.daily-modal .dr-hero .big { margin: 0 0 6px; line-height: 1; font-variant-numeric: tabular-nums; }
-.daily-modal .dr-meta { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.daily-modal .dr-chip { font-size: 0.78rem; color: var(--text-dim); background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-variant-numeric: tabular-nums; }
-.daily-modal .dr-chip:empty { display: none; }
-.daily-modal .dr-chip.dr-streak { color: #f59e0b; border-color: rgba(245,158,11,.35); }
-.daily-modal .dr-hero .daily-result-grid { margin: 0; padding: 0; border: 0; background: none; }
-.daily-modal .dr-actions { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 14px; }
-.daily-modal .dr-actions .btn { padding: 9px 12px; }
-.daily-modal .dr-main { font-size: 0.9rem; padding: 11px 12px !important; background: var(--accent); color: #fff; }
-.daily-modal .dr-main:hover { filter: brightness(1.1); }
-.daily-modal .dr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.daily-modal .dr-challenge { display: flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
-.daily-modal .dr-challenge input { flex: 1; min-width: 0; height: auto; margin: 0; background: var(--bg); color: var(--text); border: 0; border-radius: 0; padding: 9px 12px; font-size: 0.82rem; outline: none; }
-.daily-modal .dr-challenge .btn { margin: 0; border: 0; border-inline-start: 1px solid var(--border); border-radius: 0; white-space: nowrap; padding: 9px 12px; }
-.daily-modal .dr-foot { border-top: 1px solid var(--border); padding-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.daily-modal .dr-foot .daily-next { margin-top: 0; }
-.daily-modal .dr-discord { background: none; color: #8b93ff; padding: 0; margin: 0; font-weight: 600; }
-.daily-modal .dr-discord:hover { filter: none; text-decoration: underline; }
-.daily-modal .dr-foot .kofi-nudge { margin: 0; text-align: center; max-width: 340px; line-height: 1.4; }
-.daily-modal .dr-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-.daily-modal .dr-nav .btn { background: transparent; padding: 8px 10px; }
+/* Result windows (Daily and Full Pokédex): score card, one main action, then a quiet footer */
+.dr-modal .btn { margin: 0; }
+.dr-modal .dr-row { display: flex; gap: 8px; }
+.dr-modal .dr-row .btn { flex: 1; }
+.dr-modal .dr-label { margin: 0 0 4px !important; font-size: 0.72rem !important; text-transform: uppercase; letter-spacing: 1px; }
+.dr-modal .dr-best { margin: 0 !important; font-size: 0.78rem !important; }
+.dr-modal .dr-best:empty { display: none; }
+.dr-modal .dr-hero .modal-hint, .dr-modal .dr-hero .modal-chat { margin: 8px 0 0 !important; font-size: 0.8rem !important; }
+.pdx-modal { max-width: min(400px, 94vw); padding: 26px 22px; }
+.pdx-modal h2 { margin-bottom: 12px; }
+.pdx-modal .dr-foot:not(:has(> :not([hidden]))) { display: none; }
+.dr-modal .dr-sub { color: var(--text-dim); margin-bottom: 14px !important; }
+.dr-modal .dr-hero { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px 12px; margin-bottom: 12px; }
+.dr-modal .dr-hero .big { margin: 0 0 6px; line-height: 1; font-variant-numeric: tabular-nums; }
+.dr-modal .dr-meta { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.dr-modal .dr-chip { font-size: 0.78rem; color: var(--text-dim); background: var(--bg2); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-variant-numeric: tabular-nums; }
+.dr-modal .dr-chip:empty { display: none; }
+.dr-modal .dr-chip.dr-streak { color: #f59e0b; border-color: rgba(245,158,11,.35); }
+.dr-modal .dr-hero .daily-result-grid { margin: 0; padding: 0; border: 0; background: none; }
+.dr-modal .dr-actions { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 14px; }
+.dr-modal .dr-actions .btn { padding: 9px 12px; }
+.dr-modal .dr-main { font-size: 0.9rem; padding: 11px 12px !important; background: var(--accent); color: #fff; }
+.dr-modal .dr-main:hover { filter: brightness(1.1); }
+.dr-modal .dr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dr-modal .dr-challenge { display: flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 14px; }
+.dr-modal .dr-challenge input { flex: 1; min-width: 0; height: auto; margin: 0; background: var(--bg); color: var(--text); border: 0; border-radius: 0; padding: 9px 12px; font-size: 0.82rem; outline: none; }
+.dr-modal .dr-challenge .btn { margin: 0; border: 0; border-inline-start: 1px solid var(--border); border-radius: 0; white-space: nowrap; padding: 9px 12px; }
+.dr-modal .dr-foot { border-top: 1px solid var(--border); padding-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dr-modal .dr-foot .daily-next { margin-top: 0; }
+.dr-modal .dr-discord { background: none; color: #8b93ff; padding: 0; margin: 0; font-weight: 600; }
+.dr-modal .dr-discord:hover { filter: none; text-decoration: underline; }
+.dr-modal .dr-foot .kofi-nudge { margin: 0; text-align: center; max-width: 340px; line-height: 1.4; }
+.dr-modal .dr-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+.dr-modal .dr-nav .btn { background: transparent; padding: 8px 10px; }
 .daily-result-grid { font-family: 'SF Mono', Menlo, monospace; font-size: clamp(0.62rem, 2.1vw, 0.9rem); line-height: 1.25; letter-spacing: 0; padding: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0; user-select: all; white-space: pre; word-break: keep-all; overflow-x: auto; max-width: 100%; }
 .daily-share-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 .daily-share-row .btn { min-width: 130px; }
@@ -1922,20 +1932,27 @@ body.creator .kofi-nudge { display: none !important; }
 </div>
 
 <div class="overlay" id="overlay">
-  <div class="modal">
+  <div class="modal dr-modal pdx-modal">
     <h2 id="modal-title">Well done!</h2>
-    <p>You named</p>
-    <div class="big" id="modal-score">0 / 0</div>
-    <p id="modal-time"></p>
-    <p id="modal-pct"></p>
-    <p id="modal-hint" class="modal-hint" hidden></p>
-    <p id="modal-best"></p>
-    <p id="modal-chat" class="modal-chat" hidden></p>
-    <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
-    <a class="discord-link" id="modal-discord" data-discord="pokedex_result" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener" hidden>💬 Show it off on Discord</a>
-    <a class="kofi-nudge" id="modal-kofi" data-kofi="pokedex_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
-    <button class="btn" onclick="Q.closeModal()">Close</button>
-    <button class="btn danger" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+    <div class="dr-hero">
+      <p class="dr-label">You named</p>
+      <div class="big" id="modal-score">0 / 0</div>
+      <div class="dr-meta"><span class="dr-chip" id="modal-time"></span><span class="dr-chip" id="modal-pct"></span></div>
+      <p id="modal-best" class="dr-best"></p>
+      <p id="modal-hint" class="modal-hint" hidden></p>
+      <p id="modal-chat" class="modal-chat" hidden></p>
+    </div>
+    <div class="dr-actions">
+      <button class="btn danger dr-main" onclick="Q.reset(); Q.closeModal()">Play Again</button>
+      <div class="dr-row">
+        <button class="btn" id="modal-image-btn" hidden>🖼️ Share Image</button>
+        <button class="btn" onclick="Q.closeModal()">Close</button>
+      </div>
+    </div>
+    <div class="dr-foot">
+      <a class="discord-link dr-discord" id="modal-discord" data-discord="pokedex_result" href="https://discord.gg/XqReMaV2N3" target="_blank" rel="noopener" hidden>💬 Show it off on Discord</a>
+      <a class="kofi-nudge" id="modal-kofi" data-kofi="pokedex_result" href="https://ko-fi.com/rand32491" target="_blank" rel="noopener" hidden>Enjoyed it? Support NameEmAll on Ko-fi ☕</a>
+    </div>
   </div>
 </div>
 
@@ -1995,7 +2012,7 @@ body.creator .kofi-nudge { display: none !important; }
 </div>
 
 <div class="overlay" id="daily-result-overlay">
-  <div class="modal daily-modal">
+  <div class="modal daily-modal dr-modal">
     <h2 id="daily-result-title">Daily Complete!</h2>
     <p class="dr-sub" id="daily-result-sub">🗓️ Daily #0 · Today</p>
     <div class="dr-hero">
