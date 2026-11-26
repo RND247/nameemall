@@ -248,6 +248,47 @@ body.skin-fx-pikachu.light .region-header { color: #8a5a2b; }
 @keyframes fx-dash { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-100vw - 60vw)); } }
 @keyframes fx-hop { from { transform: translateY(0); } to { transform: translateY(-10px); } }
 @media (prefers-reduced-motion: reduce) { .scene-pikachu .zig, .scene-pikachu .flash, .scene-pikachu svg { animation: none; } }
+/* ── Skin FX: Hanukkah (winter night with gold motes and a menorah that lights up as the board fills, candle-glow reveal) ── */
+body.skin-fx-hanukkah:not(.light) { --bg: #0d1430; background: #0d1430; }
+body.skin-fx-hanukkah.light { --bg: #f3f7ff; background: #f3f7ff; }
+.scene-hanukkah { inset: 0; opacity: 1 !important; overflow: hidden; }
+.scene-hanukkah .night { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 110%, rgba(255,190,80,.18), transparent 55%), radial-gradient(ellipse at 50% -20%, #22357a 0%, #131d48 45%, #0d1430 85%); }
+body.light .scene-hanukkah .night { background: radial-gradient(ellipse at 50% 110%, rgba(255,200,90,.3), transparent 55%), linear-gradient(#ffffff, #e3ecff 60%, #d3e1ff); }
+.scene-hanukkah > b { position: absolute; bottom: -10px; width: 4px; height: 4px; border-radius: 50%; background: #ffd36b; box-shadow: 0 0 8px 2px rgba(255,211,107,.6); opacity: 0; animation: fx-mote 20s linear infinite; }
+body.light .scene-hanukkah > b { background: #e0a82e; box-shadow: 0 0 6px 1px rgba(224,168,46,.5); }
+@keyframes fx-mote { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .8; } 50% { transform: translate(18px, -55vh); } 90% { opacity: .6; } 100% { transform: translate(-10px, -110vh); opacity: 0; } }
+.scene-hanukkah .menorah { position: absolute; left: 50%; bottom: 3vh; transform: translateX(-50%); display: flex; align-items: flex-end; gap: clamp(10px, 2.4vw, 22px); height: 150px; padding: 0 14px 38px; opacity: .32; }
+body.light .scene-hanukkah .menorah { opacity: .4; }
+.scene-hanukkah .menorah i { position: relative; width: 12px; height: 48px; border-radius: 3px; background: linear-gradient(#f1f5ff, #9fb6ff); z-index: 1; }
+.scene-hanukkah .menorah i.shamash { height: 74px; }
+.scene-hanukkah .menorah i b { position: absolute; left: 50%; bottom: 100%; width: 16px; height: 26px; margin-left: -8px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 50% 70%, #fffbe6 0 22%, #ffd36b 45%, #ff9b3d 80%); box-shadow: 0 0 18px 6px rgba(255,190,80,.5); opacity: 0; transform-origin: 50% 100%; transition: opacity .4s; }
+.scene-hanukkah .menorah i.on b { opacity: 1; animation: fx-flicker 1.7s ease-in-out infinite alternate; }
+.scene-hanukkah .menorah i.flare b { animation: fx-flare .9s ease-out, fx-flicker 1.7s ease-in-out .9s infinite alternate; }
+@keyframes fx-flare { 0% { transform: scale(.2); box-shadow: 0 0 0 0 rgba(255,211,107,.9); } 40% { transform: scale(1.5); box-shadow: 0 0 40px 18px rgba(255,211,107,.7); } 100% { transform: scale(1); } }
+.scene-hanukkah .menorah .bar { position: absolute; left: 0; right: 0; bottom: 30px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, #9c7a1a, #ffd36b, #9c7a1a); }
+.scene-hanukkah .menorah .stem { position: absolute; left: 50%; bottom: 0; width: 70px; height: 30px; margin-left: -35px; background: linear-gradient(#ffd36b, #9c7a1a); clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%); }
+body.skin-fx-hanukkah header, body.skin-fx-hanukkah .tab-bar { background: rgba(13,20,48,0.62); }
+body.skin-fx-hanukkah.light header, body.skin-fx-hanukkah.light .tab-bar { background: rgba(243,247,255,0.78); }
+body.skin-fx-hanukkah .card.unrevealed { background: linear-gradient(160deg, #1f2f66, #141d45); border: 1px solid rgba(255,211,107,.35); border-radius: 12px; box-shadow: inset 0 1px 0 rgba(158,194,255,.18), 0 3px 10px rgba(0,0,0,.3); }
+body.skin-fx-hanukkah.light .card.unrevealed { background: linear-gradient(160deg, #ffffff, #dbe7ff); border-color: rgba(201,164,58,.55); box-shadow: inset 0 -3px 6px rgba(79,125,255,.12), 0 2px 6px rgba(47,91,216,.12); }
+body.skin-fx-hanukkah .card.unrevealed .poke-placeholder { color: #ffd36b !important; opacity: .8 !important; text-shadow: 0 0 10px rgba(255,211,107,.5); }
+body.skin-fx-hanukkah.light .card.unrevealed .poke-placeholder { color: #2f5bd8 !important; opacity: .65 !important; text-shadow: none; }
+body.skin-fx-hanukkah .card.just-found { animation: none; }
+body.skin-fx-hanukkah.light .title .accent { background-image: linear-gradient(90deg, #2f5bd8, #c9961f, #4f7dff, #b8860b, #2f5bd8); }
+body.skin-fx-hanukkah[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { animation: none; border: 1px solid rgba(255,211,107,.6); border-radius: 12px; box-shadow: 0 0 10px rgba(255,190,80,.25); }
+body.skin-fx-hanukkah.light[data-tab] .card.found:not(.chat-claim):not(.last-revealed) { border-color: rgba(201,164,58,.7); box-shadow: 0 2px 8px rgba(224,168,46,.2); }
+body.skin-fx-hanukkah .region-section.region-complete { border-color: #ffd36b; box-shadow: 0 0 18px rgba(255,211,107,.45), inset 0 0 22px rgba(79,125,255,.18); }
+body.skin-fx-hanukkah .region-header { color: #ffe9a8; }
+body.skin-fx-hanukkah.light .region-header { color: #2f5bd8; }
+.fx-candle { position: absolute; pointer-events: none; z-index: 150; }
+.fx-candle .glow { position: absolute; inset: -6px; border-radius: 14px; background: radial-gradient(circle, rgba(255,247,214,.95) 0%, rgba(255,211,107,.6) 35%, rgba(255,190,80,0) 72%); opacity: 0; animation: fx-hit .8s ease-out forwards; }
+.fx-candle .flame { position: absolute; left: 50%; top: 30%; width: 16px; height: 26px; margin-left: -8px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 50% 70%, #fffbe6 0 22%, #ffd36b 45%, #ff9b3d 80%); box-shadow: 0 0 16px 6px rgba(255,190,80,.55); opacity: 0; animation: fx-rise 1.1s ease-out forwards; }
+.fx-candle b { position: absolute; left: 50%; top: 45%; width: 4px; height: 4px; border-radius: 50%; background: #ffe9a8; box-shadow: 0 0 6px #ffd36b; opacity: 0; animation: fx-ember .9s ease-out forwards; }
+@keyframes fx-rise { 0% { opacity: 0; transform: translateY(10px) scale(.4); } 25% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-46px) scale(.7); } }
+@keyframes fx-ember { 0% { opacity: 1; transform: translate(0, 0); } 100% { opacity: 0; transform: translate(var(--x), -60px); } }
+@media (prefers-reduced-motion: reduce) { .scene-hanukkah > b, .scene-hanukkah .menorah i.on b { animation: none; } }
 /* ── Skin FX: Rare Candy (candy-stripe scene, glossy wrapper tiles, unwrap reveal, level-up banner) ── */
 body.skin-fx-candy:not(.light) { --bg: #160f2e; background: #160f2e; }
 body.skin-fx-candy.light { --bg: #f4efff; background: #f4efff; }
@@ -1384,6 +1425,25 @@ body.creator .kofi-nudge { display: none !important; }
 .daily-challenge-row input { flex: 1 1 140px; max-width: 200px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; }
 .daily-done-bar { display: flex; justify-content: center; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
 .daily-sticky { padding: 6px 0 4px; border-top: 1px solid var(--border); margin-top: 6px; }
+.daily-lobby .dl-theme { margin: -8px auto 16px; padding: 10px 14px; max-width: 380px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg2); }
+.daily-lobby .dl-th-eyebrow { font-size: 0.68rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+.daily-lobby .dl-th-title { font-size: 1.05rem; font-weight: 800; margin-top: 2px; }
+.daily-lobby .dl-th-note { font-size: 0.76rem; color: var(--text-dim); margin-top: 6px; }
+.daily-lobby .dl-theme.hanukkah { border-color: rgba(255,211,107,.45); background: linear-gradient(160deg, rgba(79,125,255,.16), rgba(255,211,107,.06)); }
+.daily-lobby .dl-theme.hanukkah.soon { padding: 8px 12px; }
+.daily-lobby .dl-theme.hanukkah.soon .dl-th-note { margin-top: 0; color: var(--text); }
+.dl-menorah { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 9px; height: 64px; margin: 8px auto 2px; width: fit-content; padding: 0 8px 18px; }
+.dl-menorah i { position: relative; width: 7px; height: 22px; border-radius: 2px; background: linear-gradient(#e9efff, #9fb6ff); opacity: .45; z-index: 1; }
+.dl-menorah i.shamash { height: 34px; }
+.dl-menorah i b { position: absolute; left: 50%; bottom: 100%; width: 10px; height: 15px; margin-left: -5px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background: radial-gradient(circle at 50% 70%, #fff7d6 0 22%, #ffd36b 45%, #ff9b3d 80%); box-shadow: 0 0 10px 3px rgba(255,190,80,.55); opacity: 0; transform-origin: 50% 100%; }
+.dl-menorah i.on { opacity: 1; }
+.dl-menorah i.on b { opacity: 1; animation: fx-flicker 1.6s ease-in-out infinite alternate; }
+.dl-menorah i.tonight { opacity: .8; outline: 1px dashed rgba(255,211,107,.8); outline-offset: 3px; }
+.dl-menorah .bar { position: absolute; left: 0; right: 0; bottom: 14px; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #b8901f, #ffd36b, #b8901f); }
+.dl-menorah .stem { position: absolute; left: 50%; bottom: 0; width: 26px; height: 14px; margin-left: -13px; background: linear-gradient(#ffd36b, #b8901f); clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%); }
+@keyframes fx-flicker { 0% { transform: scale(1, 1) rotate(-2deg); } 50% { transform: scale(.92, 1.08) rotate(2deg); } 100% { transform: scale(1.04, .95) rotate(-1deg); } }
+@media (prefers-reduced-motion: reduce) { .dl-menorah i.on b { animation: none; } }
 /* Daily board: centered grid matching the share layout (Mini 5 across, Midi 6 across) */
 .daily-board { max-width: 760px; }
 .daily-board .region-grid { grid-template-columns: repeat(var(--daily-cols, 5), minmax(0, 120px)); justify-content: center; gap: 8px; padding: 8px 0 16px; }
@@ -2647,6 +2707,7 @@ const Q = (function() {
         wrap.appendChild(sec);
       }
     }
+    hanukkahCandles(false); // a new board starts the Hanukkah skin's menorah over
   }
 
   document.addEventListener('error', function(e) {
@@ -4332,6 +4393,53 @@ const Q = (function() {
   var DAILY_ARCHIVE_KEY = 'daily_archive_v1';  // { 'YYYY-MM-DD': { mini: best, midi: best } } for past days (never counts toward streaks)
   var DAILY_NAME_KEY = 'daily_player_name';
   var DAILY_SITE_URL = 'https://nameemall.com/';
+  // Themed Daily days: on these local dates both Mini and Midi draw only from one theme.
+  //   theme: a themes.json slug with 30+ Pokémon (a type, starters, legendary, pseudo-legendary) or 'gen-1'..'gen-9'
+  //   by:    the Ko-fi supporter who picked it (their name only with their OK)
+  //   event + night: Hanukkah
+  // Only add future dates: changing a past date would change that day's archive board.
+  var HANUKKAH = { teaser: '2026-11-26', start: '2026-12-04', end: '2026-12-11' };
+  var DAILY_THEMED = {
+    '2026-12-04': { theme: 'fire-type', event: 'hanukkah', night: 1 },
+    '2026-12-05': { theme: 'electric-type', event: 'hanukkah', night: 2 },
+    '2026-12-06': { theme: 'ghost-type', event: 'hanukkah', night: 3 },
+    '2026-12-07': { theme: 'steel-type', event: 'hanukkah', night: 4 },
+    '2026-12-08': { theme: 'fighting-type', event: 'hanukkah', night: 5 },
+    '2026-12-09': { theme: 'fairy-type', event: 'hanukkah', night: 6 },
+    '2026-12-10': { theme: 'dragon-type', event: 'hanukkah', night: 7 },
+    '2026-12-11': { theme: 'legendary', event: 'hanukkah', night: 8 }
+  };
+  var KOFI_URL = 'https://ko-fi.com/rand32491';
+  function dailyThemeFor(dateStr) { return DAILY_THEMED[dateStr] || null; }
+  // { icon, label, ids | gen } for a themed day, or null (also null until themes.json has loaded)
+  function dailyThemeInfo(dt) {
+    if (!dt) return null;
+    var g = /^gen-([1-9])$/.exec(dt.theme);
+    if (g) return { icon: '📘', label: t('Gen {range}', { range: g[1] }) + ' · ' + t(REGION_ORDER[+g[1] - 1]), gen: +g[1] };
+    var th = themeList && themeList.filter(function(x) { return x.slug === dt.theme; })[0];
+    return th ? { icon: th.icon, label: themeTitle(th), ids: th.ids } : null;
+  }
+  // One line naming the day's theme (and Hanukkah night, and who picked it), for the badge and share text
+  function dailyThemeLine(dateStr) {
+    var dt = dailyThemeFor(dateStr), ti = dailyThemeInfo(dt);
+    if (!ti) return '';
+    var line = ti.icon + ' ' + ti.label;
+    if (dt.event === 'hanukkah') line = t('🕎 Hanukkah, night {n} of 8', { n: dt.night }) + ' · ' + line;
+    return line;
+  }
+  function dailyShortDate(s) {
+    var p = s.split('-');
+    return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString(NEA_LOCALE, { month: 'short', day: 'numeric' });
+  }
+  // Hanukkah nights this player lit (a ranked Daily played on that night)
+  function hanukkahLitNights() {
+    var ranked = dailyLoadResults(), lit = {};
+    Object.keys(DAILY_THEMED).forEach(function(day) {
+      var dt = DAILY_THEMED[day];
+      if (dt.event === 'hanukkah' && ranked[day] && (ranked[day].mini || ranked[day].midi)) lit[dt.night] = true;
+    });
+    return lit;
+  }
   // Discord invite shown on the Daily results screen (empty = hidden). Only there, not on the
   // main screen or the kids page: Discord is for ages 13+.
   // One permanent invite per channel, so each link lands people where the conversation is
@@ -4385,6 +4493,7 @@ const Q = (function() {
   // A finished run of 100+ Pokémon (a whole generation or the full Pokédex) is the player's peak moment:
   // there the ask is warmer and skips the daily cap, since it happens rarely.
   var KOFI_TEXT = 'Enjoyed it? Support NameEmAll on Ko-fi ☕';
+  var KOFI_FIRST = 'Enjoyed it? Be the first to support NameEmAll on Ko-fi ☕';
   var KOFI_SPECIAL = 'You finished it! If NameEmAll made that fun, a Rare Candy on Ko-fi helps keep it free ☕';
   function kofiNudge(id, show, special) {
     var a = $(id); if (!a) return;
@@ -4395,7 +4504,7 @@ const Q = (function() {
       if (!special && localStorage.getItem('nea_kofi_day') === today) return;
       localStorage.setItem('nea_kofi_day', today);
     } catch(e) { if (!special) return; }
-    a.textContent = t(special ? KOFI_SPECIAL : KOFI_TEXT);
+    a.textContent = t(special ? KOFI_SPECIAL : (SUPPORTERS.length ? KOFI_TEXT : KOFI_FIRST));
     a.classList.toggle('special', !!special);
     a.hidden = false;
     track('kofi_nudge_shown', { placement: a.dataset.kofi + (special ? '_complete' : '') });
@@ -4415,7 +4524,7 @@ const Q = (function() {
     var el = $('supporters'); if (!el) return;
     el.textContent = SUPPORTERS.length
       ? t('☕ Thank you to our supporters: {names}', { names: SUPPORTERS.join(', ') })
-      : t('☕ Supporters wall: be the first! Leave a name with your Ko-fi support and it will be listed here.');
+      : t('☕ The Supporters wall is still empty. Support on Ko-fi and your name goes first, for good.');
   })();
   function dailyTodayStr(d) {
     d = d || new Date();
@@ -4680,8 +4789,10 @@ const Q = (function() {
       '<div class="dl-eyebrow">Today\'s Challenges</div>' +
       '<h2>' + t('🗓️ Daily #{num}', { num: dailyNum }) + '</h2>' +
       '<div class="dl-date">' + t('{date} · silhouettes 🔍', { date: dailyDateLabel(todayStr) }) + '</div>' +
+      '<div id="dl-theme"></div>' +
       '<div class="dl-modes">' + cards + '</div>' +
       '<div class="dl-countdown">Next daily in <span class="dl-cd-val" id="dl-countdown">--:--:--</span></div>' +
+      '<a class="kofi-nudge dl-pick" data-kofi="daily_pick" href="' + KOFI_URL + '" target="_blank" rel="noopener"></a>' +
       (dailyNum > 1
         ? '<button class="btn dl-prev-toggle" data-dl-prev-toggle aria-expanded="' + (dailyState.prevOpen ? 'true' : 'false') + '">' +
             (dailyState.prevOpen ? '▾ ' : '▸ ') + t('📚 Play previous dailies') + '</button>' +
@@ -4693,6 +4804,11 @@ const Q = (function() {
         : '');
     wrap.appendChild(lobby);
 
+    dailyRenderTheme(todayStr);
+    var pick = lobby.querySelector('.dl-pick');
+    pick.textContent = SUPPORTERS.length ? t('☕ Ko-fi supporters pick the theme of a future Daily') : t('☕ Ko-fi supporters pick the theme of a future Daily. Be the first!');
+    kofiTrackClicks(lobby);
+    if (!dailyPickShown && !document.body.classList.contains('creator')) { dailyPickShown = true; track('kofi_nudge_shown', { placement: 'daily_pick' }); }
     dailyRenderChallengeBanner();
     dailyRenderArchive();
     dailySyncStreakProps();
@@ -4731,6 +4847,42 @@ const Q = (function() {
         b.textContent = (dailyState.prevOpen ? '▾ ' : '▸ ') + t('📚 Play previous dailies');
       }
     });
+  }
+
+  var dailyPickShown = false;
+  // Today's theme under the date: Hanukkah gets a menorah (one candle per night the player played),
+  // a supporter's pick gets their name, and the week before Hanukkah shows a teaser
+  function dailyRenderTheme(todayStr) {
+    var el = $('dl-theme');
+    if (!el) return;
+    var dt = dailyThemeFor(todayStr);
+    if (dt && !themeList) { loadThemes().then(function() { if ($('dl-theme') === el) dailyRenderTheme(todayStr); }, function() {}); return; }
+    var esc = function(x) { var d = document.createElement('div'); d.textContent = x; return d.innerHTML; };
+    var ti = dailyThemeInfo(dt), html = '';
+    if (dt && dt.event === 'hanukkah' && ti) {
+      var lit = hanukkahLitNights(), candles = '';
+      // Candle 1 is on the right, like a real menorah; the shamash stands in the middle
+      for (var n = 8; n >= 1; n--) {
+        if (n === 4) candles += '<i class="shamash on"><b></b></i>';
+        candles += '<i class="' + (lit[n] ? 'on' : (n === dt.night ? 'tonight' : '')) + '"><b></b></i>';
+      }
+      var count = Object.keys(lit).length;
+      html = '<div class="dl-theme hanukkah">' +
+        '<div class="dl-th-eyebrow">' + esc(t('🕎 Hanukkah, night {n} of 8', { n: dt.night })) + '</div>' +
+        '<div class="dl-th-title">' + esc(ti.icon + ' ' + ti.label) + '</div>' +
+        '<div class="dl-menorah" aria-hidden="true">' + candles + '<span class="bar"></span><span class="stem"></span></div>' +
+        '<div class="dl-th-note">' + esc(lit[dt.night] ? t('🕯️ Tonight\'s candle is lit. {count} of 8 so far', { count: count })
+          : t('🕯️ Play tonight\'s Daily to light a candle. Your first one unlocks the Hanukkah skin')) + '</div></div>';
+    } else if (ti) {
+      html = '<div class="dl-theme">' +
+        '<div class="dl-th-eyebrow">' + esc(t("Today's theme")) + '</div>' +
+        '<div class="dl-th-title">' + esc(ti.icon + ' ' + ti.label) + '</div>' +
+        (dt.by ? '<div class="dl-th-note">' + esc(t('☕ Picked by {name}, a Ko-fi supporter. Thank you!', { name: dt.by })) + '</div>' : '') + '</div>';
+    } else if (todayStr >= HANUKKAH.teaser && todayStr < HANUKKAH.start) {
+      html = '<div class="dl-theme hanukkah soon"><div class="dl-th-note">' +
+        esc(t('🕎 Hanukkah Dailies start {date}: 8 nights, 8 themes and a new skin', { date: dailyShortDate(HANUKKAH.start) })) + '</div></div>';
+    }
+    el.innerHTML = html;
   }
 
   function dailyRenderChallengeBanner() {
@@ -4821,6 +4973,12 @@ const Q = (function() {
     var seed = dailySeedFor(todayStr, mode);
     var rng = mulberry32(seed);
     var pool = filterByGens(data, new Set([1,2,3,4,5,6,7,8,9]));
+    var ti = dailyThemeInfo(dailyThemeFor(todayStr));
+    if (ti) {
+      var idSet = ti.ids ? new Set(ti.ids) : null;
+      var themed = ti.gen ? filterByGens(data, new Set([ti.gen])) : pool.filter(function(p) { return idSet.has(p.id); });
+      if (themed.length >= DAILY_MODES.midi.size) pool = themed;
+    }
     var indices = pool.map(function(_, i) { return i; });
     var pickCount = Math.min(cfg.size, pool.length);
     var picked = dailyShuffle(indices, rng).slice(0, pickCount).sort(function(a, b) { return a - b; });
@@ -4873,7 +5031,9 @@ const Q = (function() {
       $('daily-sticky').style.display = '';
 
       $('db-num').textContent = cfg.label + ' #' + dailyState.dailyNum;
-      $('db-date').textContent = dailyDateLabel(todayStr) + (isArchive ? ' · ' + t('Archive') : (dailyState.unranked ? ' · ' + t('Unranked') : ''));
+      var themeLine = dailyThemeLine(todayStr), dtPick = dailyThemeFor(todayStr);
+      $('db-date').textContent = dailyDateLabel(todayStr) + (isArchive ? ' · ' + t('Archive') : (dailyState.unranked ? ' · ' + t('Unranked') : '')) +
+        (themeLine ? ' · ' + themeLine : '') + (themeLine && dtPick.by ? ' · ' + t('☕ picked by {name}', { name: dtPick.by }) : '');
       dailyUpdateStreakBadge();
 
       renderGrid();
@@ -4893,11 +5053,16 @@ const Q = (function() {
       }
     };
 
+    // A themed day needs themes.json before the board can be built
+    var go = function(data) {
+      if (dailyThemeFor(todayStr) && !themeList) loadThemes().then(function() { startWith(data); }, function() { startWith(data); });
+      else startWith(data);
+    };
     var cached = dataSources['pokemon'];
-    if (cached) startWith(cached);
+    if (cached) go(cached);
     else {
       $('grid-wrap').innerHTML = '<div class="loading">Loading…</div>';
-      fetch('pokemon.json').then(function(r) { return r.json(); }).then(startWith);
+      fetch('pokemon.json').then(function(r) { return r.json(); }).then(go);
     }
   }
 
@@ -5133,6 +5298,8 @@ const Q = (function() {
     var dailyNum = result.dailyNum || dailyState.dailyNum;
     var pct = Math.round((result.score / result.total) * 100);
     var header = t('NameEmAll · Daily {label} #{num}', { label: cfg.label, num: dailyNum }) + (dailyState.archive ? t(' (archive)') : '');
+    var themeLine = dailyThemeLine(dailyState.dateStr);
+    if (themeLine) header += '\n' + themeLine;
     var stats = t('{score}/{total} ({pct}%) in {time}', { score: result.score, total: result.total, pct: pct, time: fmtTime(result.time) });
     var grid = dailyBuildShareGrid(result);
     var url = DAILY_SITE_URL;
@@ -6413,7 +6580,7 @@ const Q = (function() {
   // Daily numbers come straight from the saved results (ranked days for streaks, archive too for perfect runs)
   function achDailyStats() {
     var ranked = dailyLoadResults(), archive = dailyLoadArchive(), legacy = dailyLoadLegacy();
-    var s = { played: 0, finished: 0, mini: false, midi: false, fastMini: false, best: 0 };
+    var s = { played: 0, finished: 0, mini: false, midi: false, fastMini: false, best: 0, hanukkahAny: false, hanukkahNights: 0 };
     if (!achResetSnap) s.played = dailyPlayedDays(ranked, legacy);
     else Object.keys(ranked).forEach(function(day) {
       if (['mini', 'midi'].some(function(mode) { var r = ranked[day] && ranked[day][mode]; return r && achKeep('r', day, mode, r); })) s.played++;
@@ -6425,12 +6592,17 @@ const Q = (function() {
           var r = all[day] && all[day][mode];
           if (!r || !achKeep(src, day, mode, r)) return;
           s.finished++;
+          if (DAILY_THEMED[day] && DAILY_THEMED[day].event === 'hanukkah') s.hanukkahAny = true;
           if (dailyIsSuccess(r)) {
             if (mode === 'mini') { s.mini = true; if (r.time && r.time < 30000) s.fastMini = true; }
             else s.midi = true;
           }
         });
       });
+    });
+    Object.keys(DAILY_THEMED).forEach(function(day) {
+      if (DAILY_THEMED[day].event !== 'hanukkah' || !ranked[day]) return;
+      if (['mini', 'midi'].some(function(mode) { var r = ranked[day][mode]; return r && achKeep('r', day, mode, r); })) s.hanukkahNights++;
     });
     ['mini', 'midi'].forEach(function(mode) {
       var days = Object.keys(ranked).filter(function(k) {
@@ -6481,6 +6653,8 @@ const Q = (function() {
       var ids = ACH_SETS[c[0]];
       list.push({ id: 'set_' + c[0], cat: 'Collections', icon: c[1], title: c[2], desc: c[3], n: ids.length, p: [achCountIds(ids), ids.length] });
     });
+    // Eight Nights can only be earned during Hanukkah, so it is listed only until then (or once earned)
+    var eight = { id: 'd_hanukkah8', cat: 'Daily', icon: '🕯️', title: 'Eight Nights', desc: 'Light all 8 candles: play the Hanukkah Daily on each of its nights', p: [d.hanukkahNights, 8] };
     list.push(
       { id: 'd_first', cat: 'Daily', icon: '🗓️', title: 'Daily Debut', desc: 'Finish your first Daily challenge', p: flag(d.finished > 0) },
       { id: 'd_mini', cat: 'Daily', icon: '⭐', title: 'Mini Perfect', desc: 'Name all 5 in a Daily Mini', p: flag(d.mini) },
@@ -6490,12 +6664,18 @@ const Q = (function() {
       { id: 'd_s7', cat: 'Daily', icon: '🔥', title: 'Week Warrior', desc: 'Reach a {count}-day streak', n: 7, p: [Math.min(d.best, 7), 7] },
       { id: 'd_s30', cat: 'Daily', icon: '🌋', title: 'Unstoppable', desc: 'Reach a {count}-day streak', n: 30, p: [Math.min(d.best, 30), 30] },
       { id: 'd_10', cat: 'Daily', icon: '📅', title: 'Regular', desc: 'Play the Daily on {count} different days', n: 10, p: [Math.min(d.played, 10), 10] },
+      // Hanukkah: any Hanukkah Daily (archive too) unlocks the skin; all 8 on their nights is the event badge
+      { id: 'set_hanukkah', cat: 'Daily', icon: '🕎', title: 'Festival of Lights', desc: 'Play a Hanukkah Daily (Dec 4 to 11)', p: flag(d.hanukkahAny) },
       { id: 'duel1', cat: 'Multiplayer', icon: '⚔️', title: 'First Victory', desc: 'Win a Duel', p: [Math.min(achStats.duelWins, 1), 1] },
       { id: 'duel5', cat: 'Multiplayer', icon: '🥇', title: 'Duel Champion', desc: 'Win {count} Duels', n: 5, p: [Math.min(achStats.duelWins, 5), 5] },
       { id: 'coop', cat: 'Multiplayer', icon: '🤝', title: 'Better Together', desc: 'Finish a Co-Op game', p: flag(achStats.coop) },
       { id: 'combo', cat: 'Just for fun', icon: '💥', title: 'Combo King', desc: 'Name {count} Pokémon in a row, each within 5 seconds', n: 10, p: [Math.min(achStats.comboBest, 10), 10] },
       { id: 'share', cat: 'Just for fun', icon: '📣', title: 'Show-Off', desc: 'Share a result with friends', p: flag(achStats.share) }
     );
+    if (achUnlocked.d_hanukkah8 || dailyTodayStr() <= HANUKKAH.end) {
+      var at = 0; list.forEach(function(a, i) { if (a.id === 'set_hanukkah') at = i + 1; });
+      list.splice(at, 0, eight);
+    }
     return list;
   }
   // Item and gym badge sprites (from PokéAPI), stored with the site in img/ach/
@@ -6694,6 +6874,9 @@ const Q = (function() {
   var SKINS = [
     { id: 'pikachu', name: 'Pikachu', fx: 'pikachu', mascot: 25, line: [25], accent: '#ffd23f',
       col: ['#ffd23f', '#ff5a4e', '#f7c21d', '#ffe066', '#ffb000', '#8a5a2b', '#fff3a0', '#e8a33d', '#ff7a6e'] },
+    // Event skin: any Hanukkah Daily unlocks it
+    { id: 'hanukkah', name: 'Hanukkah Lights', fx: 'hanukkah', event: true, mascot: 609, line: [607, 609, 608], accent: '#ffd36b',
+      col: ['#4f7dff', '#ffd36b', '#9ec2ff', '#ffe9a8', '#2f5bd8', '#c9d8ff', '#f5b942', '#7aa0ff', '#fff4cf'] },
     { id: 'birds', name: 'Legendary Birds', fx: 'birds', mascot: 145, line: [144, 145, 146], accent: '#ffcf3a',
       col: ['#a8f0ff', '#7fe3f0', '#ffd23f', '#ff7a3d', '#ffe066', '#5cc8e0', '#f7c21d', '#ff9a5c', '#ff5e3a'] },
     { id: 'creation', name: 'Creation Trio', fx: 'creation', mascot: 487, line: [483, 487, 484], accent: '#b47bff',
@@ -6814,6 +6997,13 @@ const Q = (function() {
         au.className = 'skin-aurora scene-pikachu';
         au.innerHTML = '<div class="sky"></div><div class="zig"></div><div class="flash"></div><div class="flash b"></div>' +
           '<svg class="a" viewBox="0 0 40 120" preserveAspectRatio="none">' + PIKA_BOLT + '</svg><svg class="b" viewBox="0 0 40 120" preserveAspectRatio="none">' + PIKA_BOLT + '</svg>';
+      } else if (s.fx === 'hanukkah') {
+        // Winter night with drifting gold motes, and a menorah whose candles light up as the board fills
+        au.className = 'skin-aurora scene-hanukkah';
+        var motes = '', cand = '';
+        for (var h = 0; h < 16; h++) motes += '<b style="left:' + ((h * 43 + 11) % 98) + '%;animation-duration:' + (16 + (h % 5) * 4) + 's;animation-delay:-' + (h * 2.7).toFixed(1) + 's"></b>';
+        for (var n = 8; n >= 1; n--) { if (n === 4) cand += '<i class="shamash on"><b></b></i>'; cand += '<i data-n="' + n + '"><b></b></i>'; }
+        au.innerHTML = '<div class="night"></div>' + motes + '<div class="menorah">' + cand + '<span class="bar"></span><span class="stem"></span></div>';
       } else if (s.fx === 'candy') {
         // Slow candy stripes with a few Rare Candies floating up
         au.className = 'skin-aurora scene-candy';
@@ -6824,6 +7014,7 @@ const Q = (function() {
         return '<i style="left:' + SKIN_SPOTS[i][0] + '%;top:' + SKIN_SPOTS[i][1] + '%;background:radial-gradient(circle,' + c + ' 0%,transparent 65%);animation-delay:-' + (i * 3) + 's"></i>';
       }).join('');
       b.insertBefore(au, b.firstChild);
+      if (s.fx === 'hanukkah') hanukkahCandles(false);
       var hero = document.createElement('div');
       hero.id = 'skin-hero'; hero.className = 'skin-hero'; hero.setAttribute('aria-hidden', 'true');
       hero.innerHTML = s.line.map(function(pid, i) { return skinImg(pid, pid === s.mascot, (i * 0.35).toFixed(2)); }).join('');
@@ -6852,7 +7043,8 @@ const Q = (function() {
         (open ? '' : '<span class="lk">🔒</span>') +
         '<span><span class="nm">' + esc(t(s.name)) + '</span>' +
         (!open && s.supporter ? '<span class="pt">' + esc(t('☕ Ko-fi supporters')) + '</span>' : '') +
-        (!open && a ? '<span class="pg"><span style="width:' + Math.round(a.p[0] * 100 / a.p[1]) + '%"></span></span>' +
+        (!open && s.event ? '<span class="pt">' + esc(t('🕎 Hanukkah Dailies, {date}', { date: dailyShortDate(HANUKKAH.start) + ' – ' + dailyShortDate(HANUKKAH.end) })) + '</span>' : '') +
+        (!open && a && !s.event ? '<span class="pg"><span style="width:' + Math.round(a.p[0] * 100 / a.p[1]) + '%"></span></span>' +
           '<span class="pt">' + esc(t('{count} / {total} named', { count: a.p[0], total: a.p[1] })) + '</span>' : '') +
         '</span></button>';
     });
@@ -7121,6 +7313,26 @@ const Q = (function() {
   // Rare Candy: the wrapper twists open in two halves, confetti pops, and "+1 Lv" floats up
   var CANDY_CONFETTI = ['#ff8fd8', '#7fd8ff', '#ffe066', '#ffffff', '#b49cff', '#8fffc8'];
   // Pikachu: a Thunderbolt strikes each named card; every 25 names (Pikachu is #25), and when Pikachu itself is named, Pikachu dashes across
+  // Hanukkah: a named tile glows warm and sends a small flame up; the scene's menorah lights one more
+  // candle for each eighth of the board, and all eight when the board is done
+  function hanukkahGlow(c, m) {
+    var o = fxBox(c, 'fx-candle'); if (!o) return;
+    var d = (m * 70) + 'ms', html = '<i class="glow" style="animation-delay:' + d + '"></i><i class="flame" style="animation-delay:' + d + '"></i>';
+    for (var k = 0; k < 6; k++) html += '<b style="--x:' + ((k - 2.5) * 9) + 'px;animation-delay:' + (80 + m * 70 + k * 40) + 'ms"></b>';
+    o.innerHTML = html;
+    document.body.appendChild(o);
+    setTimeout(function() { o.remove(); }, 1300 + m * 70);
+  }
+  function hanukkahCandles(flare) {
+    var sc = document.querySelector('.scene-hanukkah');
+    if (!sc) return;
+    var n = items.length ? Math.min(8, Math.floor(foundSet.size * 8 / items.length)) : 0;
+    sc.querySelectorAll('.menorah i[data-n]').forEach(function(c) {
+      var on = +c.getAttribute('data-n') <= n, was = c.classList.contains('on');
+      c.classList.toggle('on', on);
+      if (on && !was && flare) { c.classList.remove('flare'); void c.offsetWidth; c.classList.add('flare'); }
+    });
+  }
   var PIKA_BOLT = '<path d="M24 0 L6 56 L20 56 L10 120 L36 44 L22 44 L32 0 Z"/>';
   function pikachuStrike(c, m) {
     var o = fxBox(c, 'fx-thunder'); if (!o) return;
@@ -7195,6 +7407,7 @@ const Q = (function() {
     if (s.fx === 'birds') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) birdsStreak(c, m); }); birdsCombo(matches); return; }
     if (s.fx === 'pikachu') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) pikachuStrike(c, m); }); pikachuDashCheck(matches); return; }
     if (s.fx === 'candy') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) candyUnwrap(c, m); }); candyLevelCheck(matches.length); return; }
+    if (s.fx === 'hanukkah') { matches.forEach(function(idx, m) { var c = $('c' + idx); if (c) hanukkahGlow(c, m); }); hanukkahCandles(true); return; }
     matches.forEach(function(idx, m) {
       var c = $('c' + idx);
       if (!c) return;
