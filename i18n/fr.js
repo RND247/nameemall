@@ -494,5 +494,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "Ran, le créateur de NameEmAll",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name} était votre premier nom de la partie, et personne ne l’a encore adopté. Adoptez-le sur Ko-fi ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "Vous avez nommé {name} tôt dans la partie, et personne ne l’a encore adopté. Adoptez-le sur Ko-fi ☕",
+  "Play tonight's Daily": "Jouer au Défi du jour",
+  "See the Daily": "Voir le Défi du jour",
   "Level up! Lv. {level}": "Niveau supérieur ! N. {level}",
 };

@@ -494,5 +494,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "NameEmAll 제작자 Ran",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "이번 게임에서 처음 맞힌 포켓몬은 {name}! 아직 아무도 입양하지 않았어요. Ko-fi에서 입양하세요 ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "이번 게임 초반에 {name}을(를) 맞혔어요. 아직 아무도 입양하지 않았어요. Ko-fi에서 입양하세요 ☕",
+  "Play tonight's Daily": "오늘 밤 데일리 하기",
+  "See the Daily": "데일리 보기",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

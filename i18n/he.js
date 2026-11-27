@@ -481,5 +481,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "רן, שבנה את NameEmAll",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name} היה הניחוש הראשון שלכם במשחק הזה, ועדיין אף אחד לא אימץ אותו. אמצו אותו ב-Ko-fi ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "ניחשתם את {name} כבר בתחילת המשחק, ועדיין אף אחד לא אימץ אותו. אמצו אותו ב-Ko-fi ☕",
+  "Play tonight's Daily": "לאתגר של הלילה",
+  "See the Daily": "לאתגר היומי",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };

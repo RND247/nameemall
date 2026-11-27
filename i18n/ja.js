@@ -520,5 +520,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "NameEmAllの作者、Ran",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "このゲームで最初に答えたのは{name}。まだ里親がいません。Ko-fiで里親になろう ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "このゲームの序盤で{name}を答えましたね。まだ里親がいません。Ko-fiで里親になろう ☕",
+  "Play tonight's Daily": "今夜のデイリーへ",
+  "See the Daily": "デイリーを見る",
   "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };

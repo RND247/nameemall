@@ -481,5 +481,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "NameEmAll 的作者 Ran",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name}是你这局说出的第一个名字，还没有人领养它。在 Ko-fi 上领养它 ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "你在这局一开始就说出了{name}，还没有人领养它。在 Ko-fi 上领养它 ☕",
+  "Play tonight's Daily": "玩今晚的每日挑战",
+  "See the Daily": "查看每日挑战",
   "Level up! Lv. {level}": "升级了！Lv. {level}",
 };

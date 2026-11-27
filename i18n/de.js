@@ -494,5 +494,7 @@ window.NEA_UI = {
   "Ran, who made NameEmAll": "Ran, der NameEmAll gemacht hat",
   "{name} was your first name this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "{name} war dein erster Name in diesem Spiel, und noch niemand hat es adoptiert. Adoptiere es auf Ko-fi ☕",
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "Du hast {name} früh in diesem Spiel genannt, und noch niemand hat es adoptiert. Adoptiere es auf Ko-fi ☕",
+  "Play tonight's Daily": "Heute Abend spielen",
+  "See the Daily": "Zum Tab „Täglich“",
   "Level up! Lv. {level}": "Level-Up! Lv. {level}",
 };

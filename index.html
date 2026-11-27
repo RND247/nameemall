@@ -955,6 +955,18 @@ header { position: sticky; top: 0; z-index: 100; background: var(--bg); border-b
 .grid-wrap { padding: 8px 10px; max-width: 1400px; margin: 0 auto; }
 .theme-banner { display: flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 1400px; margin: 6px auto 0; padding: 8px 14px; border-radius: var(--radius); background: var(--bg-card); border: 1px solid var(--border); font-weight: 700; font-size: 0.9rem; }
 .theme-banner[hidden] { display: none; }
+.event-bar { display: flex; align-items: center; justify-content: center; gap: 6px; max-width: 1400px; margin: 6px auto 0; padding: 0 6px; }
+.event-bar[hidden], body.creator .event-bar, body[data-tab="daily"] .event-bar { display: none; }
+.event-bar-go { flex: 0 1 auto; min-width: 0; font: inherit; font-size: 0.85rem; font-weight: 700; color: #ffe9a8; cursor: pointer;
+  padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(255,211,107,.55);
+  background: linear-gradient(90deg, rgba(47,91,216,.35), rgba(79,125,255,.22)); box-shadow: 0 0 14px rgba(255,211,107,.18); }
+.event-bar-go:hover { border-color: #ffd36b; box-shadow: 0 0 18px rgba(255,211,107,.35); }
+.event-bar-go .go { margin-inline-start: 8px; color: #ffd36b; white-space: nowrap; }
+.event-bar-x { flex: none; background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 0.8rem; padding: 6px; }
+.event-bar-x:hover { color: var(--text); }
+body.light .event-bar-go { color: #23408f; background: linear-gradient(90deg, rgba(79,125,255,.14), rgba(255,211,107,.22)); border-color: #e0b44a; }
+body.light .event-bar-go .go { color: #9a6a00; }
+@media (max-width: 600px) { .event-bar-go { font-size: 0.76rem; padding: 6px 12px; border-radius: 14px; line-height: 1.35; } }
 .theme-banner-exit { font-size: 0.75rem; font-weight: 600; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
 .theme-banner-exit:hover { color: var(--text); }
 .quiz-btn { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: none; letter-spacing: 0; font-size: 0.8rem; }
@@ -1699,6 +1711,10 @@ body.creator .kofi-nudge { display: none !important; }
   <button class="tab-btn" data-tab="multi">👥 Multiplayer</button>
   <button class="tab-btn" data-tab="achievements" title="Achievements">🏅 <span class="tab-label">Achievements</span></button>
 </nav>
+<div class="event-bar" id="event-bar" hidden>
+  <button type="button" class="event-bar-go" id="event-bar-go"></button>
+  <button type="button" class="event-bar-x" id="event-bar-x" title="Close" aria-label="Close">✕</button>
+</div>
 
 <div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
 <header>
@@ -4504,6 +4520,52 @@ const Q = (function() {
     });
     return lit;
   }
+  // Main-screen event bar: Hanukkah teaser before Dec 4, tonight's night during it, gone after.
+  // Closing it hides that phase (the teaser, or that one night) for good; Daily players never see it.
+  var eventBarShown = {};
+  function eventBarPhase() {
+    var today = dailyTodayStr(), dt = dailyThemeFor(today);
+    if (dt && dt.event === 'hanukkah') return hanukkahLitNights()[dt.night] ? null : { key: 'night-' + today, dt: dt, today: today };
+    if (today >= HANUKKAH.teaser && today < HANUKKAH.start) return { key: 'teaser' };
+    return null;
+  }
+  function eventBarRender() {
+    var bar = $('event-bar'); if (!bar) return;
+    var ph = eventBarPhase(), closed = '';
+    try { closed = localStorage.getItem('nea_event_bar_closed') || ''; } catch (e) {}
+    if (!ph || closed === ph.key) { bar.hidden = true; return; }
+    var text;
+    if (ph.dt) {
+      text = dailyThemeLine(ph.today);
+      if (!text) { loadThemes().then(eventBarRender, function() {}); bar.hidden = true; return; }
+    } else {
+      text = t('🕎 Hanukkah Dailies start {date}: 8 nights, 8 themes and a new skin', { date: dailyShortDate(HANUKKAH.start) });
+    }
+    var go = $('event-bar-go');
+    go.textContent = text + ' ';
+    var arrow = document.createElement('span');
+    arrow.className = 'go';
+    arrow.textContent = (ph.dt ? t("Play tonight's Daily") : t('See the Daily')) + (document.documentElement.dir === 'rtl' ? ' ←' : ' →');
+    go.appendChild(arrow);
+    bar.dataset.phase = ph.key;
+    bar.hidden = false;
+    if (currentTab !== 'daily' && !eventBarShown[ph.key]) { eventBarShown[ph.key] = true; track('event_bar_shown', { placement: ph.dt ? 'hanukkah_night' : 'hanukkah_teaser' }); }
+  }
+  (function() {
+    var go = $('event-bar-go'), x = $('event-bar-x');
+    if (go) go.addEventListener('click', function() {
+      var ph = $('event-bar').dataset.phase || '';
+      track('event_bar_click', { placement: ph === 'teaser' ? 'hanukkah_teaser' : 'hanukkah_night' });
+      switchTab('daily');
+      window.scrollTo(0, 0);
+    });
+    if (x) x.addEventListener('click', function() {
+      var bar = $('event-bar');
+      try { localStorage.setItem('nea_event_bar_closed', bar.dataset.phase || ''); } catch (e) {}
+      track('event_bar_close', { placement: bar.dataset.phase === 'teaser' ? 'hanukkah_teaser' : 'hanukkah_night' });
+      bar.hidden = true;
+    });
+  })();
   // Discord invite shown on the Daily results screen (empty = hidden). Only there, not on the
   // main screen or the kids page: Discord is for ages 13+.
   // One permanent invite per channel, so each link lands people where the conversation is
@@ -6220,6 +6282,7 @@ const Q = (function() {
     currentTab = tab;
     document.body.dataset.tab = tab;
     track('tab_view', { tab: tab });
+    eventBarRender();
     var about = $('about-section'); if (about) about.open = (tab === 'daily');
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === navTabFor(tab)));
     creatorUpdateNav();
