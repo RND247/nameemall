@@ -2213,7 +2213,7 @@ const Q = (function() {
   let typeBgEnabled = _savedSettings.typebg !== undefined ? _savedSettings.typebg : true;
   let hoverEnabled = _savedSettings.hover !== undefined ? _savedSettings.hover : true;
   let spotlightEnabled = _savedSettings.spot !== undefined ? _savedSettings.spot : true;
-  let bigPopEnabled = !!_savedSettings.bigpop;
+  let bigPopEnabled = _savedSettings.bigpop !== undefined ? !!_savedSettings.bigpop : true;
   let orderMode = _savedSettings.order || 'dex-gens';
   // Gen 10 (Pokémon Winds and Waves, 2027) is opt-in while only its starters are known, so the
   // default "Full Pokédex" stays the 1025 official Pokémon of Gens 1-9.
@@ -7989,7 +7989,7 @@ const Q = (function() {
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
-  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, evo: true, spotlight: true, bigpop: false, twitch: '', chatMode: 'coop' };
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, evo: true, spotlight: true, bigpop: true, twitch: '', chatMode: 'coop' };
   try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
   var creatorUrl = null;
   try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
