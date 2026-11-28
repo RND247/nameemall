@@ -5065,6 +5065,7 @@ const Q = (function() {
         '<div class="dl-th-title">' + esc(ti.icon + ' ' + ti.label) + '</div>' +
         '<div class="dl-menorah" aria-hidden="true">' + candles + '<span class="bar"></span><span class="stem"></span></div>' +
         '<div class="dl-th-note">' + esc(lit[dt.night] ? t('🕯️ Tonight\'s candle is lit. {count} of 8 so far', { count: count })
+          : count ? t('🕯️ Play tonight\'s Daily to light candle {n}. {count} of 8 so far', { n: dt.night, count: count })
           : t('🕯️ Play tonight\'s Daily to light a candle. Your first one unlocks the Hanukkah skin')) + '</div></div>';
     } else if (ti) {
       html = '<div class="dl-theme">' +

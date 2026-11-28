@@ -490,5 +490,6 @@ window.NEA_UI = {
   "Crop your capture to the game area and put your camera above it": "חתכו את ההקלטה לאזור המשחק ושימו את המצלמה מעליו",
   "Big Pokémon pop-up after each name": "פוקימון גדול קופץ אחרי כל שם",
   "Big Pop-up": "פוקימון גדול קופץ",
+  "🕯️ Play tonight's Daily to light candle {n}. {count} of 8 so far": "🕯️ שחקו באתגר של הלילה כדי להדליק את נר {n}. {count} מתוך 8 עד עכשיו",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };

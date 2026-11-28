@@ -529,5 +529,6 @@ window.NEA_UI = {
   "Crop your capture to the game area and put your camera above it": "ゲーム部分で切り抜き、カメラをその上に配置してください",
   "Big Pokémon pop-up after each name": "名前を当てるたびにポケモンを大きく表示",
   "Big Pop-up": "大きく表示",
+  "🕯️ Play tonight's Daily to light candle {n}. {count} of 8 so far": "🕯️ 今夜のデイリーをプレイして{n}本目のろうそくを灯そう。これまで8本中{count}本",
   "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };

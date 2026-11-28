@@ -503,5 +503,6 @@ window.NEA_UI = {
   "Crop your capture to the game area and put your camera above it": "Ritaglia la registrazione sull’area di gioco e metti la webcam sopra",
   "Big Pokémon pop-up after each name": "Pokémon grande dopo ogni nome",
   "Big Pop-up": "Pokémon in grande",
+  "🕯️ Play tonight's Daily to light candle {n}. {count} of 8 so far": "🕯️ Gioca la Giornaliera di stasera per accendere la candela {n}. {count} su 8 finora",
   "Level up! Lv. {level}": "Livello su! Lv. {level}",
 };

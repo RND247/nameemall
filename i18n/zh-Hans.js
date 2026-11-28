@@ -490,5 +490,6 @@ window.NEA_UI = {
   "Crop your capture to the game area and put your camera above it": "把录制画面裁剪到游戏区域，并把摄像头放在上方",
   "Big Pokémon pop-up after each name": "每说出一个名字就弹出大图宝可梦",
   "Big Pop-up": "大图弹出",
+  "🕯️ Play tonight's Daily to light candle {n}. {count} of 8 so far": "🕯️ 玩今晚的每日挑战，点亮第 {n} 根蜡烛。目前已点亮 {count}/8",
   "Level up! Lv. {level}": "升级了！Lv. {level}",
 };
