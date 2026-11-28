@@ -502,5 +502,6 @@ window.NEA_UI = {
   "📱 9:8 frame, the bottom half of a 9:16 video": "📱 9:8 畫框，即 9:16 影片的下半部",
   "Crop your capture to the game area and put your camera above it": "把錄製畫面裁切到遊戲區域，並把攝影機放在上方",
   "Big Pokémon pop-up after each name": "每說出一個名字就彈出大圖寶可夢",
+  "Big Pop-up": "大圖彈出",
   "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

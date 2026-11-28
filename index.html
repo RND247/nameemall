@@ -1809,6 +1809,7 @@ body.creator .kofi-nudge { display: none !important; }
         <div class="setting-row" id="set-typebg"><span class="setting-label">Type Backgrounds</span><div class="toggle-switch on" id="tog-typebg"></div></div>
         <div class="setting-row" id="set-hover"><span class="setting-label">Details on Hover</span><div class="toggle-switch on" id="tog-hover"></div></div>
         <div class="setting-row" id="set-spot"><span class="setting-label">Spotlight</span><div class="toggle-switch on" id="tog-spot"></div></div>
+        <div class="setting-row" id="set-bigpop"><span class="setting-label">Big Pop-up</span><div class="toggle-switch" id="tog-bigpop"></div></div>
         <div class="settings-divider"></div>
         <div class="settings-section-label">Appearance</div>
         <div class="setting-row-slider">
@@ -2212,6 +2213,7 @@ const Q = (function() {
   let typeBgEnabled = _savedSettings.typebg !== undefined ? _savedSettings.typebg : true;
   let hoverEnabled = _savedSettings.hover !== undefined ? _savedSettings.hover : true;
   let spotlightEnabled = _savedSettings.spot !== undefined ? _savedSettings.spot : true;
+  let bigPopEnabled = !!_savedSettings.bigpop;
   let orderMode = _savedSettings.order || 'dex-gens';
   // Gen 10 (Pokémon Winds and Waves, 2027) is opt-in while only its starters are known, so the
   // default "Full Pokédex" stays the 1025 official Pokémon of Gens 1-9.
@@ -2236,7 +2238,7 @@ const Q = (function() {
     } catch(e) {}
   })();
   function saveSettings() {
-    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, spell: spellHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, spot: spotlightEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
+    localStorage.setItem('namemall_settings', JSON.stringify({ sound: soundEnabled, shadows: shadowsEnabled, hints: hintPreset ? _savedHints : pokedexHints, spell: spellHints, cycle: cycleFormsEnabled, scroll: autoScrollEnabled, typebg: typeBgEnabled, hover: hoverEnabled, spot: spotlightEnabled, bigpop: bigPopEnabled, order: orderMode, gens: gensPreset ? _savedGensArr : Array.from(selectedGens) }));
   }
 
   let keyToIndices = {};
@@ -8002,8 +8004,9 @@ const Q = (function() {
     b.classList.toggle('creator-v', on && (creatorCfg.orient === 'v' || creatorCfg.orient === 's'));
     b.classList.toggle('creator-s', on && creatorCfg.orient === 's');
     b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v' && creatorCfg.orient !== 's');
-    b.classList.toggle('creator-bigpop', on && creatorCfg.bigpop);
-    if (!(on && creatorCfg.bigpop)) bigPopClear();
+    var bigOn = on ? creatorCfg.bigpop : bigPopEnabled;
+    b.classList.toggle('creator-bigpop', bigOn);
+    if (!bigOn) bigPopClear();
     b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
     b.classList.toggle('creator-combo', on && creatorCfg.combo);
     b.classList.toggle('creator-no-evo', on && !creatorCfg.evo);
@@ -8084,8 +8087,8 @@ const Q = (function() {
   }
   function creatorOnNamed(matches, by) {
     if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]], by);
+    if (creatorCfg.on ? creatorCfg.bigpop : bigPopEnabled) creatorBigPop(items[matches[matches.length - 1]], by);
     if (!creatorCfg.on) return;
-    if (creatorCfg.bigpop) creatorBigPop(items[matches[matches.length - 1]], by);
     var now = Date.now();
     creatorCombo.n = now - creatorCombo.last < 5000 ? creatorCombo.n + matches.length : matches.length;
     creatorCombo.last = now;
@@ -8184,6 +8187,13 @@ const Q = (function() {
     $('tog-spot').classList.toggle('on', spotlightEnabled);
     saveSettings(); creatorApply();
     track('setting_change', { setting: 'spotlight', value: spotlightEnabled });
+  });
+  $('tog-bigpop').classList.toggle('on', bigPopEnabled);
+  $('set-bigpop').addEventListener('click', function() {
+    bigPopEnabled = !bigPopEnabled;
+    $('tog-bigpop').classList.toggle('on', bigPopEnabled);
+    saveSettings(); creatorApply();
+    track('setting_change', { setting: 'bigpop', value: bigPopEnabled });
   });
   $('creator-cancel').addEventListener('click', function() { $('creator-overlay').classList.remove('active'); });
   document.querySelectorAll('[data-chat-mode]').forEach(function(btn) {

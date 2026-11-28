@@ -502,5 +502,6 @@ window.NEA_UI = {
   "📱 9:8 frame, the bottom half of a 9:16 video": "📱 Cadre 9:8, la moitié basse d’une vidéo 9:16",
   "Crop your capture to the game area and put your camera above it": "Recadrez la capture sur la zone de jeu et placez votre caméra au-dessus",
   "Big Pokémon pop-up after each name": "Grand Pokémon affiché après chaque nom",
+  "Big Pop-up": "Grand Pokémon",
   "Level up! Lv. {level}": "Niveau supérieur ! N. {level}",
 };

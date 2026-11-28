@@ -502,5 +502,6 @@ window.NEA_UI = {
   "📱 9:8 frame, the bottom half of a 9:16 video": "📱 9:8 프레임, 9:16 영상의 아래쪽 절반",
   "Crop your capture to the game area and put your camera above it": "녹화 화면을 게임 영역으로 자르고 그 위에 카메라를 배치하세요",
   "Big Pokémon pop-up after each name": "이름을 맞힐 때마다 포켓몬 크게 띄우기",
+  "Big Pop-up": "크게 띄우기",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

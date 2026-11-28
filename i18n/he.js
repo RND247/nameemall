@@ -489,5 +489,6 @@ window.NEA_UI = {
   "📱 9:8 frame, the bottom half of a 9:16 video": "📱 מסגרת 9:8, החצי התחתון של סרטון 9:16",
   "Crop your capture to the game area and put your camera above it": "חתכו את ההקלטה לאזור המשחק ושימו את המצלמה מעליו",
   "Big Pokémon pop-up after each name": "פוקימון גדול קופץ אחרי כל שם",
+  "Big Pop-up": "פוקימון גדול קופץ",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };
