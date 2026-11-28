@@ -175,17 +175,19 @@ PAGES += [
     {
         'slug': 'pokemon-quiz-for-streamers',
         'title': 'Pokémon Quiz for Streamers and YouTubers: Creator Mode',
-        'description': 'A free Pokémon naming game built for streams and videos. Let your Twitch chat play along, and use a big, clean layout with a 9:16 frame for TikTok and Shorts.',
+        'description': 'A free Pokémon naming game built for streams and videos. Let your Twitch chat play along, pop a big picture of every Pokémon you name, and use a 9:16 or face cam split frame for TikTok and Shorts.',
         'h1': 'Pokémon Quiz for Streamers and Creators',
         'play': '/?creator=setup',
         'play_label': '▶ Set up Creator Mode',
         'sprites': (25, 150, 448),
         'intro': [
             'Naming every Pokémon from memory makes great content: chat shouts suggestions, the counter keeps climbing, and the last few always feel impossible. Creator Mode turns NameEmAll into a layout that looks good on stream and is easy to edit.',
-            'Pick horizontal for YouTube and Twitch, or vertical for TikTok, Shorts and Reels. The game then uses one steady top bar, a big input box your viewers can read, and a spotlight on the last Pokémon you named.',
+            'Pick horizontal for YouTube and Twitch, vertical for TikTok, Shorts and Reels, or face cam split to put your camera above the game. The game then uses one steady top bar, a big input box your viewers can read, and a big picture of every Pokémon you name, popping up on screen so viewers see it too.',
         ],
         'how': [
             'Horizontal (16:9) or vertical (9:16): in vertical mode the game stays inside a fixed 9:16 frame, so cropping in OBS or your editor takes seconds.',
+            'Face cam split: the game stays inside a 9:8 frame, exactly the bottom half of a 9:16 video. Stack your camera on top and you have the classic reaction layout, with no need to resize the browser by hand.',
+            'Big Pokémon pop-up: every Pokémon you name appears large on screen for a moment, with its official artwork and name, the kind of effect you would otherwise add in editing. Turn it off in the setup if you prefer a calmer board.',
             'Big, readable score, timer and input box, with no tabs or footer to crop around.',
             'Twitch Chat Plays: enter your channel and your viewers name Pokémon by typing in chat. Play together, or go Chat vs You, with a live leaderboard of your top chatters.',
             'Milestone celebrations at 10, 25, 50, 75 and every 100 Pokémon, combo streaks, region completions and a finale with confetti.',
@@ -194,7 +196,9 @@ PAGES += [
         'faq': [
             ('How do I turn on Creator Mode?', 'Open ⚙️ Settings in the Full Pokédex and choose 🎥 Creator Mode, or use the button on this page. Your choice is remembered until you press Exit.'),
             ('Can I use NameEmAll on stream or in videos?', 'Yes. NameEmAll is free to play on stream and in videos. A link to nameemall.com in your description is appreciated.'),
-            ('Does it work with OBS?', 'Yes. Capture the browser window in OBS, Streamlabs or any recorder. In vertical mode, crop the capture to the 9:16 game frame.'),
+            ('Does it work with OBS?', 'Yes. Capture the browser window in OBS, Streamlabs or any recorder. In vertical mode, crop the capture to the 9:16 game frame. In face cam split, crop to the 9:8 game frame and place your camera above it.'),
+            ('How do I make a TikTok with my face above the game?', 'Choose Face cam split in the Creator Mode setup, or open nameemall.com/?creator=s. The game stays in the bottom half of a 9:16 video, so you only need to crop the capture and put your camera on top.'),
+            ('Can the Pokémon I name pop up big on screen?', 'Yes. The Big Pokémon pop-up shows the official artwork and the name of every Pokémon you name for about a second and a half. It is on by default, and you can switch it off in the Creator Mode setup or in Settings.'),
             ('Can my Twitch chat play along?', 'Yes. Type your channel name in the Creator Mode setup. Chat messages count as guesses, with no login or Twitch app needed. Choose Together to fill the Pokédex as a team, or Chat vs You to race your viewers.'),
             ('Is there a NameEmAll community?', 'Yes. Join the NameEmAll Discord at discord.gg/WJj2VYVxnz to share clips, find opponents for a Duel and suggest features for your stream.'),
         ],

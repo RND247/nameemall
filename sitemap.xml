@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://nameemall.com/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -19,7 +19,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=ja</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -36,7 +36,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=zh-Hant</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -53,7 +53,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=zh-Hans</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -70,7 +70,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=ko</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -87,7 +87,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=fr</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -104,7 +104,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=de</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -121,7 +121,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=es</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -138,7 +138,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=it</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -155,7 +155,7 @@
   </url>
   <url>
     <loc>https://nameemall.com/?lang=he</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ja" href="https://nameemall.com/?lang=ja"/>
@@ -172,253 +172,253 @@
   </url>
   <url>
     <loc>https://nameemall.com/pokemon-quizzes/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-1-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-2-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-3-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-4-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-5-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-6-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-7-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-8-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/gen-9-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/pokemon-silhouette-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/daily-pokemon-game/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/pokemon-quiz-for-kids/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/pokemon-quiz-with-friends/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/pokemon-quiz-for-streamers/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/starter-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/legendary-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/mythical-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/pseudo-legendary-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/eeveelution-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/fossil-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/ultra-beast-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/paradox-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/normal-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/fire-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/water-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/grass-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/electric-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/ice-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/fighting-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/poison-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/ground-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/flying-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/psychic-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/bug-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/rock-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/ghost-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/dragon-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/dark-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/steel-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/fairy-type-pokemon-quiz/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://nameemall.com/press/</loc>
-    <lastmod>2026-11-24</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
