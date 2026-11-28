@@ -483,5 +483,11 @@ window.NEA_UI = {
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "ניחשתם את {name} כבר בתחילת המשחק, ועדיין אף אחד לא אימץ אותו. אמצו אותו ב-Ko-fi ☕",
   "Play tonight's Daily": "לאתגר של הלילה",
   "See the Daily": "לאתגר היומי",
+  "Face cam split": "מסך מפוצל עם מצלמה",
+  "Game fills the bottom half of a 9:16 video": "המשחק ממלא את החצי התחתון של סרטון 9:16",
+  "Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.": "מסך מפוצל עם מצלמה: המשחק נשאר בתוך מסגרת 9:8. חתכו לפיה ושימו את המצלמה מעליה, בלי לשנות את גודל הדפדפן ידנית.",
+  "📱 9:8 frame, the bottom half of a 9:16 video": "📱 מסגרת 9:8, החצי התחתון של סרטון 9:16",
+  "Crop your capture to the game area and put your camera above it": "חתכו את ההקלטה לאזור המשחק ושימו את המצלמה מעליו",
+  "Big Pokémon pop-up after each name": "פוקימון גדול קופץ אחרי כל שם",
   "Level up! Lv. {level}": "עליתם רמה! רמה {level}",
 };

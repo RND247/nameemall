@@ -496,5 +496,11 @@ window.NEA_UI = {
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "이번 게임 초반에 {name}을(를) 맞혔어요. 아직 아무도 입양하지 않았어요. Ko-fi에서 입양하세요 ☕",
   "Play tonight's Daily": "오늘 밤 데일리 하기",
   "See the Daily": "데일리 보기",
+  "Face cam split": "페이스캠 분할",
+  "Game fills the bottom half of a 9:16 video": "게임이 9:16 영상의 아래쪽 절반을 채워요",
+  "Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.": "페이스캠 분할: 게임이 9:8 프레임 안에 표시돼요. 그 부분을 잘라내고 위에 카메라를 배치하면 브라우저 크기를 직접 조절할 필요가 없어요.",
+  "📱 9:8 frame, the bottom half of a 9:16 video": "📱 9:8 프레임, 9:16 영상의 아래쪽 절반",
+  "Crop your capture to the game area and put your camera above it": "녹화 화면을 게임 영역으로 자르고 그 위에 카메라를 배치하세요",
+  "Big Pokémon pop-up after each name": "이름을 맞힐 때마다 포켓몬 크게 띄우기",
   "Level up! Lv. {level}": "레벨 업! Lv. {level}",
 };

@@ -496,5 +496,11 @@ window.NEA_UI = {
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "你在這局一開始就說出了{name}，還沒有人領養牠。在 Ko-fi 上領養牠 ☕",
   "Play tonight's Daily": "玩今晚的每日挑戰",
   "See the Daily": "查看每日挑戰",
+  "Face cam split": "人像分割畫面",
+  "Game fills the bottom half of a 9:16 video": "遊戲佔滿 9:16 影片的下半部",
+  "Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.": "人像分割畫面：遊戲保持在 9:8 畫框內。依它裁切，再把攝影機畫面放在上方，不必手動調整瀏覽器大小。",
+  "📱 9:8 frame, the bottom half of a 9:16 video": "📱 9:8 畫框，即 9:16 影片的下半部",
+  "Crop your capture to the game area and put your camera above it": "把錄製畫面裁切到遊戲區域，並把攝影機放在上方",
+  "Big Pokémon pop-up after each name": "每說出一個名字就彈出大圖寶可夢",
   "Level up! Lv. {level}": "升級了！Lv. {level}",
 };

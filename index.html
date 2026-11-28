@@ -801,6 +801,11 @@ body.creator-v .grid-wrap { padding: 6px; }
 body.creator-v .region-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
 body.creator-v .toast-stack { right: calc((100vw - var(--stage-w)) / 2 + 12px); }
 body.creator-v .confetti-container { left: calc((100vw - var(--stage-w)) / 2); width: var(--stage-w); }
+body.creator-s { --stage-w: min(100vw, calc(100vh * 9 / 8)); }
+body.creator-s header { padding-top: 34px; }
+body.creator-s .region-grid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
+.creator-crop-hint .ch-s, body.creator-s .creator-crop-hint .ch-v { display: none; }
+body.creator-s .creator-crop-hint .ch-s { display: inline; }
 body.creator-v .creator-crop-hint { display: flex; position: fixed; top: 0; bottom: 0; left: 0; width: calc((100vw - var(--stage-w)) / 2); align-items: center; justify-content: center; padding: 20px; text-align: center; color: #4b5060; font-size: 0.85rem; line-height: 1.5; pointer-events: none; }
 /* Twitch Chat Plays panel */
 .creator-chat { display: none; }
@@ -890,8 +895,19 @@ body.creator-v .creator-banner.small .cb-title { font-size: 1.05rem; }
 .creator-orient small { color: var(--text-dim); font-size: 0.72rem; }
 .co-shape { display: block; border: 2px solid currentColor; border-radius: 4px; margin-bottom: 4px; opacity: 0.8; }
 .co-h { width: 64px; height: 36px; } .co-v { width: 22px; height: 39px; }
+.co-s { width: 22px; height: 39px; position: relative; background: linear-gradient(to bottom, transparent 50%, currentColor 50%, currentColor 51%, transparent 51%); }
+.co-s::after { content: '🙂'; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); font-size: 11px; line-height: 1; }
+.creator-orients { grid-template-columns: 1fr 1fr 1fr; }
+.creator-orient small { text-align: center; }
 .creator-modal .setting-row { text-transform: none; font-size: 0.85rem; padding: 8px 4px; }
 .creator-tip { font-size: 0.78rem !important; margin: 8px 0 4px; }
+.big-pop { position: fixed; left: 50%; top: 52%; z-index: 997; pointer-events: none; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -50%); animation: bigPopIn 0.45s cubic-bezier(.2,1.5,.4,1), fadeOut 0.35s ease 1.25s forwards; }
+.big-pop img { width: min(46vh, 70vw, calc(var(--stage-w, 100vw) * 0.72)); height: auto; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 10px 24px rgba(0,0,0,0.45)); }
+.big-pop.pixel img { image-rendering: pixelated; }
+.big-pop .bp-name { margin-top: -6px; font-size: clamp(1.8rem, 5vh, 3.2rem); font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px #111; paint-order: stroke fill; text-shadow: 0 3px 0 #111, 0 6px 18px rgba(0,0,0,0.5); text-align: center; line-height: 1.05; }
+.big-pop .bp-by { font-size: 1.1rem; font-weight: 800; color: #bf94ff; text-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+@keyframes bigPopIn { 0% { transform: translate(-50%, -50%) scale(0.3) rotate(-8deg); opacity: 0; } 70% { transform: translate(-50%, -50%) scale(1.06) rotate(2deg); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(1) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .big-pop { animation: fadeOut 0.35s ease 1.25s forwards; } }
 @media (prefers-reduced-motion: reduce) { .creator-banner, .creator-spot.pop { animation: fadeOut 0.5s ease 2.1s forwards; } }
 @media (prefers-reduced-motion: reduce) { .creator-banner.small { animation: fadeOut 0.4s ease 1.5s forwards; } }
 .lang-select { background: var(--bg2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; font-size: 0.75rem; padding: 3px 6px; cursor: pointer; }
@@ -1716,7 +1732,7 @@ body.creator .kofi-nudge { display: none !important; }
   <button type="button" class="event-bar-x" id="event-bar-x" title="Close" aria-label="Close">✕</button>
 </div>
 
-<div class="creator-crop-hint"><span>📱 9:16 frame<br>Crop your capture to the game area</span></div>
+<div class="creator-crop-hint"><span class="ch-v">📱 9:16 frame<br>Crop your capture to the game area</span><span class="ch-s">📱 9:8 frame, the bottom half of a 9:16 video<br>Crop your capture to the game area and put your camera above it</span></div>
 <header>
   <div class="panel-backdrop" id="panel-backdrop"></div>
   <div class="creator-nav" id="creator-nav">
@@ -2006,10 +2022,12 @@ body.creator .kofi-nudge { display: none !important; }
     <div class="creator-orients">
       <button class="creator-orient" data-orient="h"><span class="co-shape co-h"></span><b>Horizontal</b><small>16:9 · YouTube, Twitch</small></button>
       <button class="creator-orient" data-orient="v"><span class="co-shape co-v"></span><b>Vertical</b><small>9:16 · TikTok, Shorts, Reels</small></button>
+      <button class="creator-orient" data-orient="s"><span class="co-shape co-s"></span><b>Face cam split</b><small>Game fills the bottom half of a 9:16 video</small></button>
     </div>
     <div class="setting-row" id="set-creator-celebrate"><span class="setting-label">Celebrations and milestones</span><div class="toggle-switch" id="tog-creator-celebrate"></div></div>
     <div class="setting-row" id="set-creator-combo"><span class="setting-label">Combo meter beside the name box</span><div class="toggle-switch" id="tog-creator-combo"></div></div>
     <div class="setting-row" id="set-creator-evo"><span class="setting-label">Evolution line notices</span><div class="toggle-switch" id="tog-creator-evo"></div></div>
+    <div class="setting-row" id="set-creator-bigpop"><span class="setting-label">Big Pokémon pop-up after each name</span><div class="toggle-switch" id="tog-creator-bigpop"></div></div>
     <div class="setting-row" id="set-creator-spot"><span class="setting-label">Spotlight the last Pokémon named</span><div class="toggle-switch" id="tog-creator-spot"></div></div>
     <div class="settings-section-label">Twitch Chat Plays (optional)</div>
     <div class="creator-twitch">
@@ -2021,6 +2039,7 @@ body.creator .kofi-nudge { display: none !important; }
       <p class="creator-tip">Your viewers name Pokémon by typing them in your Twitch chat. Works in the Full Pokédex. Leave empty to play solo.</p>
     </div>
     <p class="creator-tip">Tip: capture this browser window in OBS or your recorder. In vertical mode the game stays inside a 9:16 frame, so crop to it.</p>
+    <p class="creator-tip">Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.</p>
     <button class="btn danger" id="creator-start">Start Creator Mode</button>
     <button class="btn" id="creator-cancel">Cancel</button>
   </div>
@@ -7968,11 +7987,11 @@ const Q = (function() {
   // ── Creator mode: big, steady layout for YouTubers, TikTokers and streamers ──
   // One fixed top bar (no separate scrolling tab bar), a big input, a spotlight on the last
   // Pokémon named, milestone celebrations, and a 9:16 frame for vertical video.
-  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, evo: true, spotlight: true, twitch: '', chatMode: 'coop' };
+  var creatorCfg = { on: false, orient: 'h', celebrate: true, combo: true, evo: true, spotlight: true, bigpop: false, twitch: '', chatMode: 'coop' };
   try { var _cc = JSON.parse(localStorage.getItem('nea_creator')); if (_cc) creatorCfg = Object.assign(creatorCfg, _cc); } catch(e) {}
   var creatorUrl = null;
   try { creatorUrl = new URLSearchParams(location.search).get('creator'); } catch(e) {}
-  if (creatorUrl === 'h' || creatorUrl === 'v') { creatorCfg.on = true; creatorCfg.orient = creatorUrl; }
+  if (creatorUrl === 'h' || creatorUrl === 'v' || creatorUrl === 's') { creatorCfg.on = true; creatorCfg.orient = creatorUrl; }
   var creatorCombo = { n: 0, last: 0 };
   var CREATOR_MILESTONES = [10, 25, 50, 75];
 
@@ -7980,8 +7999,11 @@ const Q = (function() {
   function creatorApply() {
     var b = document.body, on = creatorCfg.on;
     b.classList.toggle('creator', on);
-    b.classList.toggle('creator-v', on && creatorCfg.orient === 'v');
-    b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v');
+    b.classList.toggle('creator-v', on && (creatorCfg.orient === 'v' || creatorCfg.orient === 's'));
+    b.classList.toggle('creator-s', on && creatorCfg.orient === 's');
+    b.classList.toggle('creator-h', on && creatorCfg.orient !== 'v' && creatorCfg.orient !== 's');
+    b.classList.toggle('creator-bigpop', on && creatorCfg.bigpop);
+    if (!(on && creatorCfg.bigpop)) bigPopClear();
     b.classList.toggle('creator-spot-on', on && creatorCfg.spotlight);
     b.classList.toggle('creator-combo', on && creatorCfg.combo);
     b.classList.toggle('creator-no-evo', on && !creatorCfg.evo);
@@ -8003,6 +8025,7 @@ const Q = (function() {
     $('tog-creator-combo').classList.toggle('on', creatorCfg.combo);
     $('tog-creator-evo').classList.toggle('on', creatorCfg.evo);
     $('tog-creator-spot').classList.toggle('on', creatorCfg.spotlight);
+    $('tog-creator-bigpop').classList.toggle('on', creatorCfg.bigpop);
     document.querySelectorAll('[data-chat-mode]').forEach(function(btn) { btn.classList.toggle('active', btn.dataset.chatMode === creatorCfg.chatMode); });
   }
   function creatorOpenSetup() {
@@ -8034,9 +8057,35 @@ const Q = (function() {
     var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (size !== 'small' && !calm) launchConfetti();
   }
+  // Big pop-up: the official artwork of the Pokémon just named, large over the board for a moment,
+  // like the edits creators add by hand. Only shows once the image has loaded, newest name wins.
+  var bigPopSeq = 0, bigPopTimer = null;
+  function bigPopClear() { clearTimeout(bigPopTimer); var o = document.querySelector('.big-pop'); if (o) o.remove(); }
+  function bigPopArt(w) { return /\/sprites\/pokemon\/\d+\.png$/.test(w.s) ? w.s.replace('/sprites/pokemon/', '/sprites/pokemon/other/official-artwork/') : w.s; }
+  function creatorBigPop(w, by) {
+    if (!w) return;
+    var seq = ++bigPopSeq, img = new Image(), tried = false;
+    img.alt = '';
+    img.onload = function() {
+      if (seq !== bigPopSeq || !document.body.classList.contains('creator-bigpop')) return;
+      bigPopClear();
+      var el = document.createElement('div');
+      el.className = 'big-pop' + (img.src === w.s ? ' pixel' : '');
+      el.appendChild(img);
+      var nm = document.createElement('div');
+      nm.className = 'bp-name'; nm.textContent = displayName(w);
+      el.appendChild(nm);
+      if (by) { var b = document.createElement('div'); b.className = 'bp-by'; b.textContent = '💬 ' + by.name; if (by.color) b.style.color = by.color; el.appendChild(b); }
+      document.body.appendChild(el);
+      bigPopTimer = setTimeout(function() { el.remove(); }, 1600);
+    };
+    img.onerror = function() { if (!tried && img.src !== w.s) { tried = true; img.src = w.s; } };
+    img.src = bigPopArt(w);
+  }
   function creatorOnNamed(matches, by) {
     if (creatorCfg.on ? creatorCfg.spotlight : spotlightEnabled) creatorSpotlight(items[matches[matches.length - 1]], by);
     if (!creatorCfg.on) return;
+    if (creatorCfg.bigpop) creatorBigPop(items[matches[matches.length - 1]], by);
     var now = Date.now();
     creatorCombo.n = now - creatorCombo.last < 5000 ? creatorCombo.n + matches.length : matches.length;
     creatorCombo.last = now;
@@ -8127,6 +8176,7 @@ const Q = (function() {
   $('set-creator-combo').addEventListener('click', function() { creatorCfg.combo = !creatorCfg.combo; creatorSetupRender(); });
   $('set-creator-evo').addEventListener('click', function() { creatorCfg.evo = !creatorCfg.evo; creatorSetupRender(); });
   $('set-creator-spot').addEventListener('click', function() { creatorCfg.spotlight = !creatorCfg.spotlight; creatorSetupRender(); });
+  $('set-creator-bigpop').addEventListener('click', function() { creatorCfg.bigpop = !creatorCfg.bigpop; creatorSetupRender(); });
   $('set-creator').addEventListener('click', creatorOpenSetup);
   $('tog-spot').classList.toggle('on', spotlightEnabled);
   $('set-spot').addEventListener('click', function() {

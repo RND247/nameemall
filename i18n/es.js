@@ -496,5 +496,11 @@ window.NEA_UI = {
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "Nombraste a {name} al principio de esta partida, y nadie lo ha adoptado todavía. Adóptalo en Ko-fi ☕",
   "Play tonight's Daily": "Jugar el Diario de esta noche",
   "See the Daily": "Ver el Diario",
+  "Face cam split": "Pantalla dividida con cámara",
+  "Game fills the bottom half of a 9:16 video": "El juego ocupa la mitad inferior de un vídeo 9:16",
+  "Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.": "Pantalla dividida con cámara: el juego se queda dentro de un marco 9:8. Recórtalo y pon tu cámara encima, sin tener que ajustar el navegador a mano.",
+  "📱 9:8 frame, the bottom half of a 9:16 video": "📱 Marco 9:8, la mitad inferior de un vídeo 9:16",
+  "Crop your capture to the game area and put your camera above it": "Recorta la grabación al área del juego y pon tu cámara encima",
+  "Big Pokémon pop-up after each name": "Pokémon grande al nombrar cada uno",
   "Level up! Lv. {level}": "¡Subes de nivel! Nv. {level}",
 };

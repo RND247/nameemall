@@ -522,5 +522,11 @@ window.NEA_UI = {
   "You named {name} early this game, and nobody has adopted it yet. Adopt it on Ko-fi ☕": "このゲームの序盤で{name}を答えましたね。まだ里親がいません。Ko-fiで里親になろう ☕",
   "Play tonight's Daily": "今夜のデイリーへ",
   "See the Daily": "デイリーを見る",
+  "Face cam split": "顔出し分割",
+  "Game fills the bottom half of a 9:16 video": "ゲームが9:16動画の下半分に収まります",
+  "Face cam split: the game stays inside a 9:8 frame. Crop to it and stack your camera above it, so you don't have to resize the browser by hand.": "顔出し分割：ゲームは9:8の枠内に表示されます。そこで切り抜いてカメラを上に重ねれば、ブラウザのサイズを手動で調整する必要はありません。",
+  "📱 9:8 frame, the bottom half of a 9:16 video": "📱 9:8の枠（9:16動画の下半分）",
+  "Crop your capture to the game area and put your camera above it": "ゲーム部分で切り抜き、カメラをその上に配置してください",
+  "Big Pokémon pop-up after each name": "名前を当てるたびにポケモンを大きく表示",
   "Level up! Lv. {level}": "レベルアップ！ Lv. {level}",
 };
